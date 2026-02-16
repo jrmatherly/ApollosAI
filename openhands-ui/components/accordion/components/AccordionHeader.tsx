@@ -44,7 +44,7 @@ export const AccordionHeader = ({
         "data-[expanded=true]:hover:bg-light-neutral-900",
         // focus modifier
         "data-[expanded=false]:focus:bg-light-neutral-900",
-        className
+        className,
       )}
     >
       <Icon icon={icon} className={cn(iconCss, "w-6 h-6")} />
@@ -60,7 +60,7 @@ export const AccordionHeader = ({
           // hover modifier
           "group-hover:text-light-neutral-15",
           // focus modifier
-          "group-focus:text-light-neutral-15"
+          "group-focus:text-light-neutral-15",
         )}
       >
         {children}
@@ -71,7 +71,7 @@ export const AccordionHeader = ({
           iconCss,
           "h-4 w-4",
           "transition-transform duration-300",
-          expanded && `rotate-180`
+          expanded && `rotate-180`,
         )}
       />
     </button>

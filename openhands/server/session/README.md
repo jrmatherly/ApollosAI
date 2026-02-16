@@ -13,7 +13,7 @@ There are 3 main server side event handlers:
 * `disconnect` - Invoked when a connected client disconnects from the server.
 
 ## Disconnect
-The (manager)[manager.py] manages connections and sessions. Each session may have zero or more connections
+The [manager](manager.py) manages connections and sessions. Each session may have zero or more connections
 associated with it. When a session no longer has any
 connections associated with it, after a set amount of time (determined by `config.sandbox.close_delay`),
 the session and runtime are passivated (So will need to be rehydrated to continue.)

@@ -35,7 +35,7 @@ export const Spinner = ({
 }: SpinnerProps) => {
   const offset = useMemo(
     () => circumference - (value / 100) * circumference,
-    [value]
+    [value],
   );
 
   return (
@@ -56,7 +56,7 @@ export const Spinner = ({
       />
       <g
         className={cn(
-          !determinate && "animate-indeterminate-spinner origin-center"
+          !determinate && "animate-indeterminate-spinner origin-center",
         )}
       >
         <circle

@@ -7,7 +7,14 @@ metadata:
   namespace: default
 rules:
   - apiGroups: [""]
-    resources: ["pods", "pods/exec", "pods/portforward", "services", "persistentvolumeclaims"]
+    resources:
+      [
+        "pods",
+        "pods/exec",
+        "pods/portforward",
+        "services",
+        "persistentvolumeclaims",
+      ]
     verbs: ["get", "list", "create", "delete", "watch", "update"]
   - apiGroups: ["networking.k8s.io"] # Networking API group (for ingress, networkpolicies, etc.)
     resources: ["ingresses", "networkpolicies"]

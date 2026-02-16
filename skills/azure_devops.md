@@ -46,7 +46,7 @@ curl -H "Authorization: Basic $AUTH" -H "Content-Type: application/json" https:/
 ```
 
 Common API endpoints:
-- List repositories: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories?api-version=7.1`
-- Get repository details: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}?api-version=7.1`
-- List pull requests: `https://dev.azure.com/{organization}/{project}/_apis/git/pullrequests?api-version=7.1`
-- Create pull request: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.1` (POST)
+* List repositories: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories?api-version=7.1`
+* Get repository details: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}?api-version=7.1`
+* List pull requests: `https://dev.azure.com/{organization}/{project}/_apis/git/pullrequests?api-version=7.1`
+* Create pull request: `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.1` (POST)

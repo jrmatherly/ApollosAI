@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import AsyncGenerator
 
 from fastapi import Request
+from openhands.sdk import Event
 
 from openhands.app_server.event.event_service import EventService, EventServiceInjector
 from openhands.app_server.event.event_service_base import EventServiceBase
 from openhands.app_server.services.injector import InjectorState
-from openhands.sdk import Event
 
 _logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class FilesystemEventService(EventServiceBase):
             content = Event.model_validate_json(content)
             return content
         except Exception:
-            _logger.exception('Error reading event', stack_info=True)
+            _logger.exception("Error reading event", stack_info=True)
             return None
 
     def _store_event(self, path: Path, event: Event):
@@ -35,7 +35,7 @@ class FilesystemEventService(EventServiceBase):
         path.write_text(content)
 
     def _search_paths(self, prefix: Path, page_id: str | None = None) -> list[Path]:
-        search_path = f'{prefix}/*'
+        search_path = f"{prefix}/*"
         files = glob.glob(str(search_path))
         paths = [Path(file) for file in files]
         return paths

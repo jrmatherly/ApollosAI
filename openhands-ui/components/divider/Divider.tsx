@@ -20,7 +20,7 @@ export const Divider = ({
       className={cn(
         "bg-grey-900",
         type === "vertical" ? "w-px h-full" : "h-px w-full",
-        className
+        className,
       )}
       role="separator"
       aria-orientation={type}

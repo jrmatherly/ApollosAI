@@ -13,7 +13,7 @@ type ArrayActions<T> = {
 
 export function useArray<T>(initialValue: T | T[]): [T[], ArrayActions<T>] {
   const [array, setArray] = useState<T[]>(
-    Array.isArray(initialValue) ? initialValue : [initialValue]
+    Array.isArray(initialValue) ? initialValue : [initialValue],
   );
 
   const push = useCallback((value: T | T[]) => {
@@ -42,7 +42,7 @@ export function useArray<T>(initialValue: T | T[]): [T[], ArrayActions<T>] {
       const index = prev.findIndex((item) =>
         compareBy
           ? deepEqual(item[compareBy], value[compareBy])
-          : deepEqual(item, value)
+          : deepEqual(item, value),
       );
       return index >= 0
         ? [...prev.slice(0, index), ...prev.slice(index + 1)]

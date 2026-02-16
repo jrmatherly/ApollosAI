@@ -30,7 +30,7 @@ type IBaseToastProps = (WithRenderContent | WithTextAndIcon) & {
 const BaseToast = (props: IBaseToastProps) => {
   invariant(
     !!props.renderContent || !!props.text,
-    "Either define renderContent or text. Both cannot be defined."
+    "Either define renderContent or text. Both cannot be defined.",
   );
 
   const onDismiss = () => sonnerToast.dismiss(props.id);
@@ -41,7 +41,7 @@ const BaseToast = (props: IBaseToastProps) => {
         "border-1 border-light-neutral-500 rounded-l-[100px] rounded-r-4xl",
         "bg-light-neutral-900 px-3 py-3",
         "max-w-sm min-w-32",
-        "flex flex-row items-center justify-between gap-x-4"
+        "flex flex-row items-center justify-between gap-x-4",
       )}
     >
       {props.renderContent ? (
@@ -76,7 +76,7 @@ export const toasterMessages = {
           text={text!}
         />
       ),
-      props
+      props,
     );
   },
   success: (text?: string, props?: ExternalToast) => {
@@ -90,7 +90,7 @@ export const toasterMessages = {
           text={text!}
         />
       ),
-      props
+      props,
     );
   },
   info: (text?: string, props?: ExternalToast) => {
@@ -104,7 +104,7 @@ export const toasterMessages = {
           text={text!}
         />
       ),
-      props
+      props,
     );
   },
   warning: (text?: string, props?: ExternalToast) => {
@@ -118,16 +118,16 @@ export const toasterMessages = {
           text={text!}
         />
       ),
-      props
+      props,
     );
   },
   custom: (
     renderContent: WithRenderContent["renderContent"],
-    props?: ExternalToast
+    props?: ExternalToast,
   ) => {
     sonnerToast.custom(
       (id) => <BaseToast id={id} renderContent={renderContent} />,
-      props
+      props,
     );
   },
 };

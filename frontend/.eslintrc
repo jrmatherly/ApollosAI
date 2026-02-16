@@ -13,11 +13,17 @@
     "plugin:react-hooks/recommended",
     "plugin:@tanstack/query/recommended",
   ],
-  "plugins": ["prettier", "unused-imports", "i18next"],
+  "plugins": [
+    "prettier",
+    "unused-imports",
+    "i18next"
+  ],
   "rules": {
     "i18next/no-literal-string": "error",
     "unused-imports/no-unused-imports": "error",
-    "prettier/prettier": ["error"],
+    "prettier/prettier": [
+      "error"
+    ],
     // Enforce using optional chaining (?.) instead of && chains for null/undefined checks
     "@typescript-eslint/prefer-optional-chain": "error",
     // Resolves https://stackoverflow.com/questions/59265981/typescript-eslint-missing-file-extension-ts-import-extensions/59268871#59268871
@@ -38,14 +44,20 @@
   },
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "rules": {
         // Allow state modification in reduce and Redux reducers
         "no-param-reassign": [
           "error",
           {
             "props": true,
-            "ignorePropertyModificationsFor": ["acc", "state"],
+            "ignorePropertyModificationsFor": [
+              "acc",
+              "state"
+            ],
           },
         ],
         // For https://stackoverflow.com/questions/55844608/stuck-with-eslint-error-i-e-separately-loops-should-be-avoided-in-favor-of-arra
@@ -60,7 +72,10 @@
           2,
           {
             "required": {
-              "some": ["nesting", "id"],
+              "some": [
+                "nesting",
+                "id"
+              ],
             },
           },
         ],
@@ -71,7 +86,9 @@
         "react/react-in-jsx-scope": "off",
       },
       "parserOptions": {
-        "project": ["**/tsconfig.json"],
+        "project": [
+          "**/tsconfig.json"
+        ],
       },
     },
   ],

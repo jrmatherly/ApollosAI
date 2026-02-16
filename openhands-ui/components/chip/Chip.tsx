@@ -26,7 +26,7 @@ export const Chip = ({
         variant === "pill" ? "rounded-full" : "rounded-lg",
         "border-1",
         chipStyles[color],
-        className
+        className,
       )}
     >
       <Typography.Text fontSize="xs" fontWeight={500} className="text-inherit">

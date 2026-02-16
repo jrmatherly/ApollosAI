@@ -11,48 +11,48 @@ OpenHands includes and adapts the following open source projects. We are gratefu
 open source community:
 
 #### [SWE Agent](https://github.com/princeton-nlp/swe-agent)
-   - License: MIT License
-   - Description: Adapted for use in OpenHands's agent hub
+- License: MIT License
+- Description: Adapted for use in OpenHands's agent hub
 
 #### [Aider](https://github.com/paul-gauthier/aider)
-   - License: Apache License 2.0
-   - Description: AI pair programming tool. OpenHands has adapted and integrated its linter module for code-related tasks in [`agentskills utilities`](https://github.com/OpenHands/OpenHands/tree/main/openhands/runtime/plugins/agent_skills/utils/aider)
+- License: Apache License 2.0
+- Description: AI pair programming tool. OpenHands has adapted and integrated its linter module for code-related tasks in [`agentskills utilities`](https://github.com/OpenHands/OpenHands/tree/main/openhands/runtime/plugins/agent_skills/utils/aider)
 
 #### [BrowserGym](https://github.com/ServiceNow/BrowserGym)
-   - License: Apache License 2.0
-   - Description: Adapted in implementing the browsing agent
+- License: Apache License 2.0
+- Description: Adapted in implementing the browsing agent
 
 ### Reference Implementations for Evaluation Benchmarks
 
 OpenHands integrates code of the reference implementations for the following agent evaluation benchmarks:
 
 #### [HumanEval](https://github.com/openai/human-eval)
-   - License: MIT License
+- License: MIT License
 
 #### [DSP](https://github.com/microsoft/DataScienceProblems)
-   - License: MIT License
+- License: MIT License
 
 #### [HumanEvalPack](https://github.com/bigcode-project/bigcode-evaluation-harness)
-   - License: Apache License 2.0
+- License: Apache License 2.0
 
 #### [AgentBench](https://github.com/THUDM/AgentBench)
-   - License: Apache License 2.0
+- License: Apache License 2.0
 
 #### [SWE-Bench](https://github.com/princeton-nlp/SWE-bench)
-   - License: MIT License
+- License: MIT License
 
 #### [BIRD](https://bird-bench.github.io/)
-   - License: MIT License
-   - Dataset: CC-BY-SA 4.0
+- License: MIT License
+- Dataset: CC-BY-SA 4.0
 
 #### [Gorilla APIBench](https://github.com/ShishirPatil/gorilla)
-   - License: Apache License 2.0
+- License: Apache License 2.0
 
 #### [GPQA](https://github.com/idavidrein/gpqa)
-   - License: MIT License
+- License: MIT License
 
 #### [ProntoQA](https://github.com/asaparov/prontoqa)
-   - License: Apache License 2.0
+- License: Apache License 2.0
 
 ## Open Source licenses
 
@@ -94,7 +94,6 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### Apache License 2.0
-
 
                                  Apache License
                            Version 2.0, January 2004
@@ -286,10 +285,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
    Copyright [yyyy] [name of copyright owner]
 
-### Non-Open Source Reference Implementations:
+### Non-Open Source Reference Implementations
 
 #### [MultiPL-E](https://github.com/nuprl/MultiPL-E)
-   - License: BSD 3-Clause License with Machine Learning Restriction
+- License: BSD 3-Clause License with Machine Learning Restriction
 
 BSD 3-Clause License with Machine Learning Restriction
 
@@ -313,7 +312,7 @@ modification, are permitted provided that the following conditions are met:
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
 
-4.  The contents of this repository may not be used as training data for any
+4. The contents of this repository may not be used as training data for any
     machine learning model, including but not limited to neural networks.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"

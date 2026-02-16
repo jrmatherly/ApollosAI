@@ -29,7 +29,7 @@ export const RadioOption = ({
       data-testid={testId}
       className={cn(
         "flex items-center gap-x-4",
-        disabled ? "cursor-not-allowed" : "cursor-pointer"
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
       )}
     >
       <div className="relative">
@@ -64,7 +64,7 @@ export const RadioOption = ({
             "peer-focus:peer-enabled:bg-light-neutral-900",
             "peer-focus:peer-enabled:border-light-neutral-200",
             "peer-focus:peer-checked:peer-enabled:bg-light-neutral-985",
-            "peer-focus:peer-checked:peer-enabled:border-primary-500"
+            "peer-focus:peer-checked:peer-enabled:border-primary-500",
           )}
         />
         <div
@@ -77,7 +77,7 @@ export const RadioOption = ({
             // active modifier
 
             "peer-active:peer-enabled:scale-80",
-            "peer-active:peer-enabled:bg-primary-600"
+            "peer-active:peer-enabled:bg-primary-600",
           )}
         />
       </div>

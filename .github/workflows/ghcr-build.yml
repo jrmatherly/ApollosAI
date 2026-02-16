@@ -1,4 +1,4 @@
-# Workflow that builds, tests and then pushes the OpenHands and runtime docker images to the ghcr.io repository
+# Workflow that builds, tests and then pushes the ApollosAI and runtime docker images to the ghcr.io repository
 name: Docker
 
 # Always run on "main"
@@ -50,7 +50,7 @@ jobs:
           fi
           echo "base_image=$json" >> "$GITHUB_OUTPUT"
 
-  # Builds the OpenHands Docker images
+  # Builds the ApollosAI Docker images
   ghcr_build_app:
     name: Build App Image
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -82,7 +82,7 @@ jobs:
       - name: Build and push app image
         if: "!github.event.pull_request.head.repo.fork"
         run: |
-          ./containers/build.sh -i openhands -o ${{ env.REPO_OWNER }} --push
+          ./containers/build.sh -i apollos -o ${{ env.REPO_OWNER }} --push
 
   # Builds the runtime Docker images
   ghcr_build_runtime:
@@ -124,7 +124,7 @@ jobs:
       - name: Install Python dependencies using Poetry
         run: make install-python-dependencies POETRY_GROUP=main INSTALL_PLAYWRIGHT=0
       - name: Create source distribution and Dockerfile
-        run: poetry run python3 -m openhands.runtime.utils.runtime_build --base_image ${{ matrix.base_image.image }} --build_folder containers/runtime --force_rebuild
+        run: poetry run python3 -m apollos.runtime.utils.runtime_build --base_image ${{ matrix.base_image.image }} --build_folder containers/runtime --force_rebuild
       - name: Lowercase Repository Owner
         run: |
           echo REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
@@ -201,7 +201,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/openhands/enterprise-server
+          images: ghcr.io/jrmatherly/ApollosAI/enterprise-server
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -221,9 +221,9 @@ jobs:
         run: |
           # Duplicated with build.sh
           sanitized_ref_name=$(echo "$GITHUB_REF_NAME" | sed 's/[^a-zA-Z0-9.-]\+/-/g')
-          OPENHANDS_BUILD_VERSION=$sanitized_ref_name
+          APOLLOS_BUILD_VERSION=$sanitized_ref_name
           sanitized_ref_name=$(echo "$sanitized_ref_name" | tr '[:upper:]' '[:lower:]') # lower case is required in tagging
-          echo "OPENHANDS_DOCKER_TAG=${sanitized_ref_name}" >> $GITHUB_ENV
+          echo "APOLLOS_DOCKER_TAG=${sanitized_ref_name}" >> $GITHUB_ENV
       - name: Build and push Docker image
         uses: useblacksmith/build-push-action@v1
         with:
@@ -233,7 +233,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            OPENHANDS_VERSION=${{ env.OPENHANDS_DOCKER_TAG }}
+            APOLLOS_VERSION=${{ env.APOLLOS_DOCKER_TAG }}
           platforms: linux/amd64
           # Add build provenance
           provenance: true
@@ -250,10 +250,10 @@ jobs:
       - name: Trigger remote job
         run: |
           curl --fail-with-body -sS -X POST \
-            -H "Authorization: Bearer ${{ secrets.ALLHANDS_BOT_GITHUB_PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.APOLLOS_BOT_GITHUB_PAT }}" \
             -H "Accept: application/vnd.github+json" \
-            -d "{\"ref\": \"main\", \"inputs\": {\"openhandsPrNumber\": \"${{ github.event.pull_request.number }}\", \"deployEnvironment\": \"feature\", \"enterpriseImageTag\": \"pr-${{ github.event.pull_request.number }}\" }}" \
-            https://api.github.com/repos/OpenHands/deploy/actions/workflows/deploy.yaml/dispatches
+            -d "{\"ref\": \"main\", \"inputs\": {\"apollosPrNumber\": \"${{ github.event.pull_request.number }}\", \"deployEnvironment\": \"feature\", \"enterpriseImageTag\": \"pr-${{ github.event.pull_request.number }}\" }}" \
+            https://api.github.com/repos/jrmatherly/ApollosAI/actions/workflows/deploy.yaml/dispatches
 
   # "All Runtime Tests Passed" is a required job for PRs to merge
   # We can remove this once the config changes

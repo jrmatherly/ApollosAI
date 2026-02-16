@@ -47,10 +47,10 @@ handle the lifecycle of a Docker container or other environment running the
 ActionExecutor server.
 
 There are currently four implementations:
-* Docker (runs locally in a Docker container)
-* Remote (runs via a custom HTTP API for creating, pausing, resuming, and stopping runtimes in a remote environment)
-* Modal (uses the Modal API)
-* Runloop (uses the Runloop API)
+- Docker (runs locally in a Docker container)
+- Remote (runs via a custom HTTP API for creating, pausing, resuming, and stopping runtimes in a remote environment)
+- Modal (uses the Modal API)
+- Runloop (uses the Runloop API)
 
 You may also add your own `Runtime` subclass to the classpath and configure it like this:
 

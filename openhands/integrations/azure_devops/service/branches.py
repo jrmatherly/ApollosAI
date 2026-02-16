@@ -10,10 +10,10 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
     async def get_branches(self, repository: str) -> list[Branch]:
         """Get branches for a repository."""
         # Parse repository string: organization/project/repo
-        parts = repository.split('/')
+        parts = repository.split("/")
         if len(parts) < 3:
             raise ValueError(
-                f'Invalid repository format: {repository}. Expected format: organization/project/repo'
+                f"Invalid repository format: {repository}. Expected format: organization/project/repo"
             )
 
         org = parts[0]
@@ -25,36 +25,36 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
         project_enc = self._encode_url_component(project)
         repo_enc = self._encode_url_component(repo_name)
 
-        url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/'
+        url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/"
 
         # Set maximum branches to fetch
         MAX_BRANCHES = 1000
 
         response, _ = await self._make_request(url)
-        branches_data = response.get('value', [])
+        branches_data = response.get("value", [])
 
         all_branches = []
 
         for branch_data in branches_data:
             # Extract branch name from the ref (e.g., "refs/heads/main" -> "main")
-            name = branch_data.get('name', '').replace('refs/heads/', '')
+            name = branch_data.get("name", "").replace("refs/heads/", "")
 
             # Get the commit details for this branch
-            object_id = branch_data.get('objectId', '')
-            commit_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1'
+            object_id = branch_data.get("objectId", "")
+            commit_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1"
             commit_data, _ = await self._make_request(commit_url)
 
             # Check if the branch is protected
             name_enc = self._encode_url_component(name)
-            policy_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/policy/configurations?api-version=7.1&repositoryId={repo_enc}&refName=refs/heads/{name_enc}'
+            policy_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/policy/configurations?api-version=7.1&repositoryId={repo_enc}&refName=refs/heads/{name_enc}"
             policy_data, _ = await self._make_request(policy_url)
-            is_protected = len(policy_data.get('value', [])) > 0
+            is_protected = len(policy_data.get("value", [])) > 0
 
             branch = Branch(
                 name=name,
                 commit_sha=object_id,
                 protected=is_protected,
-                last_push_date=commit_data.get('committer', {}).get('date'),
+                last_push_date=commit_data.get("committer", {}).get("date"),
             )
             all_branches.append(branch)
 
@@ -68,10 +68,10 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
     ) -> PaginatedBranchesResponse:
         """Get branches for a repository with pagination."""
         # Parse repository string: organization/project/repo
-        parts = repository.split('/')
+        parts = repository.split("/")
         if len(parts) < 3:
             raise ValueError(
-                f'Invalid repository format: {repository}. Expected format: organization/project/repo'
+                f"Invalid repository format: {repository}. Expected format: organization/project/repo"
             )
 
         org = parts[0]
@@ -84,16 +84,16 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
         repo_enc = self._encode_url_component(repo_name)
 
         # First, get the repository to get its ID
-        repo_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}?api-version=7.1'
+        repo_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}?api-version=7.1"
         repo_data, _ = await self._make_request(repo_url)
         repo_id = repo_data.get(
-            'id', repo_name
+            "id", repo_name
         )  # Fall back to repo_name if ID not found
 
-        url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/'
+        url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/"
 
         response, _ = await self._make_request(url)
-        branches_data = response.get('value', [])
+        branches_data = response.get("value", [])
 
         # Calculate pagination
         start_idx = (page - 1) * per_page
@@ -103,24 +103,24 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
         branches: list[Branch] = []
         for branch_data in paginated_data:
             # Extract branch name from the ref (e.g., "refs/heads/main" -> "main")
-            name = branch_data.get('name', '').replace('refs/heads/', '')
+            name = branch_data.get("name", "").replace("refs/heads/", "")
 
             # Get the commit details for this branch
-            object_id = branch_data.get('objectId', '')
-            commit_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1'
+            object_id = branch_data.get("objectId", "")
+            commit_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1"
             commit_data, _ = await self._make_request(commit_url)
 
             # Check if the branch is protected using repository ID
             name_enc = self._encode_url_component(name)
-            policy_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/policy/configurations?api-version=7.1&repositoryId={repo_id}&refName=refs/heads/{name_enc}'
+            policy_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/policy/configurations?api-version=7.1&repositoryId={repo_id}&refName=refs/heads/{name_enc}"
             policy_data, _ = await self._make_request(policy_url)
-            is_protected = len(policy_data.get('value', [])) > 0
+            is_protected = len(policy_data.get("value", [])) > 0
 
             branch = Branch(
                 name=name,
                 commit_sha=object_id,
                 protected=is_protected,
-                last_push_date=commit_data.get('committer', {}).get('date'),
+                last_push_date=commit_data.get("committer", {}).get("date"),
             )
             branches.append(branch)
 
@@ -139,10 +139,10 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
     ) -> list[Branch]:
         """Search for branches within a repository."""
         # Parse repository string: organization/project/repo
-        parts = repository.split('/')
+        parts = repository.split("/")
         if len(parts) < 3:
             raise ValueError(
-                f'Invalid repository format: {repository}. Expected format: organization/project/repo'
+                f"Invalid repository format: {repository}. Expected format: organization/project/repo"
             )
 
         org = parts[0]
@@ -154,27 +154,27 @@ class AzureDevOpsBranchesMixin(AzureDevOpsMixinBase):
         project_enc = self._encode_url_component(project)
         repo_enc = self._encode_url_component(repo_name)
 
-        url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/'
+        url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/refs?api-version=7.1&filter=heads/"
 
         try:
             response, _ = await self._make_request(url)
-            branches_data = response.get('value', [])
+            branches_data = response.get("value", [])
 
             # Filter branches by query
             filtered_branches = []
             for branch_data in branches_data:
                 # Extract branch name from the ref (e.g., "refs/heads/main" -> "main")
-                name = branch_data.get('name', '').replace('refs/heads/', '')
+                name = branch_data.get("name", "").replace("refs/heads/", "")
 
                 # Check if query matches branch name
                 if query.lower() in name.lower():
-                    object_id = branch_data.get('objectId', '')
+                    object_id = branch_data.get("objectId", "")
 
                     # Get commit details for this branch
-                    commit_url = f'https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1'
+                    commit_url = f"https://dev.azure.com/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/commits/{object_id}?api-version=7.1"
                     try:
                         commit_data, _ = await self._make_request(commit_url)
-                        last_push_date = commit_data.get('committer', {}).get('date')
+                        last_push_date = commit_data.get("committer", {}).get("date")
                     except Exception:
                         last_push_date = None
 

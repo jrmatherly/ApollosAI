@@ -6,7 +6,7 @@ from pathlib import Path
 
 # Suppress alembic.runtime.plugins INFO logs during import to prevent non-JSON logs in production
 # These plugin setup messages would otherwise appear before logging is configured
-logging.getLogger('alembic.runtime.plugins').setLevel(logging.WARNING)
+logging.getLogger("alembic.runtime.plugins").setLevel(logging.WARNING)
 
 from alembic import context  # noqa: E402
 
@@ -75,17 +75,17 @@ def run_migrations_offline() -> None:
     # Get the database URL from the DbSessionInjector
     if db_session.host:
         password_value = (
-            db_session.password.get_secret_value() if db_session.password else ''
+            db_session.password.get_secret_value() if db_session.password else ""
         )
-        url = f'postgresql://{db_session.user}:{password_value}@{db_session.host}:{db_session.port}/{db_session.name}'
+        url = f"postgresql://{db_session.user}:{password_value}@{db_session.host}:{db_session.port}/{db_session.name}"
     else:
-        url = f'sqlite:///{db_session.persistence_dir}/openhands.db'
+        url = f"sqlite:///{db_session.persistence_dir}/openhands.db"
 
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={'paramstyle': 'named'},
+        dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():

@@ -41,7 +41,7 @@ class SetTitleCallbackProcessor(EventCallbackProcessor):
             get_httpx_client,
         )
 
-        _logger.info(f'Callback {callback.id} Invoked for event {event}')
+        _logger.info(f"Callback {callback.id} Invoked for event {event}")
 
         state = InjectorState()
         setattr(state, USER_CONTEXT_ATTR, ADMIN)
@@ -62,14 +62,14 @@ class SetTitleCallbackProcessor(EventCallbackProcessor):
                 app_conversation_url
             )
             response = await httpx_client.post(
-                f'{app_conversation_url}/generate_title',
+                f"{app_conversation_url}/generate_title",
                 headers={
-                    'X-Session-API-Key': app_conversation.session_api_key,
+                    "X-Session-API-Key": app_conversation.session_api_key,
                 },
-                content='{}',
+                content="{}",
             )
             response.raise_for_status()
-            title = response.json()['title']
+            title = response.json()["title"]
 
             # Save the conversation info
             info = AppConversationInfo(

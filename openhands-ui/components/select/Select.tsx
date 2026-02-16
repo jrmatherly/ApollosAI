@@ -47,7 +47,7 @@ export const Select = <T extends string>(props: SelectProps<T>) => {
         trim: true,
         matchFrom: "any",
       }),
-    []
+    [],
   );
 
   return (
@@ -57,7 +57,7 @@ export const Select = <T extends string>(props: SelectProps<T>) => {
       className={cn(
         "flex flex-col gap-y-2",
         disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-        className
+        className,
       )}
     >
       <Typography.Text fontSize="s" className="text-light-neutral-200">
@@ -100,7 +100,7 @@ export const Select = <T extends string>(props: SelectProps<T>) => {
             cn(
               "bg-light-neutral-500",
               state.selectProps.customProps.error && "bg-red-400",
-              state.selectProps.customProps.readOnly && "bg-light-neutral-985"
+              state.selectProps.customProps.readOnly && "bg-light-neutral-985",
             ),
           input: () => cn("text-white"),
           valueContainer: () => cn("py-4.25 px-4"),
@@ -112,11 +112,11 @@ export const Select = <T extends string>(props: SelectProps<T>) => {
               "focus-within:bg-light-neutral-900",
               state.selectProps.customProps.error && "border-red-400",
               state.selectProps.customProps.readOnly &&
-                "bg-light-neutral-985 border-none hover:bg-light-neutral-985 cursor-auto"
+                "bg-light-neutral-985 border-none hover:bg-light-neutral-985 cursor-auto",
             ),
           menu: () =>
             cn(
-              "border-light-neutral-500 border-1 border-t-0 rounded-b-2xl bg-light-neutral-950"
+              "border-light-neutral-500 border-1 border-t-0 rounded-b-2xl bg-light-neutral-950",
             ),
         }}
         components={{

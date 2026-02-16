@@ -14,13 +14,13 @@ The key classes in OpenHands are:
 * State: represents the current state of the Agent's task. Includes things like the current step, a history of recent events, the Agent's long-term plan, etc
 * EventStream: a central hub for Events, where any component can publish Events, or listen for Events published by other components
   * Event: an Action or Observeration
-      * Action: represents a request to e.g. edit a file, run a command, or send a message
-      * Observation: represents information collected from the environment, e.g. file contents or command output
+    * Action: represents a request to e.g. edit a file, run a command, or send a message
+    * Observation: represents information collected from the environment, e.g. file contents or command output
 * Runtime: responsible for performing Actions, and sending back Observations
-    * Sandbox: the part of the runtime responsible for running commands, e.g. inside of Docker
+  * Sandbox: the part of the runtime responsible for running commands, e.g. inside of Docker
 * Server: brokers OpenHands sessions over HTTP, e.g. to drive the frontend
-    * Session: holds a single EventStream, a single AgentController, and a single Runtime. Generally represents a single task (but potentially including several user prompts)
-    * ConversationManager: keeps a list of active sessions, and ensures requests are routed to the correct Session
+  * Session: holds a single EventStream, a single AgentController, and a single Runtime. Generally represents a single task (but potentially including several user prompts)
+  * ConversationManager: keeps a list of active sessions, and ensures requests are routed to the correct Session
 
 ## Control Flow
 

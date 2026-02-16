@@ -22,6 +22,7 @@ import httpx
 from fastapi import APIRouter, Depends, Query, Request, status
 from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader
+from openhands.sdk.conversation.state import ConversationExecutionStatus
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -72,7 +73,6 @@ from openhands.integrations.service_types import (
 )
 from openhands.runtime import get_runtime_cls
 from openhands.runtime.runtime_status import RuntimeStatus
-from openhands.sdk.conversation.state import ConversationExecutionStatus
 from openhands.server.data_models.agent_loop_info import AgentLoopInfo
 from openhands.server.data_models.conversation_info import ConversationInfo
 from openhands.server.data_models.conversation_info_result_set import (
@@ -115,7 +115,7 @@ from openhands.utils.async_utils import wait_all
 from openhands.utils.conversation_summary import get_default_conversation_title
 from openhands.utils.environment import get_effective_llm_base_url
 
-app = APIRouter(prefix='/api', dependencies=get_dependencies())
+app = APIRouter(prefix="/api", dependencies=get_dependencies())
 app_conversation_service_dependency = depends_app_conversation_service()
 app_conversation_info_service_dependency = depends_app_conversation_info_service()
 sandbox_service_dependency = depends_sandbox_service()
@@ -141,7 +141,7 @@ def _filter_conversations_by_age(
 
     for conversation in conversations:
         # Skip conversations without created_at or older than max_age
-        if not hasattr(conversation, 'created_at'):
+        if not hasattr(conversation, "created_at"):
             continue
 
         age_seconds = (
@@ -215,10 +215,10 @@ class InitSessionRequest(BaseModel):
     conversation_instructions: str | None = None
     mcp_config: MCPConfig | None = None
     # Only nested runtimes require the ability to specify a conversation id, and it could be a security risk
-    if os.getenv('ALLOW_SET_CONVERSATION_ID', '0') == '1':
+    if os.getenv("ALLOW_SET_CONVERSATION_ID", "0") == "1":
         conversation_id: str = Field(default_factory=lambda: uuid.uuid4().hex)
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra="forbid")
 
 
 class ConversationResponse(BaseModel):
@@ -232,7 +232,7 @@ class ProvidersSetModel(BaseModel):
     providers_set: list[ProviderType] | None = None
 
 
-@app.post('/conversations', deprecated=True)
+@app.post("/conversations", deprecated=True)
 async def new_conversation(
     data: InitSessionRequest,
     user_id: str = Depends(get_user_id),
@@ -248,7 +248,7 @@ async def new_conversation(
         Use the V1 endpoint ``POST /api/v1/app-conversations`` instead, which provides
         improved conversation management with sandbox lifecycle support.
     """
-    logger.info(f'initializing_new_conversation:{data}')
+    logger.info(f"initializing_new_conversation:{data}")
     repository = data.repository
     selected_branch = data.selected_branch
     initial_user_msg = data.initial_user_msg
@@ -281,7 +281,7 @@ async def new_conversation(
             # Check against git_provider, otherwise check all provider apis
             await provider_handler.verify_repo_provider(repository, git_provider)
 
-        conversation_id = getattr(data, 'conversation_id', None) or uuid.uuid4().hex
+        conversation_id = getattr(data, "conversation_id", None) or uuid.uuid4().hex
         agent_loop_info = await create_new_conversation(
             user_id=user_id,
             git_provider_tokens=provider_tokens,
@@ -299,16 +299,16 @@ async def new_conversation(
         )
 
         return ConversationResponse(
-            status='ok',
+            status="ok",
             conversation_id=conversation_id,
             conversation_status=agent_loop_info.status,
         )
     except MissingSettingsError as e:
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': str(e),
-                'msg_id': 'CONFIGURATION$SETTINGS_NOT_FOUND',
+                "status": "error",
+                "message": str(e),
+                "msg_id": "CONFIGURATION$SETTINGS_NOT_FOUND",
             },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
@@ -316,15 +316,15 @@ async def new_conversation(
     except LLMAuthenticationError as e:
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': str(e),
-                'msg_id': RuntimeStatus.ERROR_LLM_AUTHENTICATION.value,
+                "status": "error",
+                "message": str(e),
+                "msg_id": RuntimeStatus.ERROR_LLM_AUTHENTICATION.value,
             },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
 
 
-@app.get('/conversations', deprecated=True)
+@app.get("/conversations", deprecated=True)
 async def search_conversations(
     page_id: str | None = None,
     limit: int = 20,
@@ -333,7 +333,7 @@ async def search_conversations(
     include_sub_conversations: Annotated[
         bool,
         Query(
-            title='If True, include sub-conversations in the results. If False (default), exclude all sub-conversations.'
+            title="If True, include sub-conversations in the results. If False (default), exclude all sub-conversations."
         ),
     ] = False,
     conversation_store: ConversationStore = Depends(get_conversation_store),
@@ -352,8 +352,8 @@ async def search_conversations(
         try:
             # Try to parse as JSON first
             page_data = json.loads(base64.b64decode(page_id))
-            v0_page_id = page_data.get('v0')
-            v1_page_id = page_data.get('v1')
+            v0_page_id = page_data.get("v0")
+            v1_page_id = page_data.get("v1")
         except (json.JSONDecodeError, TypeError):
             # Fallback: treat as v0 page_id for backward compatibility
             v0_page_id = page_id
@@ -456,11 +456,11 @@ async def search_conversations(
         or app_conversation_page.next_page_id
     ):
         next_page_data = {
-            'v0': conversation_metadata_result_set.next_page_id,
-            'v1': app_conversation_page.next_page_id,
+            "v0": conversation_metadata_result_set.next_page_id,
+            "v1": app_conversation_page.next_page_id,
         }
         # Only include page_id if at least one source has more pages
-        if next_page_data['v0'] or next_page_data['v1']:
+        if next_page_data["v0"] or next_page_data["v1"]:
             next_page_id = base64.b64encode(
                 json.dumps(next_page_data).encode()
             ).decode()
@@ -468,7 +468,7 @@ async def search_conversations(
     return ConversationInfoResultSet(results=final_results, next_page_id=next_page_id)
 
 
-@app.get('/conversations/{conversation_id}', deprecated=True)
+@app.get("/conversations/{conversation_id}", deprecated=True)
 async def get_conversation(
     conversation_id: str = Depends(validate_conversation_id),
     conversation_store: ConversationStore = Depends(get_conversation_store),
@@ -498,13 +498,13 @@ async def get_conversation(
                     try:
                         # Check the server info is available
                         conversation_url = urlparse(app_conversation.conversation_url)
-                        sandbox_info_url = f'{str(conversation_url.scheme)}://{str(conversation_url.netloc)}/server_info'
+                        sandbox_info_url = f"{str(conversation_url.scheme)}://{str(conversation_url.netloc)}/server_info"
                         response = await httpx_client.get(sandbox_info_url)
                         response.raise_for_status()
                         server_info = response.json()
 
                         # If the server has not been running long, we consider it still starting
-                        uptime = int(server_info.get('uptime'))
+                        uptime = int(server_info.get("uptime"))
                         if uptime < _RESUME_GRACE_PERIOD:
                             app_conversation.sandbox_status = SandboxStatus.STARTING
 
@@ -516,10 +516,10 @@ async def get_conversation(
                         # STARTING. If the sandbox is actually in an error state, the API will
                         # discover this quite quickly and mark the sandbox as ERROR
                         logger.warning(
-                            'get_sandbox_info_failed',
+                            "get_sandbox_info_failed",
                             extra={
-                                'conversation_id': app_conversation.id,
-                                'sandbox_id': app_conversation.sandbox_id,
+                                "conversation_id": app_conversation.id,
+                                "sandbox_id": app_conversation.sandbox_id,
                             },
                             exc_info=True,
                             stack_info=True,
@@ -547,7 +547,7 @@ async def get_conversation(
         return None
 
 
-@app.delete('/conversations/{conversation_id}', deprecated=True)
+@app.delete("/conversations/{conversation_id}", deprecated=True)
 async def delete_conversation(
     request: Request,
     conversation_id: str = Depends(validate_conversation_id),
@@ -668,7 +668,7 @@ async def _delete_v0_conversation(conversation_id: str, user_id: str | None) -> 
     return True
 
 
-@app.get('/conversations/{conversation_id}/remember-prompt')
+@app.get("/conversations/{conversation_id}/remember-prompt")
 async def get_prompt(
     event_id: int,
     conversation_id: str = Depends(validate_conversation_id),
@@ -687,7 +687,7 @@ async def get_prompt(
     settings = await user_settings.load()
     if settings is None:
         # placeholder for error handling
-        raise ValueError('Settings not found')
+        raise ValueError("Settings not found")
 
     settings_base_url = settings.llm_base_url
     effective_base_url = get_effective_llm_base_url(
@@ -695,7 +695,7 @@ async def get_prompt(
         settings_base_url,
     )
     llm_config = LLMConfig(
-        model=settings.llm_model or '',
+        model=settings.llm_model or "",
         api_key=settings.llm_api_key,
         base_url=effective_base_url,
     )
@@ -705,15 +705,15 @@ async def get_prompt(
 
     return JSONResponse(
         {
-            'status': 'success',
-            'prompt': prompt,
+            "status": "success",
+            "prompt": prompt,
         }
     )
 
 
 def generate_prompt_template(events: str) -> str:
-    env = Environment(loader=FileSystemLoader('openhands/microagent/prompts'))
-    template = env.get_template('generate_remember_prompt.j2')
+    env = Environment(loader=FileSystemLoader("openhands/microagent/prompts"))
+    template = env.get_template("generate_remember_prompt.j2")
     return template.render(events=events)
 
 
@@ -722,24 +722,24 @@ async def generate_prompt(
 ) -> str:
     messages = [
         {
-            'role': 'system',
-            'content': prompt_template,
+            "role": "system",
+            "content": prompt_template,
         },
         {
-            'role': 'user',
-            'content': 'Please generate a prompt for the AI to update the special file based on the events provided.',
+            "role": "user",
+            "content": "Please generate a prompt for the AI to update the special file based on the events provided.",
         },
     ]
 
     raw_prompt = await conversation_manager.request_llm_completion(
-        'remember_prompt', conversation_id, llm_config, messages
+        "remember_prompt", conversation_id, llm_config, messages
     )
-    prompt = re.search(r'<update_prompt>(.*?)</update_prompt>', raw_prompt, re.DOTALL)
+    prompt = re.search(r"<update_prompt>(.*?)</update_prompt>", raw_prompt, re.DOTALL)
 
     if prompt:
         return prompt.group(1).strip()
     else:
-        raise ValueError('No valid prompt found in the response.')
+        raise ValueError("No valid prompt found in the response.")
 
 
 async def _get_conversation_info(
@@ -760,22 +760,22 @@ async def _get_conversation_info(
             selected_repository=conversation.selected_repository,
             selected_branch=conversation.selected_branch,
             git_provider=conversation.git_provider,
-            status=getattr(agent_loop_info, 'status', ConversationStatus.STOPPED),
-            runtime_status=getattr(agent_loop_info, 'runtime_status', None),
+            status=getattr(agent_loop_info, "status", ConversationStatus.STOPPED),
+            runtime_status=getattr(agent_loop_info, "runtime_status", None),
             num_connections=num_connections,
             url=agent_loop_info.url if agent_loop_info else None,
-            session_api_key=getattr(agent_loop_info, 'session_api_key', None),
+            session_api_key=getattr(agent_loop_info, "session_api_key", None),
             pr_number=conversation.pr_number,
         )
     except Exception as e:
         logger.error(
-            f'Error loading conversation {conversation.conversation_id}: {str(e)}',
-            extra={'session_id': conversation.conversation_id},
+            f"Error loading conversation {conversation.conversation_id}: {str(e)}",
+            extra={"session_id": conversation.conversation_id},
         )
         return None
 
 
-@app.post('/conversations/{conversation_id}/start', deprecated=True)
+@app.post("/conversations/{conversation_id}/start", deprecated=True)
 async def start_conversation(
     providers_set: ProvidersSetModel,
     conversation_id: str = Depends(validate_conversation_id),
@@ -795,20 +795,20 @@ async def start_conversation(
         sandbox lifecycle management.
     """
     logger.info(
-        f'Starting conversation: {conversation_id}',
-        extra={'session_id': conversation_id},
+        f"Starting conversation: {conversation_id}",
+        extra={"session_id": conversation_id},
     )
 
     # Log token fetch status
     if provider_tokens:
         logger.info(
-            f'/start endpoint: Fetched provider tokens: {list(provider_tokens.keys())}',
-            extra={'session_id': conversation_id},
+            f"/start endpoint: Fetched provider tokens: {list(provider_tokens.keys())}",
+            extra={"session_id": conversation_id},
         )
     else:
         logger.warning(
-            '/start endpoint: No provider tokens fetched (provider_tokens is None/empty)',
-            extra={'session_id': conversation_id},
+            "/start endpoint: No provider tokens fetched (provider_tokens is None/empty)",
+            extra={"session_id": conversation_id},
         )
 
     try:
@@ -818,8 +818,8 @@ async def start_conversation(
         except Exception:
             return JSONResponse(
                 content={
-                    'status': 'error',
-                    'conversation_id': conversation_id,
+                    "status": "error",
+                    "conversation_id": conversation_id,
                 },
                 status_code=status.HTTP_404_NOT_FOUND,
             )
@@ -837,26 +837,26 @@ async def start_conversation(
         )
 
         return ConversationResponse(
-            status='ok',
+            status="ok",
             conversation_id=conversation_id,
             conversation_status=agent_loop_info.status,
         )
     except Exception as e:
         logger.error(
-            f'Error starting conversation {conversation_id}: {str(e)}',
-            extra={'session_id': conversation_id},
+            f"Error starting conversation {conversation_id}: {str(e)}",
+            extra={"session_id": conversation_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'conversation_id': conversation_id,
-                'message': f'Failed to start conversation: {str(e)}',
+                "status": "error",
+                "conversation_id": conversation_id,
+                "message": f"Failed to start conversation: {str(e)}",
             },
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
-@app.post('/conversations/{conversation_id}/stop', deprecated=True)
+@app.post("/conversations/{conversation_id}/stop", deprecated=True)
 async def stop_conversation(
     conversation_id: str = Depends(validate_conversation_id),
     user_id: str = Depends(get_user_id),
@@ -870,7 +870,7 @@ async def stop_conversation(
         the sandbox execution, or ``DELETE /api/v1/sandboxes/{sandbox_id}`` to fully stop
         and remove the sandbox.
     """
-    logger.info(f'Stopping conversation: {conversation_id}')
+    logger.info(f"Stopping conversation: {conversation_id}")
 
     try:
         # Check if the conversation is running
@@ -886,9 +886,9 @@ async def stop_conversation(
             ConversationStatus.RUNNING,
         ):
             return ConversationResponse(
-                status='ok',
+                status="ok",
                 conversation_id=conversation_id,
-                message='Conversation was not running',
+                message="Conversation was not running",
                 conversation_status=conversation_status,
             )
 
@@ -896,21 +896,21 @@ async def stop_conversation(
         await conversation_manager.close_session(conversation_id)
 
         return ConversationResponse(
-            status='ok',
+            status="ok",
             conversation_id=conversation_id,
-            message='Conversation stopped successfully',
+            message="Conversation stopped successfully",
             conversation_status=conversation_status,
         )
     except Exception as e:
         logger.error(
-            f'Error stopping conversation {conversation_id}: {str(e)}',
-            extra={'session_id': conversation_id},
+            f"Error stopping conversation {conversation_id}: {str(e)}",
+            extra={"session_id": conversation_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'conversation_id': conversation_id,
-                'message': f'Failed to stop conversation: {str(e)}',
+                "status": "error",
+                "conversation_id": conversation_id,
+                "message": f"Failed to stop conversation: {str(e)}",
             },
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
@@ -951,7 +951,7 @@ def _get_contextual_events(event_store: EventStore, event_id: int) -> str:
     ordered_context_before.reverse()
 
     all_events = itertools.chain(ordered_context_before, context_after)
-    stringified_events = '\n'.join(str(event) for event in all_events)
+    stringified_events = "\n".join(str(event) for event in all_events)
     return stringified_events
 
 
@@ -959,10 +959,10 @@ class UpdateConversationRequest(BaseModel):
     """Request model for updating conversation metadata."""
 
     title: str = Field(
-        ..., min_length=1, max_length=200, description='New conversation title'
+        ..., min_length=1, max_length=200, description="New conversation title"
     )
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra="forbid")
 
 
 async def _update_v1_conversation(
@@ -986,8 +986,8 @@ async def _update_v1_conversation(
     """
     conversation_id = str(conversation_uuid)
     logger.info(
-        f'Updating V1 conversation {conversation_uuid}',
-        extra={'session_id': conversation_id, 'user_id': user_id},
+        f"Updating V1 conversation {conversation_uuid}",
+        extra={"session_id": conversation_id, "user_id": user_id},
     )
 
     # Get the V1 conversation info
@@ -1002,14 +1002,14 @@ async def _update_v1_conversation(
     # Validate that the user owns this conversation
     if user_id and app_conversation_info.created_by_user_id != user_id:
         logger.warning(
-            f'User {user_id} attempted to update V1 conversation {conversation_uuid} owned by {app_conversation_info.created_by_user_id}',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"User {user_id} attempted to update V1 conversation {conversation_uuid} owned by {app_conversation_info.created_by_user_id}",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': 'Permission denied: You can only update your own conversations',
-                'msg_id': 'AUTHORIZATION$PERMISSION_DENIED',
+                "status": "error",
+                "message": "Permission denied: You can only update your own conversations",
+                "msg_id": "AUTHORIZATION$PERMISSION_DENIED",
             },
             status_code=status.HTTP_403_FORBIDDEN,
         )
@@ -1027,21 +1027,21 @@ async def _update_v1_conversation(
     except AssertionError:
         # This happens when user doesn't own the conversation
         logger.warning(
-            f'User {user_id} attempted to update V1 conversation {conversation_uuid} - permission denied',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"User {user_id} attempted to update V1 conversation {conversation_uuid} - permission denied",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': 'Permission denied: You can only update your own conversations',
-                'msg_id': 'AUTHORIZATION$PERMISSION_DENIED',
+                "status": "error",
+                "message": "Permission denied: You can only update your own conversations",
+                "msg_id": "AUTHORIZATION$PERMISSION_DENIED",
             },
             status_code=status.HTTP_403_FORBIDDEN,
         )
 
     # Try to update the agent-server as well
     try:
-        if hasattr(app_conversation_service, 'update_agent_server_conversation_title'):
+        if hasattr(app_conversation_service, "update_agent_server_conversation_title"):
             await app_conversation_service.update_agent_server_conversation_title(
                 conversation_id=conversation_id,
                 new_title=new_title,
@@ -1050,13 +1050,13 @@ async def _update_v1_conversation(
     except Exception as e:
         # Log the error but don't fail the database update
         logger.warning(
-            f'Failed to update agent-server for conversation {conversation_uuid}: {e}',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"Failed to update agent-server for conversation {conversation_uuid}: {e}",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
 
     logger.info(
         f'Successfully updated V1 conversation {conversation_uuid} title from "{original_title}" to "{app_conversation_info.title}"',
-        extra={'session_id': conversation_id, 'user_id': user_id},
+        extra={"session_id": conversation_id, "user_id": user_id},
     )
 
     return True
@@ -1083,8 +1083,8 @@ async def _update_v0_conversation(
         FileNotFoundError: If the conversation is not found
     """
     logger.info(
-        f'Updating V0 conversation {conversation_id}',
-        extra={'session_id': conversation_id, 'user_id': user_id},
+        f"Updating V0 conversation {conversation_id}",
+        extra={"session_id": conversation_id, "user_id": user_id},
     )
 
     # Get the existing conversation metadata
@@ -1093,14 +1093,14 @@ async def _update_v0_conversation(
     # Validate that the user owns this conversation
     if user_id and metadata.user_id != user_id:
         logger.warning(
-            f'User {user_id} attempted to update conversation {conversation_id} owned by {metadata.user_id}',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"User {user_id} attempted to update conversation {conversation_id} owned by {metadata.user_id}",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': 'Permission denied: You can only update your own conversations',
-                'msg_id': 'AUTHORIZATION$PERMISSION_DENIED',
+                "status": "error",
+                "message": "Permission denied: You can only update your own conversations",
+                "msg_id": "AUTHORIZATION$PERMISSION_DENIED",
             },
             status_code=status.HTTP_403_FORBIDDEN,
         )
@@ -1116,29 +1116,29 @@ async def _update_v0_conversation(
     # Emit a status update to connected clients about the title change
     try:
         status_update_dict = {
-            'status_update': True,
-            'type': 'info',
-            'message': conversation_id,
-            'conversation_title': metadata.title,
+            "status_update": True,
+            "type": "info",
+            "message": conversation_id,
+            "conversation_title": metadata.title,
         }
         await conversation_manager.sio.emit(
-            'oh_event',
+            "oh_event",
             status_update_dict,
-            to=f'room:{conversation_id}',
+            to=f"room:{conversation_id}",
         )
     except Exception as e:
-        logger.error(f'Error emitting title update event: {e}')
+        logger.error(f"Error emitting title update event: {e}")
         # Don't fail the update if we can't emit the event
 
     logger.info(
         f'Successfully updated conversation {conversation_id} title from "{original_title}" to "{metadata.title}"',
-        extra={'session_id': conversation_id, 'user_id': user_id},
+        extra={"session_id": conversation_id, "user_id": user_id},
     )
 
     return True
 
 
-@app.patch('/conversations/{conversation_id}', deprecated=True)
+@app.patch("/conversations/{conversation_id}", deprecated=True)
 async def update_conversation(
     data: UpdateConversationRequest,
     conversation_id: str = Depends(validate_conversation_id),
@@ -1172,8 +1172,8 @@ async def update_conversation(
         which provides the same functionality for updating conversation metadata.
     """
     logger.info(
-        f'Updating conversation {conversation_id} with title: {data.title}',
-        extra={'session_id': conversation_id, 'user_id': user_id},
+        f"Updating conversation {conversation_id} with title: {data.title}",
+        extra={"session_id": conversation_id, "user_id": user_id},
     )
 
     new_title = data.title.strip()
@@ -1198,8 +1198,8 @@ async def update_conversation(
         pass
     except Exception as e:
         logger.warning(
-            f'Error checking V1 conversation {conversation_id}: {str(e)}',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"Error checking V1 conversation {conversation_id}: {str(e)}",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         # Fall through to V0 logic
 
@@ -1213,33 +1213,33 @@ async def update_conversation(
         )
     except FileNotFoundError:
         logger.warning(
-            f'Conversation {conversation_id} not found for update',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"Conversation {conversation_id} not found for update",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': 'Conversation not found',
-                'msg_id': 'CONVERSATION$NOT_FOUND',
+                "status": "error",
+                "message": "Conversation not found",
+                "msg_id": "CONVERSATION$NOT_FOUND",
             },
             status_code=status.HTTP_404_NOT_FOUND,
         )
     except Exception as e:
         logger.error(
-            f'Error updating conversation {conversation_id}: {str(e)}',
-            extra={'session_id': conversation_id, 'user_id': user_id},
+            f"Error updating conversation {conversation_id}: {str(e)}",
+            extra={"session_id": conversation_id, "user_id": user_id},
         )
         return JSONResponse(
             content={
-                'status': 'error',
-                'message': f'Failed to update conversation: {str(e)}',
-                'msg_id': 'CONVERSATION$UPDATE_ERROR',
+                "status": "error",
+                "message": f"Failed to update conversation: {str(e)}",
+                "msg_id": "CONVERSATION$UPDATE_ERROR",
             },
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
-@app.post('/conversations/{conversation_id}/exp-config')
+@app.post("/conversations/{conversation_id}/exp-config")
 def add_experiment_config_for_conversation(
     exp_config: ExperimentConfig,
     conversation_id: str = Depends(validate_conversation_id),
@@ -1259,7 +1259,7 @@ def add_experiment_config_for_conversation(
     try:
         file_store.write(exp_config_filepath, exp_config.model_dump_json())
     except Exception as e:
-        logger.info(f'Failed to write experiment config for {conversation_id}: {e}')
+        logger.info(f"Failed to write experiment config for {conversation_id}: {e}")
         return True
 
     return False
@@ -1281,8 +1281,8 @@ def _parse_combined_page_id(page_id: str | None) -> tuple[str | None, str | None
         try:
             # Try to parse as JSON first
             page_data = json.loads(base64.b64decode(page_id))
-            v0_page_id = page_data.get('v0')
-            v1_page_id = page_data.get('v1')
+            v0_page_id = page_data.get("v0")
+            v1_page_id = page_data.get("v1")
         except (json.JSONDecodeError, TypeError, Exception):
             # Fallback: treat as v0 page_id for backward compatibility
             # This catches base64 decode errors and any other parsing issues
@@ -1329,7 +1329,7 @@ async def _fetch_v1_conversations_safe(
         v1_next_page_id = app_conversation_page.next_page_id
     except Exception as e:
         # V1 system might not be available or initialized yet
-        logger.debug(f'V1 conversation service not available: {str(e)}')
+        logger.debug(f"V1 conversation service not available: {str(e)}")
 
     return v1_conversations, v1_next_page_id
 
@@ -1449,14 +1449,14 @@ def _create_combined_page_id(
         return None
 
     next_page_data = {
-        'v0': v0_next_page_id,
-        'v1': v1_next_page_id,
+        "v0": v0_next_page_id,
+        "v1": v1_next_page_id,
     }
 
     return base64.b64encode(json.dumps(next_page_data).encode()).decode()
 
 
-@app.get('/microagent-management/conversations')
+@app.get("/microagent-management/conversations")
 async def get_microagent_management_conversations(
     selected_repository: str,
     page_id: str | None = None,
@@ -1559,7 +1559,7 @@ def _to_conversation_info(app_conversation: AppConversation) -> ConversationInfo
 
     title = (
         app_conversation.title
-        or f'Conversation {base62.encodebytes(app_conversation.id.bytes)}'
+        or f"Conversation {base62.encodebytes(app_conversation.id.bytes)}"
     )
 
     return ConversationInfo(
@@ -1577,7 +1577,7 @@ def _to_conversation_info(app_conversation: AppConversation) -> ConversationInfo
         session_api_key=app_conversation.session_api_key,
         created_at=app_conversation.created_at,
         pr_number=app_conversation.pr_number,
-        conversation_version='V1',
+        conversation_version="V1",
         sub_conversation_ids=[
             sub_id.hex for sub_id in app_conversation.sub_conversation_ids
         ],

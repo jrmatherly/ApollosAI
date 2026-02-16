@@ -32,7 +32,7 @@ export const Checkbox = ({
       className={cn(
         "flex items-center gap-2 cursor-pointer",
         disabled && "cursor-not-allowed",
-        className
+        className,
       )}
       data-testid={testId}
     >
@@ -68,7 +68,7 @@ export const Checkbox = ({
           "peer-focus:peer-enabled:bg-light-neutral-900",
           "peer-focus:peer-enabled:border-light-neutral-200",
           "peer-focus:peer-checked:peer-enabled:bg-light-neutral-985",
-          "peer-focus:peer-checked:peer-enabled:border-primary-500"
+          "peer-focus:peer-checked:peer-enabled:border-primary-500",
         )}
       >
         {checked && (

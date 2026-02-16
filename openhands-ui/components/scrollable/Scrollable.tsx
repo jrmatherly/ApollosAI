@@ -43,7 +43,7 @@ export const Scrollable = ({
         "scrollbar-thin scrollbar-thumb-light-neutral-700",
         "scrollbar-thumb-rounded-md scrollbar-track-transparent",
         style,
-        className
+        className,
       )}
     >
       {children}

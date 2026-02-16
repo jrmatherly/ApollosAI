@@ -5,7 +5,7 @@ from typing import AsyncGenerator, Generic, TypeAlias, TypeVar
 from fastapi import Request
 from starlette.datastructures import State
 
-T = TypeVar('T')
+T = TypeVar("T")
 InjectorState: TypeAlias = State
 
 

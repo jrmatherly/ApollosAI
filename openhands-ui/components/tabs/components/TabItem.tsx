@@ -45,7 +45,7 @@ export const TabItem = ({
         "enabled:active:bg-grey-970 enabled:active:text-primary-500",
         isActive && "enabled:text-primary-500",
         isFirst && "border-l-1 rounded-tl-2xl",
-        isLast && "rounded-tr-2xl"
+        isLast && "rounded-tr-2xl",
       )}
       onClick={onSelect}
     >

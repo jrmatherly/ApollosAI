@@ -3,7 +3,7 @@ import type { BaseProps, HTMLProps } from "../../shared/types";
 
 export const cloneIcon = (
   icon?: ReactElement<HTMLProps<"svg"> & BaseProps>,
-  props?: HTMLProps<"svg"> & BaseProps
+  props?: HTMLProps<"svg"> & BaseProps,
 ) => {
   if (!icon) {
     return null;

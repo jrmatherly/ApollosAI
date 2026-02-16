@@ -236,29 +236,29 @@ class ConversationManager(ABC):
         """
         async with httpx.AsyncClient(
             verify=httpx_verify_option(),
-            headers={'X-Session-API-Key': session_api_key} if session_api_key else {},
+            headers={"X-Session-API-Key": session_api_key} if session_api_key else {},
         ) as client:
-            params = {'path': path} if path else {}
+            params = {"path": path} if path else {}
             try:
-                response = await client.get(f'{nested_url}/list-files', params=params)
+                response = await client.get(f"{nested_url}/list-files", params=params)
                 response.raise_for_status()
                 return response.json()
             except httpx.TimeoutException:
                 logger.error(
-                    'Timeout fetching files from nested runtime',
-                    extra={'session_id': sid},
+                    "Timeout fetching files from nested runtime",
+                    extra={"session_id": sid},
                 )
                 raise
             except httpx.ConnectError as e:
                 logger.error(
-                    f'Failed to connect to nested runtime: {e}',
-                    extra={'session_id': sid},
+                    f"Failed to connect to nested runtime: {e}",
+                    extra={"session_id": sid},
                 )
                 raise
             except httpx.HTTPStatusError as e:
                 logger.error(
-                    f'Nested runtime returned error: {e.response.status_code}',
-                    extra={'session_id': sid},
+                    f"Nested runtime returned error: {e.response.status_code}",
+                    extra={"session_id": sid},
                 )
                 raise
 
@@ -282,29 +282,29 @@ class ConversationManager(ABC):
         """
         async with httpx.AsyncClient(
             verify=httpx_verify_option(),
-            headers={'X-Session-API-Key': session_api_key} if session_api_key else {},
+            headers={"X-Session-API-Key": session_api_key} if session_api_key else {},
         ) as client:
-            params = {'file': file}
+            params = {"file": file}
             try:
-                response = await client.get(f'{nested_url}/select-file', params=params)
+                response = await client.get(f"{nested_url}/select-file", params=params)
                 response.raise_for_status()
                 data = response.json()
-                return data.get('code'), None
+                return data.get("code"), None
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 415:
-                    return None, f'BINARY_FILE:{file}'
+                    return None, f"BINARY_FILE:{file}"
                 error_data = e.response.json() if e.response.content else {}
-                return None, error_data.get('error', str(e))
+                return None, error_data.get("error", str(e))
             except httpx.TimeoutException:
                 logger.error(
-                    'Timeout fetching file from nested runtime',
-                    extra={'session_id': sid},
+                    "Timeout fetching file from nested runtime",
+                    extra={"session_id": sid},
                 )
                 raise
             except httpx.ConnectError as e:
                 logger.error(
-                    f'Failed to connect to nested runtime: {e}',
-                    extra={'session_id': sid},
+                    f"Failed to connect to nested runtime: {e}",
+                    extra={"session_id": sid},
                 )
                 raise
 
@@ -328,35 +328,35 @@ class ConversationManager(ABC):
         """
         async with httpx.AsyncClient(
             verify=httpx_verify_option(),
-            headers={'X-Session-API-Key': session_api_key} if session_api_key else {},
+            headers={"X-Session-API-Key": session_api_key} if session_api_key else {},
         ) as client:
             try:
                 # Build multipart form data
                 multipart_files = [
-                    ('files', (filename, content)) for filename, content in files
+                    ("files", (filename, content)) for filename, content in files
                 ]
                 response = await client.post(
-                    f'{nested_url}/upload-files', files=multipart_files
+                    f"{nested_url}/upload-files", files=multipart_files
                 )
                 response.raise_for_status()
                 data = response.json()
-                return data.get('uploaded_files', []), data.get('skipped_files', [])
+                return data.get("uploaded_files", []), data.get("skipped_files", [])
             except httpx.TimeoutException:
                 logger.error(
-                    'Timeout uploading files to nested runtime',
-                    extra={'session_id': sid},
+                    "Timeout uploading files to nested runtime",
+                    extra={"session_id": sid},
                 )
                 raise
             except httpx.ConnectError as e:
                 logger.error(
-                    f'Failed to connect to nested runtime: {e}',
-                    extra={'session_id': sid},
+                    f"Failed to connect to nested runtime: {e}",
+                    extra={"session_id": sid},
                 )
                 raise
             except httpx.HTTPStatusError as e:
                 logger.error(
-                    f'Nested runtime returned error: {e.response.status_code}',
-                    extra={'session_id': sid},
+                    f"Nested runtime returned error: {e.response.status_code}",
+                    extra={"session_id": sid},
                 )
                 raise
 

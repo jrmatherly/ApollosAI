@@ -7,7 +7,7 @@ declare module "react-select/base" {
   export interface Props<
     Option,
     IsMulti extends boolean,
-    Group extends GroupBase<Option>
+    Group extends GroupBase<Option>,
   > {
     customProps: {
       error?: string;

@@ -33,7 +33,7 @@ export const TabScroller = ({ position, onScroll }: TabScrollerProps) => {
         "enabled:hover:bg-light-neutral-500",
         "enabled:focus:bg-light-neutral-970",
         "enabled:active:bg-grey-970",
-        className
+        className,
       )}
       aria-label={`Scroll tabs ${position}`}
     >

@@ -76,7 +76,6 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.10",
     "tailwind-scrollbar": "^4.0.2"
-
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.12",

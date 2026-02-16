@@ -81,7 +81,7 @@ export const buttonStyles: Record<InteractiveChipType, ButtonStyle> = {
 const BOLD_TEXT_INCREASE = 0.15;
 export const useAndApplyBoldTextWidth = (
   textNode: ReactNode,
-  varName: string
+  varName: string,
 ) => {
   const textRef = useRef<HTMLSpanElement>(null);
 

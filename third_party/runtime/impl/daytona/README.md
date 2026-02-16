@@ -38,24 +38,23 @@ Windows:
 powershell -Command "irm https://get.daytona.io/openhands-windows | iex"
 ```
 
-#### What This Command Does:
+#### What This Command Does
 - Downloads the latest OpenHands release script.
 - Runs the script in an interactive Bash session.
 - Automatically pulls and runs the OpenHands container using Docker.
 Once executed, OpenHands should be running locally and ready for use.
-
 
 ## Manual Initialization
 
 ### Step 1: Set the `OPENHANDS_VERSION` Environment Variable
 Run the following command in your terminal, replacing `<openhands-release>` with the latest release's version seen in the [main README.md file](https://github.com/OpenHands/OpenHands?tab=readme-ov-file#-quick-start):
 
-#### Mac/Linux:
+#### Mac/Linux
 ```bash
 export OPENHANDS_VERSION="<openhands-release>"  # e.g. 0.27
 ```
 
-#### Windows PowerShell:
+#### Windows PowerShell
 ```powershell
 $env:OPENHANDS_VERSION="<openhands-release>"  # e.g. 0.27
 ```
@@ -66,23 +65,23 @@ $env:OPENHANDS_VERSION="<openhands-release>"  # e.g. 0.27
 3. Enter a name for your key and confirm the creation.
 4. Once the key is generated, copy it.
 
-### Step 3: Set Your API Key as an Environment Variable:
+### Step 3: Set Your API Key as an Environment Variable
 Run the following command in your terminal, replacing `<your-api-key>` with the actual key you copied:
 
-#### Mac/Linux:
+#### Mac/Linux
 ```bash
 export DAYTONA_API_KEY="<your-api-key>"
 ```
 
-#### Windows PowerShell:
+#### Windows PowerShell
 ```powershell
 $env:DAYTONA_API_KEY="<your-api-key>"
 ```
 
-### Step 4: Run the following `docker` command:
+### Step 4: Run the following `docker` command
 This command pulls and runs the OpenHands container using Docker. Once executed, OpenHands should be running locally and ready for use.
 
-#### Mac/Linux:
+#### Mac/Linux
 ```bash
 docker run -it --rm --pull=always \
     -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.openhands.dev/openhands/runtime:${OPENHANDS_VERSION}-nikolaik \
@@ -97,7 +96,7 @@ docker run -it --rm --pull=always \
 
 > **Note**: If you used OpenHands before version 0.44, you may want to run `mv ~/.openhands-state ~/.openhands` to migrate your conversation history to the new location.
 
-#### Windows:
+#### Windows
 ```powershell
 docker run -it --rm --pull=always `
     -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.openhands.dev/openhands/runtime:${env:OPENHANDS_VERSION}-nikolaik `
@@ -118,13 +117,13 @@ docker run -it --rm --pull=always `
 
 Alternatively, if you want to run the OpenHands app on your local machine using `make run` without Docker, make sure to set the following environment variables first:
 
-#### Mac/Linux:
+#### Mac/Linux
 ```bash
 export RUNTIME="daytona"
 export DAYTONA_API_KEY="<your-api-key>"
 ```
 
-#### Windows PowerShell:
+#### Windows PowerShell
 ```powershell
 $env:RUNTIME="daytona"
 $env:DAYTONA_API_KEY="<your-api-key>"

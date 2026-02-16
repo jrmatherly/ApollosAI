@@ -15,12 +15,12 @@ from openhands.integrations.service_types import ProviderType
 
 def _get_recaptcha_site_key() -> str | None:
     """Get reCAPTCHA site key from environment variable."""
-    key = os.getenv('RECAPTCHA_SITE_KEY', '').strip()
+    key = os.getenv("RECAPTCHA_SITE_KEY", "").strip()
     return key if key else None
 
 
 class DefaultWebClientConfigInjector(WebClientConfigInjector):
-    posthog_client_key: str | None = 'phc_3ESMmY9SgqEAGBB6sMGK5ayYHkeUuknH2vP6FmWH9RA'
+    posthog_client_key: str | None = "phc_3ESMmY9SgqEAGBB6sMGK5ayYHkeUuknH2vP6FmWH9RA"
     feature_flags: WebClientFeatureFlags = Field(default_factory=WebClientFeatureFlags)
     providers_configured: list[ProviderType] = Field(default_factory=list)
     maintenance_start_time: datetime | None = None
@@ -29,11 +29,11 @@ class DefaultWebClientConfigInjector(WebClientConfigInjector):
     faulty_models: list[str] = Field(default_factory=list)
     error_message: str | None = None
     updated_at: datetime = Field(
-        default=datetime.fromisoformat('2026-01-01T00:00:00Z'),
+        default=datetime.fromisoformat("2026-01-01T00:00:00Z"),
         description=(
-            'The timestamp when error messages and faulty models were last updated. '
-            'The frontend uses this value to determine whether error messages are '
-            'new and should be displayed. (Default to start of 2026)'
+            "The timestamp when error messages and faulty models were last updated. "
+            "The frontend uses this value to determine whether error messages are "
+            "new and should be displayed. (Default to start of 2026)"
         ),
     )
     github_app_slug: str | None = None

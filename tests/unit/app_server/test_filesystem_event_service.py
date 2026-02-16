@@ -9,10 +9,10 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
-
 from openhands.agent_server.models import EventPage, EventSortOrder
-from openhands.app_server.event.filesystem_event_service import FilesystemEventService
 from openhands.sdk.event import PauseEvent, TokenEvent
+
+from openhands.app_server.event.filesystem_event_service import FilesystemEventService
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def service(temp_dir: Path) -> FilesystemEventService:
     """Create a FilesystemEventService instance for testing."""
     return FilesystemEventService(
         prefix=temp_dir,
-        user_id='test_user',
+        user_id="test_user",
         app_conversation_info_service=None,
         app_conversation_info_load_tasks={},
     )
@@ -47,13 +47,13 @@ def service_no_user(temp_dir: Path) -> FilesystemEventService:
 def create_token_event() -> TokenEvent:
     """Helper to create a TokenEvent for testing."""
     return TokenEvent(
-        source='agent', prompt_token_ids=[1, 2], response_token_ids=[3, 4]
+        source="agent", prompt_token_ids=[1, 2], response_token_ids=[3, 4]
     )
 
 
 def create_pause_event() -> PauseEvent:
     """Helper to create a PauseEvent for testing."""
-    return PauseEvent(source='user')
+    return PauseEvent(source="user")
 
 
 class TestFilesystemEventServiceSearchEvents:
@@ -100,11 +100,11 @@ class TestFilesystemEventServiceSearchEvents:
             await service.save_event(conversation_id, event)
         await service.save_event(conversation_id, pause_event)
 
-        result = await service.search_events(conversation_id, kind__eq='TokenEvent')
+        result = await service.search_events(conversation_id, kind__eq="TokenEvent")
 
         assert len(result.items) == 2
         for item in result.items:
-            assert item.kind == 'TokenEvent'
+            assert item.kind == "TokenEvent"
 
     @pytest.mark.asyncio
     async def test_search_events_sort_ascending(self, service: FilesystemEventService):
@@ -157,8 +157,8 @@ class TestFilesystemEventServiceSearchEvents:
 
         # Verify the EventPage structure
         assert isinstance(result, EventPage)
-        assert hasattr(result, 'items')
-        assert hasattr(result, 'next_page_id')
+        assert hasattr(result, "items")
+        assert hasattr(result, "next_page_id")
         assert len(result.items) == 3
 
 
@@ -175,8 +175,8 @@ class TestFilesystemEventServiceIntegration:
         path = await service.get_conversation_path(conversation_id)
 
         assert str(temp_dir) in str(path)
-        assert 'test_user' in str(path)
-        assert 'v1_conversations' in str(path)
+        assert "test_user" in str(path)
+        assert "v1_conversations" in str(path)
         assert conversation_id.hex in str(path)
 
     @pytest.mark.asyncio
@@ -189,8 +189,8 @@ class TestFilesystemEventServiceIntegration:
         path = await service_no_user.get_conversation_path(conversation_id)
 
         assert str(temp_dir) in str(path)
-        assert 'test_user' not in str(path)
-        assert 'v1_conversations' in str(path)
+        assert "test_user" not in str(path)
+        assert "v1_conversations" in str(path)
         assert conversation_id.hex in str(path)
 
     @pytest.mark.asyncio
@@ -202,8 +202,8 @@ class TestFilesystemEventServiceIntegration:
         await service.save_event(conversation_id, event)
 
         conversation_path = await service.get_conversation_path(conversation_id)
-        event_id_hex = event.id.replace('-', '')
-        event_file = conversation_path / f'{event_id_hex}.json'
+        event_id_hex = event.id.replace("-", "")
+        event_file = conversation_path / f"{event_id_hex}.json"
         assert event_file.exists()
 
     @pytest.mark.asyncio

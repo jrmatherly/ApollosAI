@@ -9,4 +9,4 @@
 
 from openhands.runtime.mcp.proxy.manager import MCPProxyManager
 
-__all__ = ['MCPProxyManager']
+__all__ = ["MCPProxyManager"]

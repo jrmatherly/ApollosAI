@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, AsyncGenerator
 
 from fastapi import Request
+from openhands.sdk.secret import SecretSource, StaticSecret
 from pydantic import PrivateAttr
 
 from openhands.app_server.errors import AuthError
@@ -14,10 +15,9 @@ from openhands.integrations.provider import (
     ProviderHandler,
     ProviderType,
 )
-from openhands.sdk.secret import SecretSource, StaticSecret
 from openhands.server.user_auth.user_auth import UserAuth, get_user_auth
 
-USER_AUTH_ATTR = 'user_auth'
+USER_AUTH_ATTR = "user_auth"
 
 
 @dataclass
@@ -43,7 +43,7 @@ class AuthUserContext(UserContext):
             assert settings is not None
             user_info = UserInfo(
                 id=user_id,
-                **settings.model_dump(context={'expose_secrets': True}),
+                **settings.model_dump(context={"expose_secrets": True}),
             )
             self._user_info = user_info
         return user_info
@@ -99,7 +99,7 @@ class AuthUserContext(UserContext):
         return mcp_api_key
 
 
-USER_ID_ATTR = 'user_id'
+USER_ID_ATTR = "user_id"
 
 
 class AuthUserContextInjector(UserContextInjector):

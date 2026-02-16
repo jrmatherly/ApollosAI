@@ -24,14 +24,14 @@ Check for:
 - Missing or misformatted comments/docstrings
 - Violations of common language-specific style guides (e.g., PEP8, Google Style Guide)
 
-2. Clarity and Readability
+1. Clarity and Readability
 Identify:
 - Overly complex or deeply nested logic
 - Functions doing too much (violating single responsibility)
 - Poor naming that obscures intent
 - Missing inline documentation for non-obvious logic
 
-3. Security and Common Bug Patterns
+1. Security and Common Bug Patterns
 Watch for:
 - Unsanitized user input (e.g., in SQL, shell, or web contexts)
 - Hardcoded secrets or credentials

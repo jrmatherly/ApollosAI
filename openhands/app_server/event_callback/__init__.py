@@ -14,6 +14,6 @@ from .event_callback_models import EventCallbackProcessor, LoggingCallbackProces
 # It will be registered when imported elsewhere in the application
 
 __all__ = [
-    'EventCallbackProcessor',
-    'LoggingCallbackProcessor',
+    "EventCallbackProcessor",
+    "LoggingCallbackProcessor",
 ]

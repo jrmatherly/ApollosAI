@@ -32,7 +32,7 @@ class ConversationInitData(Settings):
         frozen=True,
     )
 
-    @field_validator('git_provider_tokens', 'custom_secrets')
+    @field_validator("git_provider_tokens", "custom_secrets")
     @classmethod
     def immutable_validator(cls, value: Mapping | None) -> MappingProxyType | None:
         """Ensure git_provider_tokens and custom_secrets are always MappingProxyType.

@@ -78,7 +78,7 @@ export const Dialog = ({
             className={cn(
               "rounded-4xl border-1 border-light-neutral-500 outline-none",
               "transition-all will-change-transform",
-              "bg-light-neutral-900 min-w-80 min-h-64 p-6"
+              "bg-light-neutral-900 min-w-80 min-h-64 p-6",
             )}
           >
             <div className={cn("text-white", className)}>{children}</div>

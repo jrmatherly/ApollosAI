@@ -32,8 +32,8 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
         as both primary and verified — the email the user considers canonical.
         """
         for entry in emails:
-            if entry.get('primary') and entry.get('verified'):
-                return entry.get('email')
+            if entry.get("primary") and entry.get("verified"):
+                return entry.get("email")
         return None
 
     async def _get_headers(self) -> dict:
@@ -44,8 +44,8 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
                 self.token = latest_token
 
         return {
-            'Authorization': f'Bearer {self.token.get_secret_value() if self.token else ""}',
-            'Accept': 'application/vnd.github.v3+json',
+            "Authorization": f"Bearer {self.token.get_secret_value() if self.token else ''}",
+            "Accept": "application/vnd.github.v3+json",
         }
 
     async def get_latest_token(self) -> SecretStr | None:  # type: ignore[override]
@@ -84,8 +84,8 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
 
                 response.raise_for_status()
                 headers: dict = {}
-                if 'Link' in response.headers:
-                    headers['Link'] = response.headers['Link']
+                if "Link" in response.headers:
+                    headers["Link"] = response.headers["Link"]
 
                 return response.json(), headers
 
@@ -104,14 +104,14 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
                 response = await client.post(
                     self.GRAPHQL_URL,
                     headers=github_headers,
-                    json={'query': query, 'variables': variables},
+                    json={"query": query, "variables": variables},
                 )
                 response.raise_for_status()
 
                 result = response.json()
-                if 'errors' in result:
+                if "errors" in result:
                     raise UnknownException(
-                        f'GraphQL query error: {json.dumps(result["errors"])}'
+                        f"GraphQL query error: {json.dumps(result['errors'])}"
                     )
 
                 return dict(result)
@@ -128,35 +128,35 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
         containing 'email', 'primary', 'verified', and 'visibility' fields.
         Requires the user:email OAuth scope.
         """
-        url = f'{self.BASE_URL}/user/emails'
+        url = f"{self.BASE_URL}/user/emails"
         response, _ = await self._make_request(url)
         return response
 
     async def verify_access(self) -> bool:
-        url = f'{self.BASE_URL}'
+        url = f"{self.BASE_URL}"
         await self._make_request(url)
         return True
 
     async def get_user(self):
-        url = f'{self.BASE_URL}/user'
+        url = f"{self.BASE_URL}/user"
         response, _ = await self._make_request(url)
 
-        email = response.get('email')
+        email = response.get("email")
         if email is None:
             try:
                 emails = await self.get_user_emails()
                 email = self._resolve_primary_email(emails)
             except Exception:
                 logger.warning(
-                    'github:get_user:email_fallback_failed',
+                    "github:get_user:email_fallback_failed",
                     exc_info=True,
                 )
 
         return User(
-            id=str(response.get('id', '')),
-            login=cast(str, response.get('login') or ''),
-            avatar_url=cast(str, response.get('avatar_url') or ''),
-            company=response.get('company'),
-            name=response.get('name'),
+            id=str(response.get("id", "")),
+            login=cast(str, response.get("login") or ""),
+            avatar_url=cast(str, response.get("avatar_url") or ""),
+            company=response.get("company"),
+            name=response.get("name"),
             email=email,
         )

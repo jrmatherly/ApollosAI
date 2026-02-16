@@ -35,7 +35,7 @@ export const BaseTypography = ({
         "tg-family-outfit text-white leading-[100%]",
         fontSize ? fontSizes[fontSize] : undefined,
         fontWeight ? fontWeights[fontWeight] : undefined,
-        className
+        className,
       )}
     >
       {children}

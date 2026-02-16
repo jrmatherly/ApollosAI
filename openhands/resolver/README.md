@@ -74,7 +74,7 @@ If you prefer to run the resolver programmatically instead of using GitHub Actio
 pip install openhands-ai
 ```
 
-2. Create a GitHub, GitLab, Bitbucket, or Azure DevOps access token:
+1. Create a GitHub, GitLab, Bitbucket, or Azure DevOps access token:
    - Create a GitHub access token
       - Visit [GitHub's token settings](https://github.com/settings/personal-access-tokens/new)
       - Create a fine-grained token with these scopes:
@@ -110,7 +110,7 @@ pip install openhands-ai
       - 'Work Items: Read & Write'
       - 'Pull Request: Read & Write'
 
-3. Set up environment variables:
+2. Set up environment variables:
 
 ```bash
 

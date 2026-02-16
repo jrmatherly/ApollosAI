@@ -94,8 +94,8 @@ MyTool = ChatCompletionToolParam(
 )
 ```
 
-2. Add the tool to `get_tools()` in `function_calling.py`
-3. Implement the corresponding action handler in the agent class
+1. Add the tool to `get_tools()` in `function_calling.py`
+2. Implement the corresponding action handler in the agent class
 
 ## Implementation Details
 

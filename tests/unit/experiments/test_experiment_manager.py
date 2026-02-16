@@ -5,14 +5,14 @@ from unittest.mock import Mock, patch
 from uuid import UUID, uuid4
 
 import pytest
+from openhands.sdk import Agent
+from openhands.sdk.llm import LLM
 
 from openhands.app_server.app_conversation.live_status_app_conversation_service import (
     LiveStatusAppConversationService,
 )
 from openhands.app_server.sandbox.sandbox_models import SandboxInfo, SandboxStatus
 from openhands.experiments.experiment_manager import ExperimentManager
-from openhands.sdk import Agent
-from openhands.sdk.llm import LLM
 
 
 class TestExperimentManager:
@@ -20,18 +20,18 @@ class TestExperimentManager:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.user_id = 'test_user_123'
+        self.user_id = "test_user_123"
         self.conversation_id = uuid4()
 
         # Create a mock LLM
         self.mock_llm = Mock(spec=LLM)
-        self.mock_llm.model = 'gpt-4'
-        self.mock_llm.usage_id = 'agent'
+        self.mock_llm.model = "gpt-4"
+        self.mock_llm.usage_id = "agent"
 
         # Create a mock Agent
         self.mock_agent = Mock(spec=Agent)
         self.mock_agent.llm = self.mock_llm
-        self.mock_agent.system_prompt_filename = 'default_system_prompt.j2'
+        self.mock_agent.system_prompt_filename = "default_system_prompt.j2"
         self.mock_agent.model_copy = Mock(return_value=self.mock_agent)
 
     def test_run_agent_variant_tests__v1_returns_agent_unchanged(self):
@@ -76,21 +76,21 @@ class TestExperimentManagerIntegration:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.user_id = 'test_user_123'
+        self.user_id = "test_user_123"
         self.conversation_id = uuid4()
 
         # Create a mock LLM
         self.mock_llm = Mock(spec=LLM)
-        self.mock_llm.model = 'gpt-4'
-        self.mock_llm.usage_id = 'agent'
+        self.mock_llm.model = "gpt-4"
+        self.mock_llm.usage_id = "agent"
 
         # Create a mock Agent
         self.mock_agent = Mock(spec=Agent)
         self.mock_agent.llm = self.mock_llm
-        self.mock_agent.system_prompt_filename = 'default_system_prompt.j2'
+        self.mock_agent.system_prompt_filename = "default_system_prompt.j2"
         self.mock_agent.model_copy = Mock(return_value=self.mock_agent)
 
-    @patch('openhands.experiments.experiment_manager.ExperimentManagerImpl')
+    @patch("openhands.experiments.experiment_manager.ExperimentManagerImpl")
     def test_start_app_conversation_calls_experiment_manager_v1(
         self, mock_experiment_manager_impl
     ):
@@ -104,7 +104,7 @@ class TestExperimentManagerIntegration:
         mock_service = Mock(spec=LiveStatusAppConversationService)
 
         # Mock the _build_start_conversation_request_for_user method to simulate the call
-        with patch.object(mock_service, '_build_start_conversation_request_for_user'):
+        with patch.object(mock_service, "_build_start_conversation_request_for_user"):
             # Simulate the part of the code that calls the experiment manager
             from uuid import uuid4
 
@@ -130,17 +130,17 @@ class TestExperimentManagerIntegration:
         and returns the same agent instance (no copy/mutation) when building a StartConversationRequest.
         """
         # --- Arrange: fixed UUID to assert call parameters deterministically
-        fixed_conversation_id = UUID('00000000-0000-0000-0000-000000000001')
+        fixed_conversation_id = UUID("00000000-0000-0000-0000-000000000001")
 
         # Create a stable Agent (and LLM) we can identity-check later
         mock_llm = Mock(spec=LLM)
-        mock_llm.model = 'gpt-4'
-        mock_llm.usage_id = 'agent'
+        mock_llm.model = "gpt-4"
+        mock_llm.usage_id = "agent"
 
         mock_agent = Mock(spec=Agent)
         mock_agent.llm = mock_llm
         mock_agent.condenser = None  # No condenser for this test
-        mock_agent.system_prompt_filename = 'default_system_prompt.j2'
+        mock_agent.system_prompt_filename = "default_system_prompt.j2"
         mock_agent.model_copy = Mock(return_value=mock_agent)
 
         # Minimal, real-ish user context used by the service
@@ -148,8 +148,8 @@ class TestExperimentManagerIntegration:
             async def get_user_info(self):
                 # confirmation_mode=False -> NeverConfirm()
                 return SimpleNamespace(
-                    id='test_user_123',
-                    llm_model='gpt-4',
+                    id="test_user_123",
+                    llm_model="gpt-4",
                     llm_base_url=None,
                     llm_api_key=None,
                     confirmation_mode=False,
@@ -164,7 +164,7 @@ class TestExperimentManagerIntegration:
                 return None
 
             async def get_user_id(self):
-                return 'test_user_123'
+                return "test_user_123"
 
         user_context = DummyUserContext()
 
@@ -198,41 +198,41 @@ class TestExperimentManagerIntegration:
         )
 
         sandbox = SandboxInfo(
-            id='mock-sandbox-id',
-            created_by_user_id='mock-user-id',
-            sandbox_spec_id='mock-sandbox-spec-id',
+            id="mock-sandbox-id",
+            created_by_user_id="mock-user-id",
+            sandbox_spec_id="mock-sandbox-spec-id",
             status=SandboxStatus.RUNNING,
-            session_api_key='mock-session-api-key',
+            session_api_key="mock-session-api-key",
         )
 
         # Patch the pieces invoked by the service
         with (
             patch.object(
                 service,
-                '_setup_secrets_for_git_providers',
+                "_setup_secrets_for_git_providers",
                 return_value={},
             ),
             patch.object(
                 service,
-                '_configure_llm_and_mcp',
+                "_configure_llm_and_mcp",
                 return_value=(mock_llm, {}),
             ),
             patch.object(
                 service,
-                '_create_agent_with_context',
+                "_create_agent_with_context",
                 return_value=mock_agent,
             ),
             patch.object(
                 service,
-                '_load_skills_and_update_agent',
+                "_load_skills_and_update_agent",
                 return_value=mock_agent,
             ),
             patch(
-                'openhands.app_server.app_conversation.live_status_app_conversation_service.uuid4',
+                "openhands.app_server.app_conversation.live_status_app_conversation_service.uuid4",
                 return_value=fixed_conversation_id,
             ),
             patch(
-                'openhands.app_server.app_conversation.live_status_app_conversation_service.ExperimentManagerImpl'
+                "openhands.app_server.app_conversation.live_status_app_conversation_service.ExperimentManagerImpl"
             ) as mock_experiment_manager,
         ):
             # Configure the experiment manager mock to return the same agent
@@ -246,12 +246,12 @@ class TestExperimentManagerIntegration:
                 initial_message=None,
                 system_message_suffix=None,  # No additional system message suffix
                 git_provider=None,  # Keep secrets path simple
-                working_dir='/tmp/project',  # Arbitrary path
+                working_dir="/tmp/project",  # Arbitrary path
             )
 
             # --- Assert: verify experiment manager was called with correct parameters
             mock_experiment_manager.run_agent_variant_tests__v1.assert_called_once_with(
-                'test_user_123',  # user_id
+                "test_user_123",  # user_id
                 fixed_conversation_id,  # conversation_id
                 mock_agent,  # agent (after model_copy with agent_context)
             )
@@ -261,4 +261,4 @@ class TestExperimentManagerIntegration:
 
             # No tweaks to agent fields by the experiment manager (noop)
             assert start_req.agent.llm is mock_llm
-            assert start_req.agent.system_prompt_filename == 'default_system_prompt.j2'
+            assert start_req.agent.system_prompt_filename == "default_system_prompt.j2"

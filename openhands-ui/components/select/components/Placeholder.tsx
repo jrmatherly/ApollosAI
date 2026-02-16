@@ -20,7 +20,7 @@ export const Placeholder = ({
       className={cn(
         innerProps.className,
         "text-light-neutral-300",
-        error && "text-red-400"
+        error && "text-red-400",
       )}
     >
       {children}

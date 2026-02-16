@@ -30,7 +30,7 @@ const options = [
 
 const SelectComponent = (props: Partial<SelectProps<unknown>>) => {
   const [value, setValue] = useState<IOption<string> | null>(
-    (props.value as IOption<string>) ?? null
+    (props.value as IOption<string>) ?? null,
   );
   return (
     <div className="min-w-104">

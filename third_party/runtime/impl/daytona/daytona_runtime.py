@@ -235,10 +235,10 @@ class DaytonaRuntime(ActionExecutionClient):
     @tenacity.retry(
         retry=tenacity.retry_if_exception(
             lambda e: (
-                isinstance(e, httpx.HTTPError) or isinstance(e, RequestHTTPError)
+                (isinstance(e, httpx.HTTPError) or isinstance(e, RequestHTTPError))
+                and hasattr(e, "response")
+                and e.response.status_code == 502
             )
-            and hasattr(e, "response")
-            and e.response.status_code == 502
         ),
         stop=tenacity.stop_after_delay(120) | stop_if_should_exit(),
         wait=tenacity.wait_fixed(1),

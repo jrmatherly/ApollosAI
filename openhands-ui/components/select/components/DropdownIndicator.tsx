@@ -10,7 +10,7 @@ export const DropdownIndicator = ({
     <Icon
       className={cn(
         "h-5 w-5 text-light-neutral-300",
-        selectProps.customProps.error && "text-red-400"
+        selectProps.customProps.error && "text-red-400",
       )}
       icon="ChevronDown"
     />

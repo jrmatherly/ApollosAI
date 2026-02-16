@@ -42,7 +42,7 @@ export const InteractiveChip = ({
         "flex flex-row items-center gap-x-2",
         hasIcons ? " justify-between" : " justify-center",
         "group enabled:cursor-pointer focus:outline-0",
-        buttonClassNames.button
+        buttonClassNames.button,
       )}
     >
       {cloneIcon(start, {
@@ -54,7 +54,7 @@ export const InteractiveChip = ({
         className={cn(
           "tg-family-outfit tg-xs text-center font-normal line-1",
           buttonClassNames.text,
-          !props.disabled && `button-bold-text`
+          !props.disabled && `button-bold-text`,
         )}
       >
         {children}

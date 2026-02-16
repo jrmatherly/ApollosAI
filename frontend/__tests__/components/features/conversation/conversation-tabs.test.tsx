@@ -120,9 +120,7 @@ describe("ConversationTabs localStorage behavior", () => {
 
       // Verify localStorage was updated
       const storedState = JSON.parse(
-        localStorage.getItem(
-          `conversation-state-${REAL_CONVERSATION_ID}`,
-        )!,
+        localStorage.getItem(`conversation-state-${REAL_CONVERSATION_ID}`)!,
       );
       expect(storedState.selectedTab).toBe("terminal");
       expect(storedState.rightPanelShown).toBe(true);
@@ -152,9 +150,7 @@ describe("ConversationTabs localStorage behavior", () => {
 
       // Verify localStorage was updated
       const storedState = JSON.parse(
-        localStorage.getItem(
-          `conversation-state-${REAL_CONVERSATION_ID}`,
-        )!,
+        localStorage.getItem(`conversation-state-${REAL_CONVERSATION_ID}`)!,
       );
       expect(storedState.rightPanelShown).toBe(false);
     });
@@ -184,9 +180,7 @@ describe("ConversationTabs localStorage behavior", () => {
 
       // Verify localStorage was updated
       const storedState = JSON.parse(
-        localStorage.getItem(
-          `conversation-state-${REAL_CONVERSATION_ID}`,
-        )!,
+        localStorage.getItem(`conversation-state-${REAL_CONVERSATION_ID}`)!,
       );
       expect(storedState.selectedTab).toBe("browser");
     });

@@ -9,7 +9,7 @@ type RadioGroupComponentProps<T extends string> = Omit<
 >;
 
 const RadioGroupComponent = <T extends string>(
-  props: RadioGroupComponentProps<T>
+  props: RadioGroupComponentProps<T>,
 ) => {
   const [value, setValue] = useState(props.options[0]!.value);
   return (

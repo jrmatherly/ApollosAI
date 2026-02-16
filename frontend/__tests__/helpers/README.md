@@ -13,8 +13,6 @@ Contains React test components for accessing and displaying WebSocket-related st
 
 These components are designed to be used in tests to verify that WebSocket events are properly processed and stored.
 
-
-
 ### `msw-websocket-setup.ts`
 Contains MSW (Mock Service Worker) setup utilities for WebSocket testing:
 - `createWebSocketLink()` - Creates a WebSocket link for MSW testing

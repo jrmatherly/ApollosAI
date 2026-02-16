@@ -34,19 +34,19 @@ def _create_mock_app_conversation_service():
 def _decode_combined_page_id(page_id: str | None) -> dict:
     """Decode a combined page_id to get v0 and v1 components."""
     if not page_id:
-        return {'v0': None, 'v1': None}
+        return {"v0": None, "v1": None}
     try:
         return json.loads(base64.b64decode(page_id))
     except Exception:
         # Legacy format - just v0
-        return {'v0': page_id, 'v1': None}
+        return {"v0": page_id, "v1": None}
 
 
 async def _mock_wait_all(coros):
     """Mock implementation of wait_all that properly awaits coroutines."""
     results = []
     for coro in coros:
-        if hasattr(coro, '__await__'):
+        if hasattr(coro, "__await__"):
             results.append(await coro)
         else:
             results.append(coro)
@@ -56,16 +56,16 @@ async def _mock_wait_all(coros):
 def _setup_common_mocks():
     """Set up common mocks used by all tests."""
     return {
-        'config': patch('openhands.server.routes.manage_conversations.config'),
-        'conversation_manager': patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+        "config": patch("openhands.server.routes.manage_conversations.config"),
+        "conversation_manager": patch(
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ),
-        'wait_all': patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+        "wait_all": patch(
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
-        'provider_handler': patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler'
+        "provider_handler": patch(
+            "openhands.server.routes.manage_conversations.ProviderHandler"
         ),
     }
 
@@ -74,30 +74,30 @@ def _setup_common_mocks():
 async def test_get_microagent_management_conversations_success():
     """Test successful retrieval of microagent management conversations."""
     # Mock data
-    page_id = 'test_page_123'
+    page_id = "test_page_123"
     limit = 10
-    selected_repository = 'owner/repo'
+    selected_repository = "owner/repo"
 
     # Create mock conversations
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['123'],
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["123"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
         ),
         ConversationMetadata(
-            conversation_id='conv_2',
-            user_id='user_2',
-            title='Test Conversation 2',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['456'],
+            conversation_id="conv_2",
+            user_id="user_2",
+            title="Test Conversation 2",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["456"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
@@ -107,11 +107,11 @@ async def test_get_microagent_management_conversations_success():
     # Mock conversation store
     mock_conversation_store = MagicMock(spec=ConversationStore)
     mock_conversation_store.search = AsyncMock(
-        return_value=MagicMock(results=mock_conversations, next_page_id='next_page_456')
+        return_value=MagicMock(results=mock_conversations, next_page_id="next_page_456")
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -122,15 +122,15 @@ async def test_get_microagent_management_conversations_success():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -156,8 +156,8 @@ async def test_get_microagent_management_conversations_success():
 
         # Decode the combined page_id to verify v0 component
         decoded_page_id = _decode_combined_page_id(result.next_page_id)
-        assert decoded_page_id['v0'] == 'next_page_456'
-        assert decoded_page_id['v1'] is None
+        assert decoded_page_id["v0"] == "next_page_456"
+        assert decoded_page_id["v1"] is None
 
         # Verify conversation store was called correctly
         mock_conversation_store.search.assert_called_once_with(page_id, limit)
@@ -176,18 +176,18 @@ async def test_get_microagent_management_conversations_no_results():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     mock_app_conversation_service = _create_mock_app_conversation_service()
 
     with (
-        patch('openhands.server.routes.manage_conversations.ProviderHandler'),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.ProviderHandler"),
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -199,7 +199,7 @@ async def test_get_microagent_management_conversations_no_results():
 
         # Call the function with required selected_repository parameter
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -217,23 +217,23 @@ async def test_get_microagent_management_conversations_filter_by_repository():
     # Create mock conversations with different repositories
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
-            selected_repository='owner/repo1',
-            git_provider='github',
-            pr_number=['123'],
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
+            selected_repository="owner/repo1",
+            git_provider="github",
+            pr_number=["123"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
         ),
         ConversationMetadata(
-            conversation_id='conv_2',
-            user_id='user_2',
-            title='Test Conversation 2',
-            selected_repository='owner/repo2',
-            git_provider='github',
-            pr_number=['456'],
+            conversation_id="conv_2",
+            user_id="user_2",
+            title="Test Conversation 2",
+            selected_repository="owner/repo2",
+            git_provider="github",
+            pr_number=["456"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
@@ -247,7 +247,7 @@ async def test_get_microagent_management_conversations_filter_by_repository():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -257,15 +257,15 @@ async def test_get_microagent_management_conversations_filter_by_repository():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -277,7 +277,7 @@ async def test_get_microagent_management_conversations_filter_by_repository():
 
         # Call the function with repository filter
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo1',
+            selected_repository="owner/repo1",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -285,8 +285,8 @@ async def test_get_microagent_management_conversations_filter_by_repository():
 
         # Verify only conversations from the specified repository are returned
         assert len(result.results) == 1
-        assert result.results[0].conversation_id == 'conv_1'
-        assert result.results[0].selected_repository == 'owner/repo1'
+        assert result.results[0].conversation_id == "conv_1"
+        assert result.results[0].selected_repository == "owner/repo1"
 
 
 @pytest.mark.asyncio
@@ -295,23 +295,23 @@ async def test_get_microagent_management_conversations_filter_by_trigger():
     # Create mock conversations with different triggers
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['123'],
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["123"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
         ),
         ConversationMetadata(
-            conversation_id='conv_2',
-            user_id='user_2',
-            title='Test Conversation 2',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['456'],
+            conversation_id="conv_2",
+            user_id="user_2",
+            title="Test Conversation 2",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["456"],
             trigger=ConversationTrigger.GUI,  # Different trigger
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
@@ -325,7 +325,7 @@ async def test_get_microagent_management_conversations_filter_by_trigger():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -335,15 +335,15 @@ async def test_get_microagent_management_conversations_filter_by_trigger():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -355,7 +355,7 @@ async def test_get_microagent_management_conversations_filter_by_trigger():
 
         # Call the function
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -363,7 +363,7 @@ async def test_get_microagent_management_conversations_filter_by_trigger():
 
         # Verify only microagent_management conversations are returned
         assert len(result.results) == 1
-        assert result.results[0].conversation_id == 'conv_1'
+        assert result.results[0].conversation_id == "conv_1"
         assert result.results[0].trigger == ConversationTrigger.MICROAGENT_MANAGEMENT
 
 
@@ -373,23 +373,23 @@ async def test_get_microagent_management_conversations_filter_inactive_pr():
     # Create mock conversations
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['123'],
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["123"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
         ),
         ConversationMetadata(
-            conversation_id='conv_2',
-            user_id='user_2',
-            title='Test Conversation 2',
-            selected_repository='owner/repo',
-            git_provider='github',
-            pr_number=['456'],
+            conversation_id="conv_2",
+            user_id="user_2",
+            title="Test Conversation 2",
+            selected_repository="owner/repo",
+            git_provider="github",
+            pr_number=["456"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
@@ -403,7 +403,7 @@ async def test_get_microagent_management_conversations_filter_inactive_pr():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler with one active and one inactive PR
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -413,15 +413,15 @@ async def test_get_microagent_management_conversations_filter_inactive_pr():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -433,7 +433,7 @@ async def test_get_microagent_management_conversations_filter_inactive_pr():
 
         # Call the function
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -441,7 +441,7 @@ async def test_get_microagent_management_conversations_filter_inactive_pr():
 
         # Verify only conversations with active PRs are returned
         assert len(result.results) == 1
-        assert result.results[0].conversation_id == 'conv_1'
+        assert result.results[0].conversation_id == "conv_1"
 
         # Verify provider handler was called for both PRs
         assert mock_provider_handler.is_pr_open.call_count == 2
@@ -453,11 +453,11 @@ async def test_get_microagent_management_conversations_no_pr_number():
     # Create mock conversations without PR numbers
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
-            selected_repository='owner/repo',
-            git_provider='github',
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
+            selected_repository="owner/repo",
+            git_provider="github",
             pr_number=[],  # No PR number
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
@@ -472,7 +472,7 @@ async def test_get_microagent_management_conversations_no_pr_number():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -481,15 +481,15 @@ async def test_get_microagent_management_conversations_no_pr_number():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -501,7 +501,7 @@ async def test_get_microagent_management_conversations_no_pr_number():
 
         # Call the function
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -509,7 +509,7 @@ async def test_get_microagent_management_conversations_no_pr_number():
 
         # Verify conversation without PR number is included
         assert len(result.results) == 1
-        assert result.results[0].conversation_id == 'conv_1'
+        assert result.results[0].conversation_id == "conv_1"
 
         # Verify provider handler was not called (no PR to check)
         mock_provider_handler.is_pr_open.assert_not_called()
@@ -521,12 +521,12 @@ async def test_get_microagent_management_conversations_no_repository():
     # Create mock conversations without repository
     mock_conversations = [
         ConversationMetadata(
-            conversation_id='conv_1',
-            user_id='user_1',
-            title='Test Conversation 1',
+            conversation_id="conv_1",
+            user_id="user_1",
+            title="Test Conversation 1",
             selected_repository=None,  # No repository
-            git_provider='github',
-            pr_number=['123'],
+            git_provider="github",
+            pr_number=["123"],
             trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
             created_at=datetime.now(timezone.utc),
             last_updated_at=datetime.now(timezone.utc),
@@ -540,7 +540,7 @@ async def test_get_microagent_management_conversations_no_repository():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -549,15 +549,15 @@ async def test_get_microagent_management_conversations_no_repository():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -569,7 +569,7 @@ async def test_get_microagent_management_conversations_no_repository():
 
         # Call the function
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -588,24 +588,24 @@ async def test_get_microagent_management_conversations_age_filter():
     # Create mock conversations with different ages
     now = datetime.now(timezone.utc)
     old_conversation = ConversationMetadata(
-        conversation_id='conv_old',
-        user_id='user_1',
-        title='Old Conversation',
-        selected_repository='owner/repo',
-        git_provider='github',
-        pr_number=['123'],
+        conversation_id="conv_old",
+        user_id="user_1",
+        title="Old Conversation",
+        selected_repository="owner/repo",
+        git_provider="github",
+        pr_number=["123"],
         trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
         created_at=now.replace(year=now.year - 1),  # Very old
         last_updated_at=now.replace(year=now.year - 1),
     )
 
     recent_conversation = ConversationMetadata(
-        conversation_id='conv_recent',
-        user_id='user_2',
-        title='Recent Conversation',
-        selected_repository='owner/repo',
-        git_provider='github',
-        pr_number=['456'],
+        conversation_id="conv_recent",
+        user_id="user_2",
+        title="Recent Conversation",
+        selected_repository="owner/repo",
+        git_provider="github",
+        pr_number=["456"],
         trigger=ConversationTrigger.MICROAGENT_MANAGEMENT,
         created_at=now,  # Recent
         last_updated_at=now,
@@ -620,7 +620,7 @@ async def test_get_microagent_management_conversations_age_filter():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     # Mock provider handler
     mock_provider_handler = MagicMock(spec=ProviderHandler)
@@ -630,15 +630,15 @@ async def test_get_microagent_management_conversations_age_filter():
 
     with (
         patch(
-            'openhands.server.routes.manage_conversations.ProviderHandler',
+            "openhands.server.routes.manage_conversations.ProviderHandler",
             return_value=mock_provider_handler,
         ),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -650,7 +650,7 @@ async def test_get_microagent_management_conversations_age_filter():
 
         # Call the function
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,
@@ -658,7 +658,7 @@ async def test_get_microagent_management_conversations_age_filter():
 
         # Verify only recent conversation is returned
         assert len(result.results) == 1
-        assert result.results[0].conversation_id == 'conv_recent'
+        assert result.results[0].conversation_id == "conv_recent"
 
 
 @pytest.mark.asyncio
@@ -667,22 +667,22 @@ async def test_get_microagent_management_conversations_pagination():
     # Mock conversation store with pagination
     mock_conversation_store = MagicMock(spec=ConversationStore)
     mock_conversation_store.search = AsyncMock(
-        return_value=MagicMock(results=[], next_page_id='next_page_789')
+        return_value=MagicMock(results=[], next_page_id="next_page_789")
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     mock_app_conversation_service = _create_mock_app_conversation_service()
 
     with (
-        patch('openhands.server.routes.manage_conversations.ProviderHandler'),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.ProviderHandler"),
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -694,8 +694,8 @@ async def test_get_microagent_management_conversations_pagination():
 
         # Call the function with pagination parameters
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
-            page_id='test_page',
+            selected_repository="owner/repo",
+            page_id="test_page",
             limit=5,
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
@@ -703,11 +703,11 @@ async def test_get_microagent_management_conversations_pagination():
         )
 
         # Verify pagination parameters were passed correctly
-        mock_conversation_store.search.assert_called_once_with('test_page', 5)
+        mock_conversation_store.search.assert_called_once_with("test_page", 5)
 
         # Decode and verify the next_page_id
         decoded_page_id = _decode_combined_page_id(result.next_page_id)
-        assert decoded_page_id['v0'] == 'next_page_789'
+        assert decoded_page_id["v0"] == "next_page_789"
 
 
 @pytest.mark.asyncio
@@ -720,18 +720,18 @@ async def test_get_microagent_management_conversations_default_parameters():
     )
 
     # Mock provider tokens
-    mock_provider_tokens = {'github': 'token_123'}
+    mock_provider_tokens = {"github": "token_123"}
 
     mock_app_conversation_service = _create_mock_app_conversation_service()
 
     with (
-        patch('openhands.server.routes.manage_conversations.ProviderHandler'),
-        patch('openhands.server.routes.manage_conversations.config') as mock_config,
+        patch("openhands.server.routes.manage_conversations.ProviderHandler"),
+        patch("openhands.server.routes.manage_conversations.config") as mock_config,
         patch(
-            'openhands.server.routes.manage_conversations.conversation_manager'
+            "openhands.server.routes.manage_conversations.conversation_manager"
         ) as mock_conv_mgr,
         patch(
-            'openhands.server.routes.manage_conversations.wait_all',
+            "openhands.server.routes.manage_conversations.wait_all",
             side_effect=_mock_wait_all,
         ),
     ):
@@ -743,7 +743,7 @@ async def test_get_microagent_management_conversations_default_parameters():
 
         # Call the function without parameters (selected_repository is required)
         result = await get_microagent_management_conversations(
-            selected_repository='owner/repo',
+            selected_repository="owner/repo",
             conversation_store=mock_conversation_store,
             provider_tokens=mock_provider_tokens,
             app_conversation_service=mock_app_conversation_service,

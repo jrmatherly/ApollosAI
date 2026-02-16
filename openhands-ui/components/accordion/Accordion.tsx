@@ -32,13 +32,13 @@ const Accordion: AccordionType = ({
         setExpandedKeys(
           expanded
             ? [...expandedKeys, key]
-            : [...expandedKeys].filter((k) => k !== key)
+            : [...expandedKeys].filter((k) => k !== key),
         );
       } else {
         setExpandedKeys(expanded ? [key] : []);
       }
     },
-    [expandedKeys, type]
+    [expandedKeys, type],
   );
 
   const reactChildren = React.Children.toArray(children);

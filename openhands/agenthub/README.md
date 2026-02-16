@@ -46,22 +46,22 @@ The agent can add and modify subtasks through the `AddTaskAction` and `ModifyTas
 
 Here is a list of available Actions, which can be returned by `agent.step()`:
 
-- [`CmdRunAction`](../events/action/commands.py) - Runs a command inside a sandboxed terminal
-- [`IPythonRunCellAction`](../events/action/commands.py) - Execute a block of Python code interactively (in Jupyter notebook) and receives `CmdOutputObservation`. Requires setting up `jupyter` [plugin](../runtime/plugins) as a requirement.
-- [`FileReadAction`](../events/action/files.py) - Reads the content of a file
-- [`FileWriteAction`](../events/action/files.py) - Writes new content to a file
-- [`BrowseURLAction`](../events/action/browse.py) - Gets the content of a URL
-- [`AddTaskAction`](../events/action/tasks.py) - Adds a subtask to the plan
-- [`ModifyTaskAction`](../events/action/tasks.py) - Changes the state of a subtask.
-- [`AgentFinishAction`](../events/action/agent.py) - Stops the control loop, allowing the user/delegator agent to enter a new task
-- [`AgentRejectAction`](../events/action/agent.py) - Stops the control loop, allowing the user/delegator agent to enter a new task
-- [`AgentFinishAction`](../events/action/agent.py) - Stops the control loop, allowing the user to enter a new task
-- [`MessageAction`](../events/action/message.py) - Represents a message from an agent or the user
+* [`CmdRunAction`](../events/action/commands.py) - Runs a command inside a sandboxed terminal
+* [`IPythonRunCellAction`](../events/action/commands.py) - Execute a block of Python code interactively (in Jupyter notebook) and receives `CmdOutputObservation`. Requires setting up `jupyter` [plugin](../runtime/plugins) as a requirement.
+* [`FileReadAction`](../events/action/files.py) - Reads the content of a file
+* [`FileWriteAction`](../events/action/files.py) - Writes new content to a file
+* [`BrowseURLAction`](../events/action/browse.py) - Gets the content of a URL
+* [`AddTaskAction`](../events/action/tasks.py) - Adds a subtask to the plan
+* [`ModifyTaskAction`](../events/action/tasks.py) - Changes the state of a subtask.
+* [`AgentFinishAction`](../events/action/agent.py) - Stops the control loop, allowing the user/delegator agent to enter a new task
+* [`AgentRejectAction`](../events/action/agent.py) - Stops the control loop, allowing the user/delegator agent to enter a new task
+* [`AgentFinishAction`](../events/action/agent.py) - Stops the control loop, allowing the user to enter a new task
+* [`MessageAction`](../events/action/message.py) - Represents a message from an agent or the user
 
 To serialize and deserialize an action, you can use:
-- `action.to_dict()` to serialize the action to a dictionary to be sent to the UI, including a user-friendly string representation of the message
-- `action.to_memory()` to serialize the action to a dictionary to be sent to the LLM. It may include raw information, such as the underlying exceptions that occurred during the action execution.
-- `action_from_dict(action_dict)` to deserialize the action from a dictionary.
+* `action.to_dict()` to serialize the action to a dictionary to be sent to the UI, including a user-friendly string representation of the message
+* `action.to_memory()` to serialize the action to a dictionary to be sent to the LLM. It may include raw information, such as the underlying exceptions that occurred during the action execution.
+* `action_from_dict(action_dict)` to deserialize the action from a dictionary.
 
 ## Observations
 
@@ -70,12 +70,12 @@ But they may also appear as a result of asynchronous events (e.g. a message from
 
 Here is a list of available Observations:
 
-- [`CmdOutputObservation`](../events/observation/commands.py)
-- [`BrowserOutputObservation`](../events/observation/browse.py)
-- [`FileReadObservation`](../events/observation/files.py)
-- [`FileWriteObservation`](../events/observation/files.py)
-- [`ErrorObservation`](../events/observation/error.py)
-- [`SuccessObservation`](../events/observation/success.py)
+* [`CmdOutputObservation`](../events/observation/commands.py)
+* [`BrowserOutputObservation`](../events/observation/browse.py)
+* [`FileReadObservation`](../events/observation/files.py)
+* [`FileWriteObservation`](../events/observation/files.py)
+* [`ErrorObservation`](../events/observation/error.py)
+* [`SuccessObservation`](../events/observation/success.py)
 
 You can use `observation.to_dict()` and `observation_from_dict` to serialize and deserialize observations.
 

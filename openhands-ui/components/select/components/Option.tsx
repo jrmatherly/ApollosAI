@@ -27,8 +27,8 @@ export const Option = ({
               __isNew__: false,
             },
           },
-          inputValue
-        )
+          inputValue,
+        ),
       )
     : options;
   const lastOption = visibleOptions[
@@ -46,7 +46,7 @@ export const Option = ({
         "block px-6 py-3 cursor-pointer",
         "text-light-neutral-200",
         "hover:bg-blue/50 hover:font-semibold",
-        isLast && "rounded-b-2xl"
+        isLast && "rounded-b-2xl",
       )}
       {...innerProps}
     >

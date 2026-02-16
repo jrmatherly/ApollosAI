@@ -29,7 +29,7 @@ export const Toggle = ({
 }: ToggleProps) => {
   invariant(
     (onText == null && offText == null) || onText != null || offText != null,
-    "Both onText and offText must be either defined or undefined"
+    "Both onText and offText must be either defined or undefined",
   );
 
   const generatedId = useId();
@@ -40,7 +40,7 @@ export const Toggle = ({
       htmlFor={id}
       className={cn(
         "flex flex-row items-center gap-x-1",
-        disabled ? "cursor-not-allowed" : "cursor-pointer"
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
       )}
     >
       <div className="relative">
@@ -64,7 +64,7 @@ export const Toggle = ({
             "peer-checked:border-primary-500",
             // hover modifier
             "peer-hover:border-light-neutral-300",
-            "peer-hover:peer-checked:border-primary-300"
+            "peer-hover:peer-checked:border-primary-300",
           )}
         />
         <div
@@ -90,7 +90,7 @@ export const Toggle = ({
             "peer-active:peer-enabled:bg-light-neutral-500",
             "peer-active:peer-checked:peer-enabled:bg-primary-500",
             // disabled modifier
-            "peer-disabled:opacity-50"
+            "peer-disabled:opacity-50",
           )}
         />
       </div>

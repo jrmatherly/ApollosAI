@@ -10,7 +10,6 @@ repos:
         args: ["--allow-multiple-documents"]
       - id: debug-statements
 
-
   - repo: local
     hooks:
       - id: warn-appmode-oss

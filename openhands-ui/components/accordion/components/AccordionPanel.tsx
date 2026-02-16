@@ -20,7 +20,7 @@ export const AccordionPanel = ({
         "ring-1 ring-solid ring-light-neutral-500 bg-grey-800",
         "rounded-b-2xl",
         "aria-[expanded=false]:hidden",
-        className
+        className,
       )}
       {...props}
     >

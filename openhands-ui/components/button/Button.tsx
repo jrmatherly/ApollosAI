@@ -47,7 +47,7 @@ export const Button = ({
         hasIcons ? " justify-between" : " justify-center",
         "group enabled:cursor-pointer focus:outline-0",
         buttonClassNames.button,
-        className
+        className,
       )}
     >
       {cloneIcon(start, {
@@ -59,7 +59,7 @@ export const Button = ({
         className={cn(
           "tg-family-outfit tg-lg text-center font-normal leading-[100%]",
           buttonClassNames.text,
-          !props.disabled && `button-bold-text`
+          !props.disabled && `button-bold-text`,
         )}
       >
         {children}

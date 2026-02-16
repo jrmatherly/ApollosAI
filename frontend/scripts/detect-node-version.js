@@ -1,5 +1,5 @@
 function parseVersion(version) {
-  return version.split('.').map(Number);
+  return version.split(".").map(Number);
 }
 
 function compareVersions(v1, v2) {
@@ -21,8 +21,12 @@ const currentVersion = process.version.substring(1);
 const targetVersion = "18.17.1";
 
 if (compareVersions(currentVersion, targetVersion) >= 0) {
-  console.log(`Current Node.js version is ${currentVersion}, corepack is supported.`);
+  console.log(
+    `Current Node.js version is ${currentVersion}, corepack is supported.`,
+  );
 } else {
-  console.error(`Current Node.js version is ${currentVersion}, but corepack is unsupported. Required version: ^${targetVersion}.`);
-  process.exit(1)
+  console.error(
+    `Current Node.js version is ${currentVersion}, but corepack is unsupported. Required version: ^${targetVersion}.`,
+  );
+  process.exit(1);
 }

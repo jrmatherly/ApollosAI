@@ -49,59 +49,59 @@ SANDBOX_VOLUMES=/path/to/your/workspace:/workspace:rw # Mount paths in format ho
 
 There are two types of messages that can be sent to, or received from, the server:
 
-* Actions
-* Observations
+- Actions
+- Observations
 
 ### Actions
 
 An action has three parts:
 
-* `action`: The action to be taken
-* `args`: The arguments for the action
-* `message`: A friendly message that can be put in the chat log
+- `action`: The action to be taken
+- `args`: The arguments for the action
+- `message`: A friendly message that can be put in the chat log
 
 There are several kinds of actions. Their arguments are listed below.
 This list may grow over time.
 
-* `initialize` - initializes the agent. Only sent by client.
-  * `model` - the name of the model to use
-  * `directory` - the path to the workspace
-  * `agent_cls` - the class of the agent to use
-* `start` - starts a new development task. Only sent by the client.
-  * `task` - the task to start
-* `read` - reads the content of a file.
-  * `path` - the path of the file to read
-* `write` - writes the content to a file.
-  * `path` - the path of the file to write
-  * `content` - the content to write to the file
-* `run` - runs a command.
-  * `command` - the command to run
-* `browse` - opens a web page.
-  * `url` - the URL to open
-* `think` - Allows the agent to make a plan, set a goal, or record thoughts
-  * `thought` - the thought to record
-* `finish` - agent signals that the task is completed
+- `initialize` - initializes the agent. Only sent by client.
+  - `model` - the name of the model to use
+  - `directory` - the path to the workspace
+  - `agent_cls` - the class of the agent to use
+- `start` - starts a new development task. Only sent by the client.
+  - `task` - the task to start
+- `read` - reads the content of a file.
+  - `path` - the path of the file to read
+- `write` - writes the content to a file.
+  - `path` - the path of the file to write
+  - `content` - the content to write to the file
+- `run` - runs a command.
+  - `command` - the command to run
+- `browse` - opens a web page.
+  - `url` - the URL to open
+- `think` - Allows the agent to make a plan, set a goal, or record thoughts
+  - `thought` - the thought to record
+- `finish` - agent signals that the task is completed
 
 ### Observations
 
 An observation has four parts:
 
-* `observation`: The observation type
-* `content`: A string representing the observed data
-* `extras`: additional structured data
-* `message`: A friendly message that can be put in the chat log
+- `observation`: The observation type
+- `content`: A string representing the observed data
+- `extras`: additional structured data
+- `message`: A friendly message that can be put in the chat log
 
 There are several kinds of observations. Their extras are listed below.
 This list may grow over time.
 
-* `read` - the content of a file
-  * `path` - the path of the file read
-* `browse` - the HTML content of a url
-  * `url` - the URL opened
-* `run` - the output of a command
-  * `command` - the command run
-  * `exit_code` - the exit code of the command
-* `chat` - a message from the user
+- `read` - the content of a file
+  - `path` - the path of the file read
+- `browse` - the HTML content of a url
+  - `url` - the URL opened
+- `run` - the output of a command
+  - `command` - the command run
+  - `exit_code` - the exit code of the command
+- `chat` - a message from the user
 
 ## Server Components
 

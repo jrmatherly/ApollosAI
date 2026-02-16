@@ -4,7 +4,6 @@ This folder is an implementation of Locagent. It is based on ([LocAgent](https:/
 
 <!-- ## Overview -->
 
-
 ## Built-in Tools
 
 The agent provides several built-in tools:

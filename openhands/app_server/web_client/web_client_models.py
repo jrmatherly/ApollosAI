@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from openhands.agent_server.env_parser import DiscriminatedUnionMixin
 from pydantic import BaseModel
 
-from openhands.agent_server.env_parser import DiscriminatedUnionMixin
 from openhands.integrations.service_types import ProviderType
 from openhands.server.types import AppMode
 

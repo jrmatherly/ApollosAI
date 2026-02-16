@@ -47,7 +47,7 @@ from openhands.server.user_auth.user_auth import (
     get_for_user as get_user_auth_for_user,
 )
 
-router = APIRouter(prefix='/webhooks', tags=['Webhooks'])
+router = APIRouter(prefix="/webhooks", tags=["Webhooks"])
 sandbox_service_dependency = depends_sandbox_service()
 event_service_dependency = depends_event_service()
 app_conversation_info_service_dependency = depends_app_conversation_info_service()
@@ -58,19 +58,19 @@ _logger = logging.getLogger(__name__)
 async def valid_sandbox(
     user_context: UserContext = Depends(as_admin),
     session_api_key: str = Depends(
-        APIKeyHeader(name='X-Session-API-Key', auto_error=False)
+        APIKeyHeader(name="X-Session-API-Key", auto_error=False)
     ),
     sandbox_service: SandboxService = sandbox_service_dependency,
 ) -> SandboxInfo:
     if session_api_key is None:
         raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, detail='X-Session-API-Key header is required'
+            status.HTTP_401_UNAUTHORIZED, detail="X-Session-API-Key header is required"
         )
 
     sandbox_info = await sandbox_service.get_sandbox_by_session_api_key(session_api_key)
     if sandbox_info is None:
         raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, detail='Invalid session API key'
+            status.HTTP_401_UNAUTHORIZED, detail="Invalid session API key"
         )
     return sandbox_info
 
@@ -96,7 +96,7 @@ async def valid_conversation(
     return app_conversation_info
 
 
-@router.post('/conversations')
+@router.post("/conversations")
 async def on_conversation_update(
     conversation_info: ConversationInfo,
     sandbox_info: SandboxInfo = Depends(valid_sandbox),
@@ -114,7 +114,7 @@ async def on_conversation_update(
 
     app_conversation_info = AppConversationInfo(
         id=conversation_info.id,
-        title=existing.title or f'Conversation {conversation_info.id.hex}',
+        title=existing.title or f"Conversation {conversation_info.id.hex}",
         sandbox_id=sandbox_info.id,
         created_by_user_id=sandbox_info.created_by_user_id,
         llm_model=conversation_info.agent.llm.model,
@@ -135,7 +135,7 @@ async def on_conversation_update(
     return Success()
 
 
-@router.post('/events/{conversation_id}')
+@router.post("/events/{conversation_id}")
 async def on_event(
     events: list[Event],
     conversation_id: UUID,
@@ -157,7 +157,7 @@ async def on_event(
 
         # Process stats events for V1 conversations
         for event in events:
-            if isinstance(event, ConversationStateUpdateEvent) and event.key == 'stats':
+            if isinstance(event, ConversationStateUpdateEvent) and event.key == "stats":
                 await app_conversation_info_service.process_stats_event(
                     event, conversation_id
                 )
@@ -169,14 +169,14 @@ async def on_event(
         )
 
     except Exception:
-        _logger.exception('Error in webhook', stack_info=True)
+        _logger.exception("Error in webhook", stack_info=True)
 
     return Success()
 
 
-@router.get('/secrets')
+@router.get("/secrets")
 async def get_secret(
-    access_token: str = Depends(APIKeyHeader(name='X-Access-Token', auto_error=False)),
+    access_token: str = Depends(APIKeyHeader(name="X-Access-Token", auto_error=False)),
     jwt_service: JwtService = jwt_dependency,
 ) -> Response:
     """Given an access token, retrieve a user secret. The access token
@@ -184,8 +184,8 @@ async def get_secret(
     the damage in the event that a token is ever leaked"""
     try:
         payload = jwt_service.verify_jws_token(access_token)
-        user_id = payload['user_id']
-        provider_type = ProviderType(payload['provider_type'])
+        user_id = payload["user_id"]
+        provider_type = ProviderType(payload["provider_type"])
 
         # Get UserAuth for the user_id
         if user_id:
@@ -199,13 +199,13 @@ async def get_secret(
 
         secret = await user_context.get_latest_token(provider_type)
         if secret is None:
-            raise HTTPException(404, 'No such provider')
+            raise HTTPException(404, "No such provider")
         if isinstance(secret, SecretStr):
             secret_value = secret.get_secret_value()
         else:
             secret_value = secret
 
-        return Response(content=secret_value, media_type='text/plain')
+        return Response(content=secret_value, media_type="text/plain")
     except InvalidTokenError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
@@ -227,7 +227,7 @@ async def _run_callbacks_in_bg_and_close(
 
 def _import_all_tools():
     """We need to import all tools so that they are available for deserialization in webhooks."""
-    for _, name, is_pkg in pkgutil.walk_packages(tools.__path__, tools.__name__ + '.'):
+    for _, name, is_pkg in pkgutil.walk_packages(tools.__path__, tools.__name__ + "."):
         if is_pkg:  # Check if it's a subpackage
             try:
                 importlib.import_module(name)

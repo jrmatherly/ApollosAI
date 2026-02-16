@@ -22,7 +22,7 @@ def should_set_litellm_extra_body(model_name: str) -> bool:
     Returns:
         True if litellm_extra_body should be set, False otherwise
     """
-    return 'openhands/' in model_name or 'litellm_proxy/' in model_name
+    return "openhands/" in model_name or "litellm_proxy/" in model_name
 
 
 def get_llm_metadata(
@@ -47,14 +47,14 @@ def get_llm_metadata(
     openhands_version = openhands.__version__
 
     metadata: dict[str, Any] = {
-        'trace_version': openhands_version,
-        'tags': [
-            'app:openhands',
-            f'model:{model_name}',
-            f'type:{llm_type}',
-            f'web_host:{os.environ.get("WEB_HOST", "unspecified")}',
-            f'openhands_version:{openhands_version}',
-            'conversation_version:V1',
+        "trace_version": openhands_version,
+        "tags": [
+            "app:openhands",
+            f"model:{model_name}",
+            f"type:{llm_type}",
+            f"web_host:{os.environ.get('WEB_HOST', 'unspecified')}",
+            f"openhands_version:{openhands_version}",
+            "conversation_version:V1",
         ],
     }
 
@@ -65,9 +65,9 @@ def get_llm_metadata(
             if isinstance(conversation_id, UUID)
             else conversation_id
         )
-        metadata['session_id'] = session_id
+        metadata["session_id"] = session_id
 
     if user_id is not None:
-        metadata['trace_user_id'] = user_id
+        metadata["trace_user_id"] = user_id
 
     return metadata

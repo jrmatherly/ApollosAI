@@ -31,25 +31,25 @@ class AzureDevOpsResolverMixin(AzureDevOpsMixinBase):
 
         # Try to get as a pull request first
         try:
-            pr_url = f'{self.base_url}/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/pullrequests/{issue_number}?api-version=7.1'
+            pr_url = f"{self.base_url}/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/pullrequests/{issue_number}?api-version=7.1"
             response, _ = await self._make_request(pr_url)
-            title = response.get('title') or ''
-            body = response.get('description') or ''
+            title = response.get("title") or ""
+            body = response.get("description") or ""
             return title, body
         except Exception as pr_error:
-            logger.debug(f'Failed to get as PR: {pr_error}, trying as work item')
+            logger.debug(f"Failed to get as PR: {pr_error}, trying as work item")
 
         # Fall back to work item
         try:
-            wi_url = f'{self.base_url}/{org_enc}/{project_enc}/_apis/wit/workitems/{issue_number}?api-version=7.1'
+            wi_url = f"{self.base_url}/{org_enc}/{project_enc}/_apis/wit/workitems/{issue_number}?api-version=7.1"
             response, _ = await self._make_request(wi_url)
-            fields = response.get('fields', {})
-            title = fields.get('System.Title') or ''
-            body = fields.get('System.Description') or ''
+            fields = response.get("fields", {})
+            title = fields.get("System.Title") or ""
+            body = fields.get("System.Description") or ""
             return title, body
         except Exception as wi_error:
-            logger.error(f'Failed to get as work item: {wi_error}')
-            return '', ''
+            logger.error(f"Failed to get as work item: {wi_error}")
+            return "", ""
 
     async def get_issue_or_pr_comments(
         self, repository: str, issue_number: int, max_comments: int = 10
@@ -74,7 +74,7 @@ class AzureDevOpsResolverMixin(AzureDevOpsMixinBase):
             if comments:
                 return comments
         except Exception as pr_error:
-            logger.debug(f'Failed to get PR comments: {pr_error}, trying work item')
+            logger.debug(f"Failed to get PR comments: {pr_error}, trying work item")
 
         # Fall back to work item comments
         try:
@@ -82,7 +82,7 @@ class AzureDevOpsResolverMixin(AzureDevOpsMixinBase):
                 repository, issue_number, max_comments
             )
         except Exception as wi_error:
-            logger.error(f'Failed to get work item comments: {wi_error}')
+            logger.error(f"Failed to get work item comments: {wi_error}")
             return []
 
     async def get_review_thread_comments(
@@ -113,42 +113,42 @@ class AzureDevOpsResolverMixin(AzureDevOpsMixinBase):
         project_enc = self._encode_url_component(project)
         repo_enc = self._encode_url_component(repo)
 
-        url = f'{self.base_url}/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/pullrequests/{pr_number}/threads/{thread_id}?api-version=7.1'
+        url = f"{self.base_url}/{org_enc}/{project_enc}/_apis/git/repositories/{repo_enc}/pullrequests/{pr_number}/threads/{thread_id}?api-version=7.1"
 
         try:
             response, _ = await self._make_request(url)
-            comments_data = response.get('comments', [])
+            comments_data = response.get("comments", [])
 
             all_comments: list[Comment] = []
 
             for comment_data in comments_data:
                 # Extract author information
-                author_info = comment_data.get('author', {})
-                author = author_info.get('displayName', 'unknown')
+                author_info = comment_data.get("author", {})
+                author = author_info.get("displayName", "unknown")
 
                 # Parse dates
                 created_at = (
                     datetime.fromisoformat(
-                        comment_data.get('publishedDate', '').replace('Z', '+00:00')
+                        comment_data.get("publishedDate", "").replace("Z", "+00:00")
                     )
-                    if comment_data.get('publishedDate')
+                    if comment_data.get("publishedDate")
                     else datetime.fromtimestamp(0)
                 )
 
                 updated_at = (
                     datetime.fromisoformat(
-                        comment_data.get('lastUpdatedDate', '').replace('Z', '+00:00')
+                        comment_data.get("lastUpdatedDate", "").replace("Z", "+00:00")
                     )
-                    if comment_data.get('lastUpdatedDate')
+                    if comment_data.get("lastUpdatedDate")
                     else created_at
                 )
 
                 # Check if it's a system comment
-                is_system = comment_data.get('commentType', 1) != 1  # 1 = text comment
+                is_system = comment_data.get("commentType", 1) != 1  # 1 = text comment
 
                 comment = Comment(
-                    id=str(comment_data.get('id', 0)),
-                    body=self._truncate_comment(comment_data.get('content', '')),
+                    id=str(comment_data.get("id", 0)),
+                    body=self._truncate_comment(comment_data.get("content", "")),
                     author=author,
                     created_at=created_at,
                     updated_at=updated_at,
@@ -162,5 +162,5 @@ class AzureDevOpsResolverMixin(AzureDevOpsMixinBase):
             return all_comments[:max_comments]
 
         except Exception as error:
-            logger.error(f'Failed to get thread {thread_id} comments: {error}')
+            logger.error(f"Failed to get thread {thread_id} comments: {error}")
             return []

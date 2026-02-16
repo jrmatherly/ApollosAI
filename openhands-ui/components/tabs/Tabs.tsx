@@ -50,7 +50,7 @@ const Tabs: TabsType = ({ children, className, testId, ...props }) => {
           isLast,
           isActive: index === activeIndex,
           onSelect: () => setActiveIndex(index),
-        } as TabItemProps
+        } as TabItemProps,
       );
     }) ?? [];
 
@@ -78,7 +78,7 @@ const Tabs: TabsType = ({ children, className, testId, ...props }) => {
       <div
         className={cn(
           "border-1 border-t-0 rounded-b-2xl border-light-neutral-500",
-          "bg-grey-970 p-4 text-light-neutral-300"
+          "bg-grey-970 p-4 text-light-neutral-300",
         )}
       >
         {tabs.map((child, index) => {

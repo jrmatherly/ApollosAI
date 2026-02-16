@@ -61,11 +61,11 @@ cd /workspace
 wget https://download.swift.org/swift-6.0.3-release/debian12/swift-6.0.3-RELEASE/swift-6.0.3-RELEASE-debian12.tar.gz
 ```
 
-3. Extract the archive:
+1. Extract the archive:
 
 > **Note**: Make sure to install Swift in the `/workspace` directory, but outside the git repository to avoid committing the Swift binaries.
 
-4. Add Swift to your PATH by adding the following line to your `~/.bashrc` file:
+1. Add Swift to your PATH by adding the following line to your `~/.bashrc` file:
 
 ```bash
 echo 'export PATH=/workspace/swift-6.0.3-RELEASE-debian12/usr/bin:$PATH' >> ~/.bashrc

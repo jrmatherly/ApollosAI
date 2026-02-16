@@ -58,9 +58,9 @@ class AzureDevOpsService(
     The class is instantiated via get_impl() at module load time.
     """
 
-    token: SecretStr = SecretStr('')
+    token: SecretStr = SecretStr("")
     refresh = False
-    organization: str = ''
+    organization: str = ""
 
     def __init__(
         self,
@@ -81,15 +81,15 @@ class AzureDevOpsService(
             # Parse organization from base_domain
             # Strip URL prefix if present (e.g., "https://dev.azure.com/org" -> "org")
             domain_path = base_domain
-            if '://' in domain_path:
+            if "://" in domain_path:
                 # Remove protocol and domain, keep only path
-                domain_path = domain_path.split('://', 1)[1]
-                if '/' in domain_path:
-                    domain_path = domain_path.split('/', 1)[1]
+                domain_path = domain_path.split("://", 1)[1]
+                if "/" in domain_path:
+                    domain_path = domain_path.split("/", 1)[1]
 
             # Format expected: organization (e.g., "contoso")
             # Take first part only (in case user still enters org/project)
-            parts = domain_path.split('/')
+            parts = domain_path.split("/")
             if len(parts) >= 1:
                 self.organization = parts[0]
 
@@ -108,7 +108,7 @@ class AzureDevOpsService(
     @property
     def base_url(self) -> str:
         """Get the base URL for Azure DevOps API calls."""
-        return f'https://dev.azure.com/{self.organization}'
+        return f"https://dev.azure.com/{self.organization}"
 
     @staticmethod
     def _is_oauth_token(token: str) -> bool:
@@ -126,7 +126,7 @@ class AzureDevOpsService(
             True if the token appears to be a JWT (OAuth), False if it's a PAT
         """
         # JWTs have exactly 3 parts separated by dots
-        parts = token.split('.')
+        parts = token.split(".")
         return len(parts) == 3 and all(len(part) > 0 for part in parts)
 
     async def _get_azure_devops_headers(self) -> dict[str, Any]:
@@ -154,19 +154,19 @@ class AzureDevOpsService(
         if self._is_oauth_token(token_value):
             # OAuth 2.0 access token from SSO (Azure AD/Keycloak broker)
             # Use Bearer authentication as per OAuth 2.0 spec
-            auth_header = f'Bearer {token_value}'
+            auth_header = f"Bearer {token_value}"
         else:
             # Personal Access Token (PAT) for self-hosted deployments
             # Use Basic authentication with empty username and PAT as password
             import base64
 
-            auth_str = base64.b64encode(f':{token_value}'.encode()).decode()
-            auth_header = f'Basic {auth_str}'
+            auth_str = base64.b64encode(f":{token_value}".encode()).decode()
+            auth_header = f"Basic {auth_str}"
 
         return {
-            'Authorization': auth_header,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            "Authorization": auth_header,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         }
 
     async def _get_headers(self) -> dict[str, Any]:
@@ -212,8 +212,8 @@ class AzureDevOpsService(
 
                 response.raise_for_status()
                 headers = {}
-                if 'Link' in response.headers:
-                    headers['Link'] = response.headers['Link']
+                if "Link" in response.headers:
+                    headers["Link"] = response.headers["Link"]
 
                 return response.json(), headers
 
@@ -231,18 +231,18 @@ class AzureDevOpsService(
         Returns:
             Tuple of (organization, project, repo_name)
         """
-        parts = repository.split('/')
+        parts = repository.split("/")
         if len(parts) < 3:
             raise ValueError(
-                f'Invalid repository format: {repository}. Expected format: organization/project/repo'
+                f"Invalid repository format: {repository}. Expected format: organization/project/repo"
             )
         return parts[0], parts[1], parts[2]
 
 
 # Dynamic class loading to support custom implementations (e.g., SaaS)
 azure_devops_service_cls = os.environ.get(
-    'OPENHANDS_AZURE_DEVOPS_SERVICE_CLS',
-    'openhands.integrations.azure_devops.azure_devops_service.AzureDevOpsService',
+    "OPENHANDS_AZURE_DEVOPS_SERVICE_CLS",
+    "openhands.integrations.azure_devops.azure_devops_service.AzureDevOpsService",
 )
 
 # Lazy loading to avoid circular imports

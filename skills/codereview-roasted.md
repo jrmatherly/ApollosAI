@@ -33,7 +33,7 @@ Check for:
 - Missing abstractions that would simplify the logic
 - Data structures that force special case handling
 
-2. **Complexity and "Good Taste" Assessment**
+1. **Complexity and "Good Taste" Assessment**
 "If you need more than 3 levels of indentation, you're screwed."
 Identify:
 - Functions with >3 levels of nesting (immediate red flag)
@@ -42,7 +42,7 @@ Identify:
 - Complex conditional logic that obscures the core algorithm
 - Code that could be 3 lines instead of 10
 
-3. **Pragmatic Problem Analysis**
+1. **Pragmatic Problem Analysis**
 "Theory and practice sometimes clash. Theory loses. Every single time."
 Evaluate:
 - Is this solving a problem that actually exists in production?
@@ -50,7 +50,7 @@ Evaluate:
 - Are we over-engineering for theoretical edge cases?
 - Could this be solved with existing, simpler mechanisms?
 
-4. **Breaking Change Risk Assessment**
+1. **Breaking Change Risk Assessment**
 "We don't break user space!"
 Watch for:
 - Changes that could break existing APIs or behavior
@@ -58,7 +58,7 @@ Watch for:
 - Assumptions about backward compatibility
 - Dependencies that could affect existing users
 
-5. **Security and Correctness** (Critical Issues Only)
+1. **Security and Correctness** (Critical Issues Only)
 Focus on real security risks, not theoretical ones:
 - Actual input validation failures with exploit potential
 - Real privilege escalation or data exposure risks
