@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
+import { generateEntraAuthUrl } from "#/utils/generate-entra-auth-url";
 import { getLoginMethod, LoginMethod } from "#/utils/local-storage";
 
 import { useConfig } from "./query/use-config";
 import { useIsAuthed } from "./query/use-is-authed";
 import { useAuthUrl } from "./use-auth-url";
-import { generateEntraAuthUrl } from "#/utils/generate-entra-auth-url";
 
 /**
  * Hook to automatically log in the user if they have a login method stored in local storage

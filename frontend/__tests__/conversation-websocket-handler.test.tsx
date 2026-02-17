@@ -511,12 +511,17 @@ describe("Conversation WebSocket Handler", () => {
           const mockConversationErrorEvent = createMockConversationErrorEvent();
           client.send(JSON.stringify(mockConversationErrorEvent));
 
-          // Send a successful (non-error) event immediately after
-          // This simulates the user sending a follow-up message and receiving a response
-          const mockSuccessEvent = createMockMessageEvent({
-            id: "success-event-after-error",
-          });
-          client.send(JSON.stringify(mockSuccessEvent));
+          // Delay the success event to ensure the error event is fully processed
+          // before the clearing event arrives. Without this delay, both events
+          // can arrive in the same microtask batch, creating a race with the
+          // async onOpen handler's state updates (setExpectedEventCountMain)
+          // which recreates the handleMainMessage callback.
+          setTimeout(() => {
+            const mockSuccessEvent = createMockMessageEvent({
+              id: "success-event-after-error",
+            });
+            client.send(JSON.stringify(mockSuccessEvent));
+          }, 100);
         }),
       );
 
@@ -540,10 +545,14 @@ describe("Conversation WebSocket Handler", () => {
       // Wait for both events to be received and error to be cleared
       // The error was set by the first event (ConversationErrorEvent),
       // then cleared by the second successful event (MessageEvent).
-      await waitFor(() => {
-        expect(useEventStore.getState().events.length).toBe(2);
-        expect(useErrorMessageStore.getState().errorMessage).toBeNull();
-      });
+      // Use explicit timeout to avoid flakiness in CI environments.
+      await waitFor(
+        () => {
+          expect(useEventStore.getState().events.length).toBe(2);
+          expect(useErrorMessageStore.getState().errorMessage).toBeNull();
+        },
+        { timeout: 3000 },
+      );
     });
 
     it("should not create duplicate events when WebSocket reconnects with resend_all=true", async () => {

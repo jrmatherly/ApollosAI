@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+
 import OrgService from "#/api/org-service/org-service.api";
+
 import { useIsAuthed } from "./use-is-authed";
 
 export const useTeams = (orgId: string | null) => {
