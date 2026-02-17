@@ -1,6 +1,6 @@
 import pytest
 
-from apollosai.storage.database import create_async_engine_from_url, get_database_url
+from apollosai.storage.database import create_async_engine_from_url, create_session_factory, get_database_url
 
 
 def test_get_database_url_from_env(monkeypatch):
@@ -26,7 +26,7 @@ def test_get_database_url_fixes_postgresql_scheme(monkeypatch):
     assert get_database_url().startswith('postgresql+asyncpg://')
 
 
-def test_create_async_engine_returns_engine(monkeypatch):
+def test_create_async_engine_returns_engine():
     """Verify engine creation doesn't fail (no actual DB connection yet)."""
     url = 'postgresql+asyncpg://user:pass@localhost:5432/test'
     engine = create_async_engine_from_url(url)
@@ -37,8 +37,6 @@ def test_create_async_engine_returns_engine(monkeypatch):
 
 def test_create_session_factory():
     """Verify session factory can be created from an engine."""
-    from apollosai.storage.database import create_session_factory
-
     url = 'postgresql+asyncpg://user:pass@localhost:5432/test'
     engine = create_async_engine_from_url(url)
     factory = create_session_factory(engine)
