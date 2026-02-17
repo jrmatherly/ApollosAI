@@ -4,11 +4,8 @@ Revision ID: bd818a71a520
 Revises: faeef06e7fea
 Create Date: 2026-02-17 01:35:50.552448
 """
+
 from typing import Sequence, Union
-
-from alembic import op
-import sqlalchemy as sa
-
 
 revision: str = 'bd818a71a520'
 down_revision: Union[str, None] = 'faeef06e7fea'
