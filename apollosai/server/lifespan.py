@@ -64,11 +64,19 @@ class ApollosAILifespanService(OssAppLifespanService):
         await super().__aenter__()
         await self.db_injector.get_async_db_engine()
         _session_maker = await self.db_injector.get_async_session_maker()
+
+        from apollosai.monitoring.otel import init_otel
+
+        init_otel()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Review fix [H1]: Dispose engine to prevent connection leaks."""
         global _session_maker
+
+        from apollosai.monitoring.otel import shutdown_otel
+
+        shutdown_otel()
         _session_maker = None
         await self.db_injector.dispose()
         await super().__aexit__(exc_type, exc_value, traceback)
