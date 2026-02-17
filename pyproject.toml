@@ -23,7 +23,7 @@ dynamic = [ "version" ]
 dependencies = [
   "aiohttp>=3.9,!=3.11.13",
   "anthropic[vertex]",
-  "anyio==4.9",
+  "anyio>=4.9,<5",
   "asyncpg>=0.30",
   "bashlex>=0.18",
   "boto3",
@@ -33,7 +33,7 @@ dependencies = [
   "deprecation>=2.1",
   "dirhash",
   "docker",
-  "fastapi",
+  "fastapi>=0.129",
   "fastmcp>=2.12.4",
   "google-api-python-client>=2.164",
   "google-auth-httplib2",
@@ -48,24 +48,24 @@ dependencies = [
   "joblib",
   "json-repair",
   "jupyter-kernel-gateway",
-  "kubernetes>=33.1",
+  "kubernetes>=35",
   "libtmux>=0.46.2",
   "litellm!=1.64.4,!=1.67.*,>=1.74.3",
   "lmnr>=0.7.20",
   "memory-profiler>=0.61",
   "msal>=1.34,<2",
   "numpy",
-  "openai==2.8",
+  "openai>=2.8,<3",
   "openhands-aci==0.3.2",
   "openhands-agent-server==1.11.4",
   "openhands-sdk==1.11.4",
   "openhands-tools==1.11.4",
   "opentelemetry-api>=1.33.1",
   "opentelemetry-exporter-otlp-proto-grpc>=1.33.1",
-  "pathspec>=0.12.1",
+  "pathspec>=0.12.1,<1",
   "pexpect",
   "pg8000>=1.31.5",
-  "pillow>=11.3",
+  "pillow>=12.1.1",
   "playwright>=1.55",
   "poetry>=2.1.2",
   "prompt-toolkit>=3.0.50",
@@ -83,18 +83,18 @@ dependencies = [
   "python-json-logger>=3.2.1",
   "python-multipart",
   "python-pptx",
-  "python-socketio==5.13",
+  "python-socketio>=5.14,<6",
   "pythonnet",
   "pyyaml>=6.0.2",
   "qtconsole>=5.6.1",
   "rapidfuzz>=3.9",
-  "redis>=5.2,<7",
+  "redis>=5.2,<8",
   "requests>=2.32.5",
-  "setuptools>=78.1.1",
+  "setuptools>=82,<90",
   "shellingham>=1.5.4",
   "sqlalchemy[asyncio]>=2.0.40",
   "sse-starlette>=3.0.2",
-  "starlette>=0.48",
+  "starlette>=0.49.1",
   "tenacity>=8.5,<10",
   "termcolor",
   "toml",
@@ -103,7 +103,7 @@ dependencies = [
   "urllib3>=2.6.3",
   "uvicorn",
   "whatthepatch>=1.0.6",
-  "zope-interface==7.2",
+  "zope-interface>=7.2,<8",
 ]
 
 optional-dependencies.third_party_runtimes = [
@@ -165,7 +165,7 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.12,<3.14"
 litellm = ">=1.74.3, !=1.64.4, !=1.67.*"           # avoid 1.64.4 (known bug) & 1.67.* (known bug #10272)
-openai = "2.8.0"                                   # Pin due to litellm incompatibility with >=1.100.0 (BerriAI/litellm#13711)
+openai = ">=2.8,<3"                                # Relaxed: original issue was openai v1 line, not v2. Upper-bounded at <3.
 aiohttp = ">=3.9.0,!=3.11.13"                      # Pin to avoid yanked version 3.11.13
 google-genai = "*"                                 # To use litellm with Gemini Pro API
 google-api-python-client = "^2.164.0"              # For Google Sheets API
@@ -173,7 +173,7 @@ google-auth-httplib2 = "*"                         # For Google Sheets authentic
 google-auth-oauthlib = "*"                         # For Google Sheets OAuth
 termcolor = "*"
 docker = "*"
-fastapi = "*"
+fastapi = "^0.129.0"
 toml = "*"
 types-toml = "*"
 uvicorn = "*"
@@ -187,8 +187,8 @@ pexpect = "*"
 jinja2 = "^3.1.6"
 python-multipart = "*"
 tenacity = ">=8.5,<10.0"
-zope-interface = "7.2"
-pathspec = "^0.12.1"
+zope-interface = "^7.2"
+pathspec = ">=0.12.1,<1.0"
 pyjwt = "^2.9.0"
 dirhash = "*"
 tornado = ">=6.5"
@@ -203,13 +203,13 @@ libtmux = ">=0.46.2"
 pygithub = "^2.5.0"
 joblib = "*"
 openhands-aci = "0.3.2"
-python-socketio = "5.13.0"
+python-socketio = ">=5.14,<6"
 sse-starlette = "^3.0.2"
 psutil = "*"
 python-json-logger = "^3.2.1"
 prompt-toolkit = "^3.0.50"
 poetry = "^2.1.2"
-anyio = "4.9.0"
+anyio = "^4.9"
 pythonnet = "*"
 fastmcp = "^2.12.4"           # Note: 2.12.0+ has breaking auth API changes
 python-frontmatter = "^1.1.0"
@@ -224,19 +224,19 @@ bashlex = "^0.18"
 
 # Explicitly pinned packages for latest versions
 pypdf = "^6.0.0"
-pillow = "^11.3.0"
-starlette = "^0.48.0"
+pillow = ">=12.1.1,<13"
+starlette = "^0.49.1"
 urllib3 = "^2.6.3"
 requests = "^2.32.5"
-setuptools = ">=78.1.1"
+setuptools = ">=82,<90"
 
 # TODO: These are integrations that should probably be optional
-redis = ">=5.2,<7.0"
+redis = ">=5.2,<8.0"
 
 google-cloud-aiplatform = "*"
 anthropic = { extras = [ "vertex" ], version = "*" }
 boto3 = "*"
-kubernetes = "^33.1.0"
+kubernetes = "^35.0.0"
 pyyaml = "^6.0.2"
 memory-profiler = "^0.61.0"
 jupyter_kernel_gateway = "*"
