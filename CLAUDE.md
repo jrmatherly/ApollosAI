@@ -28,7 +28,8 @@ pre-commit run --config ./dev_config/python/.pre-commit-config.yaml           # 
 pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.pre-commit-config.yaml  # All files (matches CI)
 ```
 - CI runs `pre-commit --all-files` — catches entire repo, not just your changed files. Always run `--all-files` locally before pushing.
-- `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry lock` after if needed.
+- **ALWAYS run `poetry lock` after ANY `pyproject.toml` change** — including metadata-only edits (name, description, authors, URLs). CI runs `poetry install` which fails if the lock hash is stale.
+- `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry check --lock` after pre-commit and `poetry lock` if it fails.
 - Poetry 2.x: `poetry lock --no-update` does NOT exist. Always use `poetry lock` (full resolve).
 - Alembic auto-generated migrations always fail ruff — run `pre-commit --all-files` immediately after `alembic revision --autogenerate`, then re-stage the fixed files
 
@@ -182,4 +183,4 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 
 ## Known Issues
 
-- `pr-review` CI check (`.github/workflows/pr-review-by-apollos.yml`) fails on all PRs — references `apollos-sdk`/`apollos-tools` but SDK repo has `openhands-sdk`/`openhands-tools`. Fix plan: `.scratchpad/fix-pr-review-workflow.md`
+(none currently)
