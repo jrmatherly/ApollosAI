@@ -1,6 +1,7 @@
 FROM ubuntu:24.04
 
 # install basic packages
+# hadolint ignore=DL3015
 RUN apt-get update && apt-get install -y \
     curl \
     wget \

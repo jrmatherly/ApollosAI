@@ -3,8 +3,10 @@
 ###
 FROM ubuntu:22.04 AS dind
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # https://docs.docker.com/engine/install/ubuntu/
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	ca-certificates \
 	curl \
 	&& install -m 0755 -d /etc/apt/keyrings \
@@ -12,9 +14,10 @@ RUN apt-get update && apt-get install -y \
 	&& chmod a+r /etc/apt/keyrings/docker.asc \
 	&& echo \
 	"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-	$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+	$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	docker-ce \
 	docker-ce-cli \
 	containerd.io \
@@ -27,10 +30,12 @@ RUN apt-get update && apt-get install -y \
 ###
 FROM dind AS openhands
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 #
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	bash \
 	build-essential \
 	curl \
@@ -49,7 +54,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
 	&& chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-	&& apt-get update && apt-get -y install \
+	&& apt-get update && apt-get -y install --no-install-recommends \
 	gh \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& apt-get clean \
@@ -58,12 +63,13 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
 # Python 3.12
 RUN add-apt-repository ppa:deadsnakes/ppa \
 	&& apt-get update \
-	&& apt-get install -y python3.12 python3.12-venv python3.12-dev python3-pip \
+	&& apt-get install -y --no-install-recommends python3.12 python3.12-venv python3.12-dev python3-pip \
+	&& rm -rf /var/lib/apt/lists/* \
 	&& ln -s /usr/bin/python3.12 /usr/bin/python
 
 # NodeJS >= 22.x
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-	&& apt-get install -y nodejs
+	&& apt-get install -y --no-install-recommends nodejs
 
 # Poetry >= 1.8
 RUN curl -fsSL https://install.python-poetry.org | python3.12 - \
@@ -72,7 +78,7 @@ RUN curl -fsSL https://install.python-poetry.org | python3.12 - \
 #
 RUN <<EOF
 #!/bin/bash
-printf "#!/bin/bash
+printf '%s\n' "#!/bin/bash
 set +x
 uname -a
 docker --version
@@ -80,18 +86,17 @@ gh --version | head -n 1
 git --version
 #
 python --version
-echo node `node --version`
-echo npm `npm --version`
+echo node \$(node --version)
+echo npm \$(npm --version)
 poetry --version
-netcat -h 2>&1 | head -n 1
-" > /version.sh
+netcat -h 2>&1 | head -n 1" > /version.sh
 chmod a+x /version.sh
 EOF
 
 ###
 FROM openhands AS dev
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	dnsutils \
 	file \
 	iproute2 \

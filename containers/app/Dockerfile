@@ -21,8 +21,8 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 RUN apt-get update -y \
-    && apt-get install -y curl make git build-essential jq gettext \
-    && python3 -m pip install poetry --break-system-packages
+    && apt-get install -y --no-install-recommends curl make git build-essential jq gettext \
+    && python3 -m pip install --no-cache-dir poetry --break-system-packages
 
 COPY pyproject.toml poetry.lock ./
 RUN touch README.md
@@ -50,7 +50,7 @@ RUN mkdir -p $FILE_STORE_PATH
 RUN mkdir -p $WORKSPACE_BASE
 
 RUN apt-get update -y \
-    && apt-get install -y curl ssh sudo \
+    && apt-get install -y --no-install-recommends curl ssh sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # Default is 1000, but OSX is often 501
@@ -64,7 +64,7 @@ RUN useradd -l -m -u $OPENHANDS_USER_ID --gid $OPENHANDS_USER_ID -s /bin/bash op
     usermod -aG sudo openhands && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown -R openhands:openhands /app && chmod -R 770 /app
-RUN sudo chown -R openhands:openhands $WORKSPACE_BASE && sudo chmod -R 770 $WORKSPACE_BASE
+RUN chown -R openhands:openhands $WORKSPACE_BASE && chmod -R 770 $WORKSPACE_BASE
 USER openhands
 
 ENV VIRTUAL_ENV=/app/.venv \
@@ -87,6 +87,7 @@ RUN find /app \! -group openhands -exec chgrp openhands {} +
 COPY --chown=openhands:openhands --chmod=770 --from=frontend-builder /app/build ./frontend/build
 COPY --chown=openhands:openhands --chmod=770 ./containers/app/entrypoint.sh /app/entrypoint.sh
 
+# hadolint ignore=DL3002
 USER root
 
 WORKDIR /app
