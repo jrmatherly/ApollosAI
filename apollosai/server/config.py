@@ -21,7 +21,9 @@ class ApollosAIServerConfig(ServerConfig):
         'apollosai.storage.stores.conversation_store.ApollosAIConversationStore'
     )
     user_auth_class: str = 'apollosai.server.auth.entraid_auth.EntraIDUserAuth'
-    monitoring_listener_class: str = 'openhands.server.monitoring.MonitoringListener'
+    monitoring_listener_class: str = (
+        'apollosai.monitoring.listener.ApollosAIMonitoringListener'
+    )
 
     def verify_config(self):
         """Validate required environment variables for production.
