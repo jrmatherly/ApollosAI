@@ -15,12 +15,19 @@ from apollosai.server.routes.auth import router
 
 
 @pytest.fixture
-def app():
+def app(async_session):
+    from apollosai.server.deps import get_db_session
+
     app = FastAPI()
     app.add_middleware(
         SessionMiddleware, secret_key='test-session-secret-32-chars!!!!!'
     )
     app.include_router(router)
+
+    async def _override_session():
+        yield async_session
+
+    app.dependency_overrides[get_db_session] = _override_session
     return app
 
 

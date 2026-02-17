@@ -9,11 +9,14 @@ Security properties:
 - HS256 with minimum 32-character secret (enforced at creation time)
 - Audience claim ('apollosai') prevents cross-service token replay
 - Required claims (sub, email, entra_oid) validated after decode
+- jti claim enables per-token revocation via revoked_token table
 """
 
 import time
+import uuid
 
 import jwt
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from apollosai.server.auth.constants import get_jwt_secret
 
@@ -52,6 +55,7 @@ def create_session_token(
         'aud': JWT_AUDIENCE,
         'iat': now,
         'exp': now + expires_in_seconds,
+        'jti': str(uuid.uuid4()),
     }
     return jwt.encode(payload, secret, algorithm='HS256')
 
@@ -76,4 +80,25 @@ def decode_session_token(token: str) -> dict:
     for claim in ('sub', 'email', 'entra_oid'):
         if claim not in payload or not isinstance(payload[claim], str):
             raise jwt.InvalidTokenError(f'Missing or invalid required claim: {claim}')
+    return payload
+
+
+async def validate_session_token(token: str, session: AsyncSession) -> dict:
+    """Decode a JWT and check revocation status.
+
+    Composes decode_session_token() with a revocation table lookup.
+    Tokens without a jti claim (pre-Phase 2) skip the revocation check
+    for backward compatibility.
+
+    Raises jwt.InvalidTokenError if the token's jti has been revoked.
+    """
+    payload = decode_session_token(token)
+    jti = payload.get('jti')
+    if jti is not None:
+        from apollosai.storage.services.token_revocation_service import (
+            is_token_revoked,
+        )
+
+        if await is_token_revoked(session, jti):
+            raise jwt.InvalidTokenError(f'Token has been revoked (jti={jti})')
     return payload

@@ -3,19 +3,23 @@
 Flow:
 1. GET /auth/login -> redirect to Entra ID login page
 2. GET /auth/callback -> exchange code for tokens, set JWT session cookie
-3. POST /auth/logout -> clear session cookie
+3. POST /auth/logout -> clear session cookie, revoke JWT
 """
 
+import datetime
 import secrets
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from apollosai.server.auth.jwt_utils import create_session_token
+from apollosai.server.auth.jwt_utils import create_session_token, decode_session_token
 from apollosai.server.auth.msal_client import (
     acquire_token_by_auth_code_flow,
     get_auth_url,
 )
+from apollosai.server.deps import get_db_session
+from apollosai.storage.services.token_revocation_service import revoke_token
 
 router = APIRouter()
 
@@ -100,8 +104,26 @@ async def callback(request: Request):
 
 
 @router.post('/auth/logout')
-async def logout(request: Request, response: Response):
-    """Clear session cookie and server-side session state."""
+async def logout(
+    request: Request,
+    response: Response,
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Clear session cookie, revoke JWT, and clear server-side session state."""
+    # Revoke the current JWT if present
+    token = request.cookies.get(COOKIE_NAME)
+    if token:
+        try:
+            payload = decode_session_token(token)
+            jti = payload.get('jti')
+            if jti:
+                expires_at = datetime.datetime.fromtimestamp(
+                    payload['exp'], tz=datetime.timezone.utc,
+                )
+                await revoke_token(session, jti, expires_at)
+        except Exception:
+            pass  # Token may be expired/invalid — still clear the cookie
+
     request.session.clear()
     response.delete_cookie(key=COOKIE_NAME)
     return {'status': 'logged_out'}
