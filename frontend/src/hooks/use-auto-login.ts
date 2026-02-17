@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+import { generateEntraAuthUrl } from "#/utils/generate-entra-auth-url";
 import { getLoginMethod, LoginMethod } from "#/utils/local-storage";
 
 import { useConfig } from "./query/use-config";
@@ -73,6 +74,10 @@ export const useAutoLogin = () => {
       authUrl = bitbucketAuthUrl;
     } else if (loginMethod === LoginMethod.ENTERPRISE_SSO) {
       authUrl = enterpriseSsoUrl;
+    } else if (loginMethod === LoginMethod.ENTRA_ID) {
+      // Entra ID uses backend-driven MSAL flow, not Keycloak
+      window.location.href = generateEntraAuthUrl(window.location.pathname);
+      return;
     }
 
     // If we have an auth URL, redirect to it

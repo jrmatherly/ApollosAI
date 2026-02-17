@@ -3,19 +3,26 @@
 Flow:
 1. GET /auth/login -> redirect to Entra ID login page
 2. GET /auth/callback -> exchange code for tokens, set JWT session cookie
-3. POST /auth/logout -> clear session cookie
+3. POST /auth/logout -> clear session cookie, revoke JWT, return MSAL signout URL
 """
 
+import datetime
 import secrets
+from urllib.parse import quote, urlparse
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from apollosai.server.auth.jwt_utils import create_session_token
+from apollosai.server.auth.constants import get_entra_tenant_id
+from apollosai.server.auth.jwt_utils import create_session_token, decode_session_token
 from apollosai.server.auth.msal_client import (
     acquire_token_by_auth_code_flow,
     get_auth_url,
 )
+from apollosai.server.deps import get_db_session
+from apollosai.server.rate_limit import limiter
+from apollosai.storage.services.token_revocation_service import revoke_token
 
 router = APIRouter()
 
@@ -25,6 +32,7 @@ COOKIE_MAX_AGE = 86400  # 24 hours
 
 
 @router.get('/auth/login')
+@limiter.limit('10/minute')
 async def login(request: Request):
     """Initiate Entra ID login flow."""
     state = secrets.token_urlsafe(32)
@@ -40,6 +48,7 @@ async def login(request: Request):
 
 
 @router.get('/auth/callback')
+@limiter.limit('10/minute')
 async def callback(request: Request):
     """Handle Entra ID OAuth2 callback."""
     flow = request.session.get('auth_flow', {})
@@ -82,7 +91,11 @@ async def callback(request: Request):
     )
 
     # Set HttpOnly cookie and redirect to app
+    # Review fix [L3]: Validate redirect URL to prevent open redirect attacks
     redirect_url = request.session.pop('redirect_after_login', '/')
+    parsed = urlparse(redirect_url)
+    if parsed.netloc and parsed.netloc != request.url.netloc:
+        redirect_url = '/'  # Reject external redirects
     response = RedirectResponse(url=redirect_url)
     response.set_cookie(
         key=COOKIE_NAME,
@@ -100,8 +113,39 @@ async def callback(request: Request):
 
 
 @router.post('/auth/logout')
-async def logout(request: Request, response: Response):
-    """Clear session cookie and server-side session state."""
+@limiter.limit('10/minute')
+async def logout(
+    request: Request,
+    response: Response,
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Clear session cookie, revoke JWT, and clear server-side session state."""
+    # Revoke the current JWT if present
+    token = request.cookies.get(COOKIE_NAME)
+    if token:
+        try:
+            payload = decode_session_token(token)
+            jti = payload.get('jti')
+            if jti:
+                expires_at = datetime.datetime.fromtimestamp(
+                    payload['exp'],
+                    tz=datetime.timezone.utc,
+                )
+                await revoke_token(session, jti, expires_at)
+        except Exception:
+            pass  # Token may be expired/invalid — still clear the cookie
+
     request.session.clear()
     response.delete_cookie(key=COOKIE_NAME)
-    return {'status': 'logged_out'}
+
+    # Build Microsoft signout URL for frontend to redirect to
+    # Review fix [M6]: Return JSON with signout_url (not a redirect) so
+    # the frontend can handle the flow: call logout API, then redirect.
+    tenant = get_entra_tenant_id()
+    # Use the app's base URL as post-logout redirect
+    base_url = str(request.base_url).rstrip('/')
+    signout_url = (
+        f'https://login.microsoftonline.com/{tenant}/oauth2/v2.0/logout'
+        f'?post_logout_redirect_uri={quote(base_url, safe="")}'
+    )
+    return {'status': 'logged_out', 'signout_url': signout_url}

@@ -498,11 +498,14 @@ describe("Conversation WebSocket Handler", () => {
       // and any non-error event should clear it.
       const conversationId = "test-conversation-error-clear";
 
-      // Set up MSW to mock event count API and send events
+      // Clear event store to prevent stale state from prior tests
+      useEventStore.getState().clearEvents();
+
+      // Set up MSW to mock event count API and send events on connection
       mswServer.use(
         http.get(
           `http://localhost:3000/api/conversations/${conversationId}/events/count`,
-          () => HttpResponse.json(2),
+          () => HttpResponse.json(0),
         ),
         wsLink.addEventListener("connection", ({ client, server }) => {
           server.connect();
@@ -537,13 +540,19 @@ describe("Conversation WebSocket Handler", () => {
         );
       });
 
-      // Wait for both events to be received and error to be cleared
+      // Wait for both events to be received and error to be cleared.
       // The error was set by the first event (ConversationErrorEvent),
       // then cleared by the second successful event (MessageEvent).
-      await waitFor(() => {
-        expect(useEventStore.getState().events.length).toBe(2);
-        expect(useErrorMessageStore.getState().errorMessage).toBeNull();
-      });
+      // Use 5s timeout for CI — WebSocket event processing involves async
+      // onOpen handler (getEventCount), React state batching, and callback
+      // updates via optionsRef that can take >1s in slow CI environments.
+      await waitFor(
+        () => {
+          expect(useEventStore.getState().events.length).toBe(2);
+          expect(useErrorMessageStore.getState().errorMessage).toBeNull();
+        },
+        { timeout: 5000 },
+      );
     });
 
     it("should not create duplicate events when WebSocket reconnects with resend_all=true", async () => {
