@@ -30,6 +30,7 @@ pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.
 - CI runs `pre-commit --all-files` — catches entire repo, not just your changed files. Always run `--all-files` locally before pushing.
 - **ALWAYS run `poetry lock` after ANY `pyproject.toml` change** — including metadata-only edits (name, description, authors, URLs). CI runs `poetry install` which fails if the lock hash is stale.
 - `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry check --lock` after pre-commit and `poetry lock` if it fails.
+- Verify lock sync on the BRANCH BEING PUSHED, not just main — feature branches can have stale locks even when main is fine
 - Poetry 2.x: `poetry lock --no-update` does NOT exist. Always use `poetry lock` (full resolve).
 - Alembic auto-generated migrations always fail ruff — run `pre-commit --all-files` immediately after `alembic revision --autogenerate`, then re-stage the fixed files
 
@@ -141,6 +142,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - PR titles use conventional commits: `feat(scope):`, `fix:`, `refactor:`, `docs:`, `test:`, `perf:`, `chore:`
 - Worktrees go in `.worktrees/` (gitignored). Use `git worktree add .worktrees/<name> -b <branch>`
 - `gh pr merge` must run from the main repo directory, NOT from a worktree (fails with `'main' is already used by worktree`)
+- Worktree cleanup order: `git worktree remove <path>` FIRST, then `git branch -d <branch>` — `gh pr merge --delete-branch` can't delete a branch held by a worktree
 
 **Dependency upgrades:**
 - `pyproject.toml` has TWO dep sections that must stay in sync: `[project].dependencies` (PEP 621) and `[tool.poetry.dependencies]` (Poetry)
@@ -180,6 +182,7 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 **Plans:**
 - `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — Phase 1.5 auth wiring (14 tasks, merged PR #1)
 - `docs/plans/2026-02-17-phase2-implementation.md` — Phase 2 enterprise stores/services/CRUD/RBAC (22 tasks, merged PR #5)
+- `.scratchpad/2026-02-17-phase3-review-fixes.md` — Phase 3A security review fixes (9 tasks, merged PR #7)
 
 ## Known Issues
 
