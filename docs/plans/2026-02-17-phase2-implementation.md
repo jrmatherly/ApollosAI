@@ -2255,19 +2255,50 @@ git commit -m "feat(apollosai): add rate limiting on auth endpoints via slowapi"
 - Modify: `apollosai/server/routes/auth.py` (logout endpoint)
 - Modify: `tests/unit/apollosai/server/routes/test_auth.py`
 
+> **Review fix [L1]: Task ordering.** This task MUST come after Task 15 (server-side
+> sessions). If implemented before Task 15, the auth flow still uses cookie sessions
+> and the session clearing logic won't match the new middleware.
+
 **Key change:** After clearing session, redirect to Microsoft signout:
+
+> **Review fix [M6]:** Return JSON with `signout_url` (not a redirect) so the
+> frontend can handle the flow. Document expected frontend behavior: call logout API,
+> then `window.location.href = signout_url`.
+
+> **Review fix [L3]: Open redirect validation.** Validate `redirect_after_login` to
+> ensure it's a relative path or matches the app domain:
+> ```python
+> from urllib.parse import urlparse
+> parsed = urlparse(redirect_url)
+> if parsed.netloc and parsed.netloc != request.url.netloc:
+>     redirect_url = '/'  # Reject external redirects
+> ```
+
 ```python
 @router.post('/auth/logout')
 async def logout(request: Request, response: Response):
     request.session.clear()
     response.delete_cookie(key=COOKIE_NAME)
     # Revoke JWT (Task 14)
-    # Redirect to Microsoft signout
+    # Build Microsoft signout URL
     from apollosai.server.auth.constants import get_entra_tenant_id
     tenant = get_entra_tenant_id()
     redirect_uri = request.url_for('is_apollosai')
     signout_url = f'https://login.microsoftonline.com/{tenant}/oauth2/v2.0/logout?post_logout_redirect_uri={redirect_uri}'
     return {'status': 'logged_out', 'signout_url': signout_url}
+```
+
+**Tests:**
+
+```python
+# Review fix [M8-test]: Test signout URL construction.
+def test_logout_returns_signout_url(client, monkeypatch):
+    monkeypatch.setenv('ENTRA_TENANT_ID', 'test-tenant')
+    response = client.post('/auth/logout')
+    data = response.json()
+    assert 'signout_url' in data
+    assert 'login.microsoftonline.com/test-tenant' in data['signout_url']
+    assert 'post_logout_redirect_uri' in data['signout_url']
 ```
 
 ```bash
@@ -2292,6 +2323,32 @@ git commit -m "feat(apollosai): add MSAL signout on logout"
 - Login page: show "Sign in with Microsoft" when config indicates ApollosAI mode
 - Auto-login hook supports `entra_id` provider
 
+> **Review fix [L3]: Open redirect.** `generateEntraAuthUrl()` uses `window.location.href`
+> as `returnTo`. Server-side validation (Task 17) prevents external redirects.
+
+**Tests:**
+
+> Review fix [M11]: Frontend utility must have vitest tests.
+
+```typescript
+// frontend/src/utils/__tests__/generate-entra-auth-url.test.ts
+import { describe, it, expect } from 'vitest';
+import { generateEntraAuthUrl } from '../generate-entra-auth-url';
+
+describe('generateEntraAuthUrl', () => {
+  it('returns login URL with encoded returnTo', () => {
+    const url = generateEntraAuthUrl('/conversations');
+    expect(url).toBe('/api/auth/login?returnTo=%2Fconversations');
+  });
+
+  it('handles special characters in returnTo', () => {
+    const url = generateEntraAuthUrl('/path?foo=bar&baz=1');
+    expect(url).toContain('returnTo=');
+    expect(url).not.toContain('&baz='); // Should be encoded
+  });
+});
+```
+
 ```bash
 git commit -m "feat(frontend): add Entra ID login button and auth URL generation"
 ```
@@ -2312,6 +2369,22 @@ git commit -m "feat(frontend): add Entra ID login button and auth URL generation
 - Query hooks use TanStack Query with appropriate staleTime
 - Mutation hooks invalidate settings/secrets queries on org/team switch
 
+**Tests:**
+
+> Review fix [L6]: Frontend hooks and service must have vitest tests.
+
+```typescript
+// frontend/src/hooks/query/__tests__/use-organizations.test.ts
+describe('useOrganizations', () => {
+  it('fetches org list from /api/orgs', () => { /* ... */ });
+});
+
+// frontend/src/hooks/mutation/__tests__/use-switch-org.test.ts
+describe('useSwitchOrg', () => {
+  it('invalidates settings queries after switch', () => { /* ... */ });
+});
+```
+
 ```bash
 git commit -m "feat(frontend): add org/team API service and TanStack Query hooks"
 ```
@@ -2330,6 +2403,18 @@ git commit -m "feat(frontend): add org/team API service and TanStack Query hooks
 - `TeamSelector`: Dropdown using `useTeams(currentOrgId)`, calls `useSwitchTeam()` on change
 - Both components placed in sidebar header area
 - Switching invalidates relevant queries
+
+**Tests:**
+
+> Review fix [L6]: Component rendering tests.
+
+```typescript
+// frontend/src/components/features/workspace/__tests__/org-selector.test.tsx
+describe('OrgSelector', () => {
+  it('renders dropdown with org list', () => { /* renderWithProviders */ });
+  it('calls switchOrg on selection change', () => { /* ... */ });
+});
+```
 
 ```bash
 git commit -m "feat(frontend): add org/team selector components in sidebar"
