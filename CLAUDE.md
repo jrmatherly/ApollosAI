@@ -12,11 +12,15 @@ See `AGENTS.md` for detailed procedures (adding LLM models, user settings, front
 
 ```bash
 make build                    # Full build (backend + frontend + pre-commit hooks)
-make run                      # Run app (backend :3000 + frontend)
-make start-backend            # Backend only
+make run                      # Run ApollosAI (backend :3000 + frontend)
+make start-apollosai          # ApollosAI backend only (primary dev target)
+make start-backend            # OpenHands V0 backend (legacy)
 make start-frontend           # Frontend only
 make setup-config             # Interactive LLM config (model, API key)
-make docker-dev               # Develop inside Docker container
+make setup-env                # Bootstrap .env from .env.example
+make migrate                  # Run ApollosAI Alembic migrations
+make test-apollosai           # Run ApollosAI unit tests
+make docker-build-app         # Build ApollosAI app Docker image
 make help                     # List all available targets
 ```
 

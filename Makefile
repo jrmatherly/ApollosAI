@@ -374,6 +374,10 @@ migrate: check-env
 	@echo "$(GREEN)Migrations complete.$(RESET)"
 
 migrate-create: check-env
+	@if [ -z "$(MSG)" ]; then \
+		echo "$(RED)Usage: make migrate-create MSG='description of migration'$(RESET)"; \
+		exit 1; \
+	fi
 	@echo "$(YELLOW)Creating new migration...$(RESET)"
 	@PYTHONPATH=".:$$PYTHONPATH" poetry run alembic -c apollosai/alembic.ini revision --autogenerate -m "$(MSG)"
 	@echo "$(YELLOW)Migration created. Run pre-commit --all-files to fix ruff formatting, then re-stage.$(RESET)"
@@ -408,7 +412,7 @@ docker-dev:
 # Clean up all caches
 clean:
 	@echo "$(YELLOW)Cleaning up caches...$(RESET)"
-	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name "__pycache__" -prune -exec rm -rf {} + 2>/dev/null || true
 	@rm -rf openhands/.cache .mypy_cache .ruff_cache .pytest_cache
 	@echo "$(GREEN)Caches cleaned up successfully.$(RESET)"
 
@@ -429,7 +433,7 @@ help:
 	@echo "  $(GREEN)migrate-status$(RESET)      - Check current migration status"
 	@echo ""
 	@echo "$(YELLOW)Testing:$(RESET)"
-	@echo "  $(GREEN)test$(RESET)                - Run all tests (ApollosAI + frontend)"
+	@echo "  $(GREEN)test$(RESET)                - Run ApollosAI unit tests + frontend tests"
 	@echo "  $(GREEN)test-apollosai$(RESET)      - Run ApollosAI unit tests"
 	@echo "  $(GREEN)test-apollosai-cov$(RESET)  - Run ApollosAI tests with coverage"
 	@echo "  $(GREEN)test-backend$(RESET)        - Run all backend unit tests"
@@ -453,7 +457,7 @@ help:
 	@echo "  $(GREEN)help$(RESET)                - Display this help message"
 
 # Phony targets
-.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry
+.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-tmux check-poetry
 .PHONY: install-python-dependencies install-frontend-dependencies install-pre-commit-hooks
 .PHONY: lint-backend lint-frontend lint
 .PHONY: start-apollosai start-backend start-frontend _run_setup run dev-exposed
