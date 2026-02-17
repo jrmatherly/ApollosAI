@@ -138,7 +138,7 @@ api_key = ""
 #max_output_tokens = 0
 
 # Model to use. (For Headless / CLI only -  In Web this is overridden by Session Init)
-model = "gpt-4o"
+model = "gpt-5-mini"
 
 # Number of retries to attempt when an operation fails with the LLM.
 # Increase this value to allow more attempts before giving up
@@ -215,9 +215,9 @@ model = "gpt-4o"
 # The number of times llm_editor tries to fix an error when editing.
 correct_num = 5
 
-[llm.gpt4o-mini]
+[llm.gpt-5-mini]
 api_key = ""
-model = "gpt-4o"
+model = "gpt-5-mini"
 
 # Example routing LLM configuration for multimodal model routing
 # Uncomment and configure to enable model routing with a secondary model
@@ -436,7 +436,7 @@ type = "noop"
 # Example of a custom LLM configuration for condensers that require an LLM
 # If not provided, it falls back to the default LLM
 #[llm.condenser]
-#model = "gpt-4o"
+#model = "gpt-5-mini"
 #temperature = 0.1
 #max_input_tokens = 1024
 

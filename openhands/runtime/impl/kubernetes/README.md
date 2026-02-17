@@ -76,7 +76,7 @@ make kind # target is stateless and will check for an existing kind cluster or m
 This command will:
 
 1. **Check Dependencies**: Verify that `kind`, `kubectl`, and `mirrord` are installed
-2. **Create KIND Cluster**: Create a local Kubernetes cluster named "local-hands" using the configuration in `kind/cluster.yaml`
+2. **Create KIND Cluster**: Create a local Kubernetes cluster named "apollos-ai" using the configuration in `kind/cluster.yaml`
 3. **Deploy Infrastructure**: Apply Kubernetes manifests including:
    - Ubuntu development pod for runtime execution
    - Nginx ingress controller for HTTP routing
@@ -88,7 +88,7 @@ This command will:
 
 The KIND cluster is configured with:
 
-- **Cluster Name**: `local-hands`
+- **Cluster Name**: `apollos-ai`
 - **Node Configuration**: Single control-plane node
 - **Port Mapping**: Host port 80 maps to container port 80 for nginx ingress
 - **Base Image**: Ubuntu 22.04 for the development environment
@@ -137,5 +137,5 @@ If you encounter issues:
 To clean up the environment:
 
 ```bash
-kind delete cluster --name local-hands
+kind delete cluster --name apollos-ai
 ```

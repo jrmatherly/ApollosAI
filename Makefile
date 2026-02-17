@@ -8,11 +8,11 @@ BACKEND_HOST_PORT = "$(BACKEND_HOST):$(BACKEND_PORT)"
 FRONTEND_HOST ?= "127.0.0.1"
 FRONTEND_PORT ?= 3001
 DEFAULT_WORKSPACE_DIR = "./workspace"
-DEFAULT_MODEL = "gpt-4o"
+DEFAULT_MODEL = "gpt-5-mini"
 CONFIG_FILE = config.toml
 PRE_COMMIT_CONFIG_PATH = "./dev_config/python/.pre-commit-config.yaml"
 PYTHON_VERSION = 3.12
-KIND_CLUSTER_NAME = "local-hands"
+KIND_CLUSTER_NAME = "apollos-ai"
 
 # ANSI color codes
 GREEN=$(shell tput -Txterm setaf 2)
