@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Enum, ForeignKey, Index, JSON, Text
+from sqlalchemy import JSON, Enum, ForeignKey, Index, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from apollosai.storage.models.base import Base, TimestampMixin

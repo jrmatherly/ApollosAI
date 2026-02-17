@@ -50,9 +50,7 @@ def init_otel(service_name: str = 'apollosai') -> None:
 
         resource = Resource.create({'service.name': service_name})
 
-        sampler_arg = float(
-            os.environ.get('OTEL_TRACES_SAMPLER_ARG', '0.1')
-        )
+        sampler_arg = float(os.environ.get('OTEL_TRACES_SAMPLER_ARG', '0.1'))
         sampler = ParentBased(root=TraceIdRatioBased(sampler_arg))
 
         # Tracer

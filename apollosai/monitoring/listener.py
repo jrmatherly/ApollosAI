@@ -49,7 +49,5 @@ class ApollosAIMonitoringListener(MonitoringListener):
         )
 
     @classmethod
-    def get_instance(
-        cls, config: OpenHandsConfig
-    ) -> 'ApollosAIMonitoringListener':
+    def get_instance(cls, config: OpenHandsConfig) -> 'ApollosAIMonitoringListener':
         return cls()

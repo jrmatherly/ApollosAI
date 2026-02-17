@@ -24,8 +24,8 @@ from apollosai.server.auth.auth_error import (  # noqa: E402
     InvalidTokenError,
     NoCredentialsError,
 )
-from apollosai.server.routes.auth import router as auth_router  # noqa: E402
 from apollosai.server.routes.admin import router as admin_router  # noqa: E402
+from apollosai.server.routes.auth import router as auth_router  # noqa: E402
 from apollosai.server.routes.health import router as health_router  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402
