@@ -498,30 +498,23 @@ describe("Conversation WebSocket Handler", () => {
       // and any non-error event should clear it.
       const conversationId = "test-conversation-error-clear";
 
-      // Set up MSW to mock event count API and send events
+      // Capture MSW client so we can send the second event from the test body
+      // after verifying the first event was fully processed.
+      let mswClient: { send: (data: string) => void } | null = null;
+
+      // Set up MSW to mock event count API and send only the error event
       mswServer.use(
         http.get(
           `http://localhost:3000/api/conversations/${conversationId}/events/count`,
-          () => HttpResponse.json(2),
+          () => HttpResponse.json(0),
         ),
         wsLink.addEventListener("connection", ({ client, server }) => {
           server.connect();
+          mswClient = client;
 
-          // Send a ConversationErrorEvent first (this sets the error banner)
+          // Send a ConversationErrorEvent (this sets the error banner)
           const mockConversationErrorEvent = createMockConversationErrorEvent();
           client.send(JSON.stringify(mockConversationErrorEvent));
-
-          // Delay the success event to ensure the error event is fully processed
-          // before the clearing event arrives. Without this delay, both events
-          // can arrive in the same microtask batch, creating a race with the
-          // async onOpen handler's state updates (setExpectedEventCountMain)
-          // which recreates the handleMainMessage callback.
-          setTimeout(() => {
-            const mockSuccessEvent = createMockMessageEvent({
-              id: "success-event-after-error",
-            });
-            client.send(JSON.stringify(mockSuccessEvent));
-          }, 100);
         }),
       );
 
@@ -535,24 +528,26 @@ describe("Conversation WebSocket Handler", () => {
         `http://localhost:3000/api/conversations/${conversationId}`,
       );
 
-      // Wait for connection
+      // Wait for connection and first event (error) to be processed
       await waitFor(() => {
         expect(screen.getByTestId("connection-state")).toHaveTextContent(
           "OPEN",
         );
+        expect(useEventStore.getState().events.length).toBe(1);
+        expect(useErrorMessageStore.getState().errorMessage).not.toBeNull();
       });
 
-      // Wait for both events to be received and error to be cleared
-      // The error was set by the first event (ConversationErrorEvent),
-      // then cleared by the second successful event (MessageEvent).
-      // Use explicit timeout to avoid flakiness in CI environments.
-      await waitFor(
-        () => {
-          expect(useEventStore.getState().events.length).toBe(2);
-          expect(useErrorMessageStore.getState().errorMessage).toBeNull();
-        },
-        { timeout: 3000 },
-      );
+      // Now send the success event — the error banner should be cleared
+      const mockSuccessEvent = createMockMessageEvent({
+        id: "success-event-after-error",
+      });
+      mswClient!.send(JSON.stringify(mockSuccessEvent));
+
+      // Wait for second event and error clearing
+      await waitFor(() => {
+        expect(useEventStore.getState().events.length).toBe(2);
+        expect(useErrorMessageStore.getState().errorMessage).toBeNull();
+      });
     });
 
     it("should not create duplicate events when WebSocket reconnects with resend_all=true", async () => {
