@@ -269,3 +269,6 @@ test-results
 .local_docs/
 .todos/
 .sidecar/
+
+# git worktrees
+.worktrees/
