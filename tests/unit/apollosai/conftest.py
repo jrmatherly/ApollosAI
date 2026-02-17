@@ -8,8 +8,11 @@ from apollosai.storage.models.base import Base
 # Import all models so Base.metadata.create_all creates all tables.
 # Without this, tables for models imported only inside test functions
 # may not exist when the engine fixture runs.
+import apollosai.storage.models.api_key  # noqa: F401
+import apollosai.storage.models.auth_token  # noqa: F401
 import apollosai.storage.models.conversation  # noqa: F401
 import apollosai.storage.models.encrypted_secret  # noqa: F401
+import apollosai.storage.models.org_membership  # noqa: F401
 import apollosai.storage.models.organization  # noqa: F401
 import apollosai.storage.models.revoked_token  # noqa: F401
 import apollosai.storage.models.role  # noqa: F401
