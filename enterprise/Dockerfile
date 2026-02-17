@@ -1,3 +1,14 @@
+# ===========================================================================
+# DEPRECATED — DO NOT USE
+# This is the upstream OpenHands enterprise Dockerfile. It references
+# upstream registries (ghcr.io/openhands/openhands), installs unused
+# dependencies (ddtrace, keycloak, stripe, etc.), and uses the wrong
+# entrypoint (saas_server:app).
+#
+# Use containers/apollosai/Dockerfile instead for ApollosAI builds.
+# See: .scratchpad/fix-enterprise-docker-workflow.md for full analysis.
+# ===========================================================================
+
 ARG OPENHANDS_VERSION=latest
 ARG BASE="ghcr.io/openhands/openhands"
 FROM ${BASE}:${OPENHANDS_VERSION}
