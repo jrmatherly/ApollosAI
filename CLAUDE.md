@@ -129,3 +129,10 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 ## V0/V1 Transition
 
 The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SDK. The frontend supports both via `settings?.v1_enabled` feature flag. Both `ConversationService` (V0) and `V1ConversationService` coexist.
+
+**V1 Key Types:**
+- `UserInfo` extends `Settings` (29 fields) — use `UserInfo(id=user_id, **settings.model_dump(context={'expose_secrets': True}))`, NOT `UserInfo(user_id=...)`
+- `SecretSource` is an ABC (abstract `get_value`) — use `StaticSecret(value=..., description=...)` from `openhands.sdk.secret`
+- `AuthUserContext` (`openhands/app_server/user/auth_user_context.py`) is the reference V0→V1 bridge pattern
+- `UserContextInjector` caches via `InjectorState` attribute (`user_context`); see `Injector` base at `openhands/app_server/services/injector.py`
+- `OssAppLifespanService.run_alembic_on_startup` is a field — override it to `False` to skip OpenHands migrations (no need to override `__aenter__`)
