@@ -84,7 +84,7 @@ jobs:
             - name: Install ApollosAI dependencies
               run: |
                   # Install ApollosAI SDK and tools from local checkout
-                  uv pip install --system ./software-agent-sdk/apollos-sdk ./software-agent-sdk/apollos-tools
+                  uv pip install --system ./software-agent-sdk/openhands-sdk ./software-agent-sdk/openhands-tools
 
             - name: Check required configuration
               env:
