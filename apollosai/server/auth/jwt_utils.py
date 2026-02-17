@@ -67,7 +67,10 @@ def decode_session_token(token: str) -> dict:
     """
     secret = _get_validated_secret()
     payload = jwt.decode(
-        token, secret, algorithms=['HS256'], audience=JWT_AUDIENCE,
+        token,
+        secret,
+        algorithms=['HS256'],
+        audience=JWT_AUDIENCE,
     )
     # Validate required claims exist and are strings
     for claim in ('sub', 'email', 'entra_oid'):

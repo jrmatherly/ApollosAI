@@ -20,7 +20,10 @@ from fastapi import Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse  # noqa: E402
 
-from apollosai.server.auth.auth_error import InvalidTokenError, NoCredentialsError  # noqa: E402
+from apollosai.server.auth.auth_error import (  # noqa: E402
+    InvalidTokenError,
+    NoCredentialsError,
+)
 from apollosai.server.routes.auth import router as auth_router  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402

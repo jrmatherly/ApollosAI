@@ -17,8 +17,6 @@ class AuthToken(TimestampMixin, Base):
     __tablename__ = 'auth_token'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey('user.id'), unique=True
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('user.id'), unique=True)
     # Encrypted MSAL SerializableTokenCache JSON blob
     token_cache: Mapped[str] = mapped_column(Text)

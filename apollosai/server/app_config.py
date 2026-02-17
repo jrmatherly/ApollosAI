@@ -4,11 +4,10 @@ Creates an AppServerConfig with ApollosAI-specific injectors.
 Called during V1 server initialization when enable_v1=True.
 """
 
-from openhands.app_server.config import AppServerConfig
-from openhands.server.types import AppMode
-
 from apollosai.server.auth.user_context import EntraIDUserContextInjector
 from apollosai.server.lifespan import ApollosAILifespanService
+from openhands.app_server.config import AppServerConfig
+from openhands.server.types import AppMode
 
 
 def create_apollosai_app_config() -> AppServerConfig:

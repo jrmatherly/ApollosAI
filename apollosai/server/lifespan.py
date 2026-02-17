@@ -6,7 +6,9 @@ Overrides OssAppLifespanService to:
 3. Initialize async engine on startup (Phase 2)
 """
 
-from openhands.app_server.app_lifespan.oss_app_lifespan_service import OssAppLifespanService
+from openhands.app_server.app_lifespan.oss_app_lifespan_service import (
+    OssAppLifespanService,
+)
 
 
 class ApollosAILifespanService(OssAppLifespanService):
