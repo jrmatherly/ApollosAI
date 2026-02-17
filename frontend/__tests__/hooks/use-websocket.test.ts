@@ -22,6 +22,8 @@ import { useWebSocket } from "#/hooks/use-websocket";
 
 // CI runners are slower than local — default 1000ms waitFor timeout is too short
 const WAIT_FOR_TIMEOUT = { timeout: 5000 };
+// Tests with multiple waitFor calls can exceed vitest's default 5000ms testTimeout
+const TEST_TIMEOUT = 15_000;
 
 describe("useWebSocket", () => {
   // MSW WebSocket mock setup
@@ -64,7 +66,7 @@ describe("useWebSocket", () => {
 
     // Confirm that the WebSocket connection is established when the hook is used
     expect(result.current.socket).toBeTruthy();
-  });
+  }, TEST_TIMEOUT);
 
   it.skip("should handle incoming messages correctly", async () => {
     const { result } = renderHook(() => useWebSocket("ws://acme.com/ws"));
@@ -91,7 +93,7 @@ describe("useWebSocket", () => {
       "Welcome to the WebSocket!",
       "Hello from server!",
     ]);
-  });
+  }, TEST_TIMEOUT);
 
   it("should handle connection errors gracefully", async () => {
     // Create a mock that will simulate an error
@@ -127,7 +129,7 @@ describe("useWebSocket", () => {
 
     // Should not crash the application
     expect(result.current.socket).toBeTruthy();
-  });
+  }, TEST_TIMEOUT);
 
   it.skip("should close the WebSocket connection on unmount", async () => {
     const { result, unmount } = renderHook(() =>
@@ -150,7 +152,7 @@ describe("useWebSocket", () => {
 
     // Verify that WebSocket close was called during cleanup
     expect(closeSpy).toHaveBeenCalledOnce();
-  });
+  }, TEST_TIMEOUT);
 
   it("should support query parameters in WebSocket URL", async () => {
     const baseUrl = "ws://acme.com/ws";
@@ -172,7 +174,7 @@ describe("useWebSocket", () => {
     expect(result.current.socket!.url).toBe(
       "ws://acme.com/ws?token=abc123&userId=user456&version=v1",
     );
-  });
+  }, TEST_TIMEOUT);
 
   it("should call onOpen handler when WebSocket connection opens", async () => {
     const onOpenSpy = vi.fn();
@@ -193,7 +195,7 @@ describe("useWebSocket", () => {
 
     // onOpen handler should have been called
     expect(onOpenSpy).toHaveBeenCalledOnce();
-  });
+  }, TEST_TIMEOUT);
 
   it("should call onClose handler when WebSocket connection closes", async () => {
     const onCloseSpy = vi.fn();
@@ -217,7 +219,7 @@ describe("useWebSocket", () => {
     await waitFor(() => {
       expect(onCloseSpy).toHaveBeenCalledOnce();
     }, WAIT_FOR_TIMEOUT);
-  });
+  }, TEST_TIMEOUT);
 
   it.skip("should call onMessage handler when WebSocket receives a message", async () => {
     const onMessageSpy = vi.fn();
@@ -249,7 +251,7 @@ describe("useWebSocket", () => {
 
     // onMessage handler should have been called twice now
     expect(onMessageSpy).toHaveBeenCalledTimes(2);
-  });
+  }, TEST_TIMEOUT);
 
   it("should call onError handler when WebSocket encounters an error", async () => {
     const onErrorSpy = vi.fn();
@@ -284,7 +286,7 @@ describe("useWebSocket", () => {
 
     // onError handler should have been called
     expect(onErrorSpy).toHaveBeenCalled();
-  });
+  }, TEST_TIMEOUT);
 
   it.skip("should provide sendMessage function to send messages to WebSocket", async () => {
     const { result } = renderHook(() => useWebSocket("ws://acme.com/ws"));
@@ -307,7 +309,7 @@ describe("useWebSocket", () => {
     // Verify that WebSocket.send was called with the correct message
     expect(sendSpy).toHaveBeenCalledOnce();
     expect(sendSpy).toHaveBeenCalledWith("Hello WebSocket!");
-  });
+  }, TEST_TIMEOUT);
 
   it("should not send message when WebSocket is not connected", () => {
     const { result } = renderHook(() => useWebSocket("ws://acme.com/ws"));
