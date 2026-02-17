@@ -18,6 +18,12 @@ class NoCredentialsError(AuthError):
     pass
 
 
+class InvalidTokenError(AuthError):
+    """Raised when a provided token fails validation (expired, tampered, wrong signature)."""
+
+    pass
+
+
 class ExpiredError(AuthError):
     """Authentication token has expired."""
 

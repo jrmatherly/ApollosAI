@@ -20,7 +20,7 @@ from fastapi import Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse  # noqa: E402
 
-from apollosai.server.auth.auth_error import NoCredentialsError  # noqa: E402
+from apollosai.server.auth.auth_error import InvalidTokenError, NoCredentialsError  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402
 from openhands.server.middleware import CacheControlMiddleware  # noqa: E402
@@ -39,6 +39,11 @@ def is_apollosai():
 @base_app.exception_handler(NoCredentialsError)
 async def no_credentials_handler(request: Request, exc: NoCredentialsError):
     return JSONResponse(status_code=401, content={'error': 'Not authenticated'})
+
+
+@base_app.exception_handler(InvalidTokenError)
+async def invalid_token_handler(request: Request, exc: InvalidTokenError):
+    return JSONResponse(status_code=401, content={'error': 'Invalid or expired token'})
 
 
 # CORS — required for frontend on different port/domain to reach API

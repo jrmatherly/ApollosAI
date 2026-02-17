@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from fastapi import Request
 from pydantic import SecretStr
 
-from apollosai.server.auth.auth_error import NoCredentialsError
+from apollosai.server.auth.auth_error import InvalidTokenError, NoCredentialsError
 from openhands.integrations.provider import PROVIDER_TOKEN_TYPE
 from openhands.server.settings import Settings
 from openhands.server.user_auth.user_auth import UserAuth
@@ -79,15 +79,54 @@ class EntraIDUserAuth(UserAuth):
 
     @classmethod
     async def get_instance(cls, request: Request) -> 'EntraIDUserAuth':
-        # Phase 1.5 will extract user from signed JWT cookie or Bearer API key.
-        # Until then, require explicit opt-in for unauthenticated access to prevent
-        # accidental deployment without auth.
-        if not os.environ.get('APOLLOSAI_ALLOW_UNAUTHENTICATED'):
-            raise NoCredentialsError(
-                'Authentication not configured. '
-                'Set APOLLOSAI_ALLOW_UNAUTHENTICATED=1 for development.'
+        """Extract user identity from JWT session cookie or Bearer token.
+
+        Priority:
+        1. JWT session cookie ('session')
+        2. Bearer token in Authorization header
+        3. APOLLOSAI_ALLOW_UNAUTHENTICATED env var (dev mode ONLY -- no credentials path)
+
+        SECURITY: If a token IS present but fails validation, we raise immediately.
+        We only fall through to APOLLOSAI_ALLOW_UNAUTHENTICATED when NO credentials
+        are present at all. This prevents auth bypass via malformed tokens.
+        """
+        import logging
+
+        from apollosai.server.auth.jwt_utils import decode_session_token
+
+        logger = logging.getLogger(__name__)
+
+        # Try JWT session cookie
+        token = request.cookies.get('session')
+        if not token:
+            # Try Bearer token
+            auth_header = request.headers.get('authorization', '')
+            if auth_header.startswith('Bearer '):
+                token = auth_header[7:]
+
+        if token:
+            # Token present -- validation failure is a HARD error, never fall through
+            try:
+                payload = decode_session_token(token)
+            except Exception as exc:
+                logger.warning('JWT validation failed: %s', exc)
+                raise InvalidTokenError(
+                    'Invalid or expired authentication token.'
+                ) from exc
+            return cls(
+                user_id=payload['sub'],
+                email=payload['email'],
             )
-        return cls()
+
+        # No credentials provided -- check dev mode
+        # Parse explicitly: only '1', 'true', 'yes' are truthy (not '0', 'false', 'no')
+        allow_unauth = os.environ.get('APOLLOSAI_ALLOW_UNAUTHENTICATED', '').lower()
+        if allow_unauth in ('1', 'true', 'yes'):
+            return cls()
+
+        raise NoCredentialsError(
+            'Authentication required. Provide a session cookie or Bearer token.'
+        )
 
     @classmethod
     async def get_for_user(cls, user_id: str) -> 'EntraIDUserAuth':
