@@ -27,7 +27,9 @@ from apollosai.server.auth.auth_error import (  # noqa: E402
 from apollosai.server.routes.admin import router as admin_router  # noqa: E402
 from apollosai.server.routes.auth import router as auth_router  # noqa: E402
 from apollosai.server.routes.health import router as health_router  # noqa: E402
-from apollosai.server.routes.integrations import router as integrations_router  # noqa: E402
+from apollosai.server.routes.integrations import (  # noqa: E402
+    router as integrations_router,
+)
 from apollosai.server.routes.mcp import router as mcp_router  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402

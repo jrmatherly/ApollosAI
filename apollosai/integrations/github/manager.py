@@ -39,11 +39,14 @@ class GitHubIntegrationManager(ApollosAIIntegrationManager):
             return False
 
         body = await request.body()
-        expected = 'sha256=' + hmac.new(
-            self._webhook_secret.encode(),
-            body,
-            hashlib.sha256,
-        ).hexdigest()
+        expected = (
+            'sha256='
+            + hmac.new(
+                self._webhook_secret.encode(),
+                body,
+                hashlib.sha256,
+            ).hexdigest()
+        )
 
         return hmac.compare_digest(signature, expected)
 

@@ -61,11 +61,14 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
 
         body = await request.body()
         basestring = f'v0:{timestamp}:{body.decode()}'.encode()
-        expected = 'v0=' + hmac.new(
-            self._signing_secret.encode(),
-            basestring,
-            hashlib.sha256,
-        ).hexdigest()
+        expected = (
+            'v0='
+            + hmac.new(
+                self._signing_secret.encode(),
+                basestring,
+                hashlib.sha256,
+            ).hexdigest()
+        )
 
         return hmac.compare_digest(signature, expected)
 

@@ -65,9 +65,11 @@ class JiraIntegrationManager(ApollosAIIntegrationManager):
 
         # Issue created with trigger label
         if webhook_event == 'jira:issue_created':
-            labels = [lbl.get('name', '') if isinstance(lbl, dict) else lbl
-                       for lbl in fields.get('labels', [])]
-            if TRIGGER_LABEL not in [l.lower() for l in labels]:
+            labels = [
+                lbl.get('name', '') if isinstance(lbl, dict) else lbl
+                for lbl in fields.get('labels', [])
+            ]
+            if TRIGGER_LABEL not in [lbl.lower() for lbl in labels]:
                 return None
             user = payload.get('user', {})
             return IntegrationEvent(

@@ -1,7 +1,5 @@
 """Tests for integration registry and generic routes."""
 
-import uuid
-
 import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
@@ -18,7 +16,6 @@ from apollosai.integrations.registry import (
     list_integrations,
     register_integration,
 )
-
 
 # --- Registry unit tests ---
 

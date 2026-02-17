@@ -64,9 +64,7 @@ class ApollosAIIntegrationManager(ABC):
         Override for custom flows (e.g., Slack url_verification challenge).
         """
         if not await self.validate_webhook(request):
-            return JSONResponse(
-                status_code=401, content={'error': 'invalid_signature'}
-            )
+            return JSONResponse(status_code=401, content={'error': 'invalid_signature'})
 
         content_type = request.headers.get('content-type', '')
         try:
@@ -80,9 +78,7 @@ class ApollosAIIntegrationManager(ABC):
                     status_code=400, content={'error': 'unsupported_content_type'}
                 )
         except Exception:
-            return JSONResponse(
-                status_code=400, content={'error': 'invalid_payload'}
-            )
+            return JSONResponse(status_code=400, content={'error': 'invalid_payload'})
 
         event = await self.parse_event(body)
         if event is None:

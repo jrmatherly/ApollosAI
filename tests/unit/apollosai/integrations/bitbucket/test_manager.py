@@ -78,7 +78,9 @@ async def test_parse_pr_comment_with_mention():
         'pullrequest': {
             'id': 7,
             'title': 'Add feature X',
-            'links': {'html': {'href': 'https://bitbucket.org/ws/repo/pull-requests/7'}},
+            'links': {
+                'html': {'href': 'https://bitbucket.org/ws/repo/pull-requests/7'}
+            },
         },
         'comment': {
             'id': 100,

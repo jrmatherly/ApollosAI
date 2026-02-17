@@ -47,11 +47,14 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
             return False
 
         body = await request.body()
-        expected = 'sha256=' + hmac.new(
-            self._webhook_secret.encode(),
-            body,
-            hashlib.sha256,
-        ).hexdigest()
+        expected = (
+            'sha256='
+            + hmac.new(
+                self._webhook_secret.encode(),
+                body,
+                hashlib.sha256,
+            ).hexdigest()
+        )
 
         return hmac.compare_digest(signature, expected)
 
@@ -68,7 +71,7 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
             pr = payload['pullrequest']
             repo = payload.get('repository', {})
             actor = payload.get('actor', {})
-            repo_full = repo.get('full_name', '')
+            repo.get('full_name', '')
             repo_links = repo.get('links', {})
             repo_url = repo_links.get('html', {}).get('href')
 
@@ -131,7 +134,9 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
     async def post_response(self, conversation_id: str, message: str) -> None:
         """Post a response comment back to Bitbucket."""
         if not all([self._username, self._app_password]):
-            logger.warning('Bitbucket credentials not configured — cannot post response')
+            logger.warning(
+                'Bitbucket credentials not configured — cannot post response'
+            )
             return
         from apollosai.integrations.bitbucket.service import BitbucketService
 

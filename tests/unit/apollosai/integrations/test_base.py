@@ -1,7 +1,6 @@
 """Tests for ApollosAIIntegrationManager base class."""
 
 import pytest
-from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
 
 from apollosai.integrations.base import ApollosAIIntegrationManager
@@ -103,7 +102,9 @@ def test_handle_webhook_unsupported_content_type():
     manager = ConcreteManager(valid=True)
     app = _make_app(manager)
     client = TestClient(app)
-    resp = client.post('/webhook', content=b'plain', headers={'content-type': 'text/plain'})
+    resp = client.post(
+        '/webhook', content=b'plain', headers={'content-type': 'text/plain'}
+    )
     assert resp.status_code == 400
     assert resp.json()['error'] == 'unsupported_content_type'
 

@@ -41,7 +41,9 @@ class ApollosAIMCPConfig(OpenHandsMCPConfig):
 
     @staticmethod
     async def create_default_mcp_server_config(
-        host: str, config: 'OpenHandsConfig', user_id: str | None = None  # noqa: F821
+        host: str,
+        config: 'OpenHandsConfig',  # noqa: F821
+        user_id: str | None = None,
     ) -> tuple[MCPSHTTPServerConfig | None, list[MCPStdioServerConfig]]:
         """Create MCP config merging base config with user's custom MCP servers."""
         # Get base config from parent
@@ -64,12 +66,13 @@ class ApollosAIMCPConfig(OpenHandsMCPConfig):
         # Load user's custom MCP servers from DB
         user_stdio: list[MCPStdioServerConfig] = []
         try:
+            from sqlalchemy import select
+
             from apollosai.server.lifespan import get_session_maker
             from apollosai.storage.models.user_mcp_server import (
                 MCPServerType,
                 UserMCPServer,
             )
-            from sqlalchemy import select
 
             session_maker = get_session_maker()
             if session_maker is None:
