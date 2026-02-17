@@ -20,6 +20,9 @@ import { ws } from "msw";
 import { setupServer } from "msw/node";
 import { useWebSocket } from "#/hooks/use-websocket";
 
+// CI runners are slower than local — default 1000ms waitFor timeout is too short
+const WAIT_FOR_TIMEOUT = { timeout: 5000 };
+
 describe("useWebSocket", () => {
   // MSW WebSocket mock setup
   const wsLink = ws.link("ws://acme.com/ws");
@@ -52,12 +55,12 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should receive the welcome message from our mock
     await waitFor(() => {
       expect(result.current.lastMessage).toBe("Welcome to the WebSocket!");
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Confirm that the WebSocket connection is established when the hook is used
     expect(result.current.socket).toBeTruthy();
@@ -69,19 +72,19 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should receive the welcome message from our mock
     await waitFor(() => {
       expect(result.current.lastMessage).toBe("Welcome to the WebSocket!");
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Send another message from the mock server
     wsLink.broadcast("Hello from server!");
 
     await waitFor(() => {
       expect(result.current.lastMessage).toBe("Hello from server!");
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should have a messages array with all received messages
     expect(result.current.messages).toEqual([
@@ -109,12 +112,12 @@ describe("useWebSocket", () => {
     // Wait for the connection to fail
     await waitFor(() => {
       expect(result.current.isConnected).toBe(false);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should have error information (the close event should trigger error state)
     await waitFor(() => {
       expect(result.current.error).not.toBe(null);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     expect(result.current.error).toBeInstanceOf(Error);
     // Should have meaningful error message (could be from onerror or onclose)
@@ -134,7 +137,7 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Verify connection is active
     expect(result.current.isConnected).toBe(true);
@@ -162,7 +165,7 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Verify that the WebSocket was created with query parameters
     expect(result.current.socket).toBeTruthy();
@@ -186,7 +189,7 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // onOpen handler should have been called
     expect(onOpenSpy).toHaveBeenCalledOnce();
@@ -203,7 +206,7 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     expect(onCloseSpy).not.toHaveBeenCalled();
 
@@ -213,7 +216,7 @@ describe("useWebSocket", () => {
     // Wait for onClose handler to be called
     await waitFor(() => {
       expect(onCloseSpy).toHaveBeenCalledOnce();
-    });
+    }, WAIT_FOR_TIMEOUT);
   });
 
   it.skip("should call onMessage handler when WebSocket receives a message", async () => {
@@ -227,12 +230,12 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should receive the welcome message from our mock
     await waitFor(() => {
       expect(result.current.lastMessage).toBe("Welcome to the WebSocket!");
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // onMessage handler should have been called for the welcome message
     expect(onMessageSpy).toHaveBeenCalledOnce();
@@ -242,7 +245,7 @@ describe("useWebSocket", () => {
 
     await waitFor(() => {
       expect(result.current.lastMessage).toBe("Hello from server!");
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // onMessage handler should have been called twice now
     expect(onMessageSpy).toHaveBeenCalledTimes(2);
@@ -272,12 +275,12 @@ describe("useWebSocket", () => {
     // Wait for the connection to fail
     await waitFor(() => {
       expect(result.current.isConnected).toBe(false);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should have error information
     await waitFor(() => {
       expect(result.current.error).not.toBe(null);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // onError handler should have been called
     expect(onErrorSpy).toHaveBeenCalled();
@@ -289,7 +292,7 @@ describe("useWebSocket", () => {
     // Wait for connection to be established
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
-    });
+    }, WAIT_FOR_TIMEOUT);
 
     // Should have a sendMessage function
     expect(result.current.sendMessage).toBeDefined();
