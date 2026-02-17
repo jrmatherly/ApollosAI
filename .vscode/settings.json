@@ -21,23 +21,43 @@
             "includeAllSymbols": true
         }
     ],
+    // ── Pylance Type Checking (approximates mypy.ini) ─────────────
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.exclude": [
+        "third_party",
+        "enterprise"
+    ],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportOptionalMemberAccess": "warning",
+        "reportOptionalCall": "warning",
+        "reportOptionalIterable": "warning",
+        "reportOptionalSubscript": "warning",
+        "reportUnnecessaryCast": "warning",
+        "reportUnusedImport": "warning"
+    },
     // ── Python Formatting & Linting (Ruff) ─────────────────────────
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
+        "editor.rulers": [88],
         "editor.codeActionsOnSave": {
-            "source.fixAll.ruff": "explicit",
-            "source.organizeImports.ruff": "explicit"
+            "source.fixAll.ruff": "always",
+            "source.organizeImports.ruff": "always"
         }
     },
     "ruff.configuration": "dev_config/python/ruff.toml",
+    // ── ESLint (flat config in frontend/) ──────────────────────────
+    "eslint.workingDirectories": ["./frontend"],
     // ── TypeScript ─────────────────────────────────────────────────
     "typescript.tsdk": "frontend/node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     // ── Frontend Formatting ────────────────────────────────────────
     "[typescript][typescriptreact][javascript][javascriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "always"
+        }
     },
     "[json][jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

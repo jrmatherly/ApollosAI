@@ -1,6 +1,10 @@
 # Exclude third-party runtime directory from linting
 exclude = ["third_party/", "enterprise/"]
 
+# Enable unsafe fixes so the VSCode extension applies the same fixes as pre-commit
+# (pre-commit passes --unsafe-fixes on the command line)
+unsafe-fixes = true
+
 [lint]
 select = [
     "E",

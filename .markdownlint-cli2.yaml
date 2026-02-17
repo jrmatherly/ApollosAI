@@ -1,0 +1,48 @@
+# markdownlint-cli2 configuration
+# https://github.com/DavidAnson/markdownlint-cli2
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+# Automatically respect .gitignore for performance
+gitignore: true
+
+# Enable auto-fixing of supported linting errors
+# fix: true
+
+# Files to lint
+globs:
+  - "**/*.md"
+
+# Files to ignore
+ignores:
+  - "node_modules/**"
+  - "**/node_modules/**"
+  - "vendor/**"
+  - "**/vendor/**"
+  - ".git/**"
+  - "**/build/**"
+  - "**/dist/**"
+  - ".venv/**"
+  # Serena memories (auto-generated, not actively maintained)
+  - ".serena/**"
+  # Drift Detect data
+  - ".drift/**"
+  # Claude Code config files (have YAML frontmatter)
+  - ".claude/**"
+  - ".agents/**"
+  # Gemini/Antigravity artifacts (AI-generated)
+  - ".gemini/**"
+  # Terraform provider docs
+  - ".terraform/**"
+  # Local docs
+  - ".docs/**"
+  - ".scratchpad/**"
+  - ".local_docs/**"
+  # LICENSE symlink (plain text, not markdown)
+  - "docs/LICENSE.md"
+  - "LICENSE"
+  - "CHANGELOG.md"
+
+# Rule configuration
+config:
+  # Defaults to true for all rules
+  default: false
