@@ -10,7 +10,6 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 from uuid import uuid4
 
 import pytest
-from openhands.sdk.context.skills import Skill
 
 from openhands.app_server.app_conversation.app_conversation_models import AgentType
 from openhands.app_server.app_conversation.app_conversation_service_base import (
@@ -18,6 +17,7 @@ from openhands.app_server.app_conversation.app_conversation_service_base import 
 )
 from openhands.app_server.sandbox.sandbox_models import SandboxInfo
 from openhands.app_server.user.user_context import UserContext
+from openhands.sdk.context.skills import Skill
 
 
 class MockUserInfo:
@@ -33,7 +33,7 @@ class MockUserInfo:
 class MockCommandResult:
     """Mock class for command execution result."""
 
-    def __init__(self, exit_code: int = 0, stderr: str = ""):
+    def __init__(self, exit_code: int = 0, stderr: str = ''):
         self.exit_code = exit_code
         self.stderr = stderr
 
@@ -41,7 +41,7 @@ class MockCommandResult:
 class MockWorkspace:
     """Mock class for AsyncRemoteWorkspace."""
 
-    def __init__(self, working_dir: str = "/workspace"):
+    def __init__(self, working_dir: str = '/workspace'):
         self.working_dir = working_dir
         self.execute_command = AsyncMock(return_value=MockCommandResult())
 
@@ -56,7 +56,7 @@ class MockAppConversationServiceBase:
         self,
         workspace_path: str,
         repo_url: str,
-        branch: str = "main",
+        branch: str = 'main',
         timeout: int = 300,
     ) -> bool:
         """Clone or initialize a git repository.
@@ -66,7 +66,7 @@ class MockAppConversationServiceBase:
         try:
             # Try to clone the repository
             clone_result = subprocess.run(
-                ["git", "clone", "--branch", branch, repo_url, workspace_path],
+                ['git', 'clone', '--branch', branch, repo_url, workspace_path],
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -74,13 +74,13 @@ class MockAppConversationServiceBase:
 
             if clone_result.returncode == 0:
                 self.logger.info(
-                    f"Successfully cloned repository {repo_url} to {workspace_path}"
+                    f'Successfully cloned repository {repo_url} to {workspace_path}'
                 )
                 return True
 
             # If clone fails, try to checkout the branch
             checkout_result = subprocess.run(
-                ["git", "checkout", branch],
+                ['git', 'checkout', branch],
                 cwd=workspace_path,
                 capture_output=True,
                 text=True,
@@ -88,19 +88,19 @@ class MockAppConversationServiceBase:
             )
 
             if checkout_result.returncode == 0:
-                self.logger.info(f"Successfully checked out branch {branch}")
+                self.logger.info(f'Successfully checked out branch {branch}')
                 return True
             else:
                 self.logger.error(
-                    f"Failed to checkout branch {branch}: {checkout_result.stderr}"
+                    f'Failed to checkout branch {branch}: {checkout_result.stderr}'
                 )
                 return False
 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"Git operation timed out after {timeout} seconds")
+            self.logger.error(f'Git operation timed out after {timeout} seconds')
             return False
         except Exception as e:
-            self.logger.error(f"Git operation failed: {str(e)}")
+            self.logger.error(f'Git operation failed: {str(e)}')
             return False
 
 
@@ -113,52 +113,52 @@ def service():
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_successful_clone(service):
     """Test successful git clone operation."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock successful clone
-        mock_run.return_value = MagicMock(returncode=0, stderr="", stdout="Cloning...")
+        mock_run.return_value = MagicMock(returncode=0, stderr='', stdout='Cloning...')
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="main",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='main',
             timeout=300,
         )
 
         assert result is True
         mock_run.assert_called_once_with(
             [
-                "git",
-                "clone",
-                "--branch",
-                "main",
-                "https://github.com/test/repo.git",
-                "/tmp/test_repo",
+                'git',
+                'clone',
+                '--branch',
+                'main',
+                'https://github.com/test/repo.git',
+                '/tmp/test_repo',
             ],
             capture_output=True,
             text=True,
             timeout=300,
         )
         service.logger.info.assert_called_with(
-            "Successfully cloned repository https://github.com/test/repo.git to /tmp/test_repo"
+            'Successfully cloned repository https://github.com/test/repo.git to /tmp/test_repo'
         )
 
 
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_clone_fails_checkout_succeeds(service):
     """Test git clone fails but checkout succeeds."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock clone failure, then checkout success
         mock_run.side_effect = [
-            MagicMock(returncode=1, stderr="Clone failed", stdout=""),  # Clone fails
+            MagicMock(returncode=1, stderr='Clone failed', stdout=''),  # Clone fails
             MagicMock(
-                returncode=0, stderr="", stdout="Switched to branch"
+                returncode=0, stderr='', stdout='Switched to branch'
             ),  # Checkout succeeds
         ]
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="feature-branch",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='feature-branch',
             timeout=300,
         )
 
@@ -168,12 +168,12 @@ async def test_clone_or_init_git_repo_clone_fails_checkout_succeeds(service):
         # Check clone call
         mock_run.assert_any_call(
             [
-                "git",
-                "clone",
-                "--branch",
-                "feature-branch",
-                "https://github.com/test/repo.git",
-                "/tmp/test_repo",
+                'git',
+                'clone',
+                '--branch',
+                'feature-branch',
+                'https://github.com/test/repo.git',
+                '/tmp/test_repo',
             ],
             capture_output=True,
             text=True,
@@ -182,109 +182,109 @@ async def test_clone_or_init_git_repo_clone_fails_checkout_succeeds(service):
 
         # Check checkout call
         mock_run.assert_any_call(
-            ["git", "checkout", "feature-branch"],
-            cwd="/tmp/test_repo",
+            ['git', 'checkout', 'feature-branch'],
+            cwd='/tmp/test_repo',
             capture_output=True,
             text=True,
             timeout=300,
         )
 
         service.logger.info.assert_called_with(
-            "Successfully checked out branch feature-branch"
+            'Successfully checked out branch feature-branch'
         )
 
 
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_both_operations_fail(service):
     """Test both git clone and checkout operations fail."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock both operations failing
         mock_run.side_effect = [
-            MagicMock(returncode=1, stderr="Clone failed", stdout=""),  # Clone fails
+            MagicMock(returncode=1, stderr='Clone failed', stdout=''),  # Clone fails
             MagicMock(
-                returncode=1, stderr="Checkout failed", stdout=""
+                returncode=1, stderr='Checkout failed', stdout=''
             ),  # Checkout fails
         ]
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="nonexistent-branch",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='nonexistent-branch',
             timeout=300,
         )
 
         assert result is False
         assert mock_run.call_count == 2
         service.logger.error.assert_called_with(
-            "Failed to checkout branch nonexistent-branch: Checkout failed"
+            'Failed to checkout branch nonexistent-branch: Checkout failed'
         )
 
 
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_timeout(service):
     """Test git operation timeout."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock timeout exception
         mock_run.side_effect = subprocess.TimeoutExpired(
-            cmd=["git", "clone"], timeout=300
+            cmd=['git', 'clone'], timeout=300
         )
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="main",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='main',
             timeout=300,
         )
 
         assert result is False
         service.logger.error.assert_called_with(
-            "Git operation timed out after 300 seconds"
+            'Git operation timed out after 300 seconds'
         )
 
 
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_exception(service):
     """Test git operation with unexpected exception."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock unexpected exception
-        mock_run.side_effect = Exception("Unexpected error")
+        mock_run.side_effect = Exception('Unexpected error')
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="main",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='main',
             timeout=300,
         )
 
         assert result is False
         service.logger.error.assert_called_with(
-            "Git operation failed: Unexpected error"
+            'Git operation failed: Unexpected error'
         )
 
 
 @pytest.mark.asyncio
 async def test_clone_or_init_git_repo_custom_timeout(service):
     """Test git operation with custom timeout."""
-    with patch("subprocess.run") as mock_run:
+    with patch('subprocess.run') as mock_run:
         # Mock successful clone with custom timeout
-        mock_run.return_value = MagicMock(returncode=0, stderr="", stdout="Cloning...")
+        mock_run.return_value = MagicMock(returncode=0, stderr='', stdout='Cloning...')
 
         result = await service.clone_or_init_git_repo(
-            workspace_path="/tmp/test_repo",
-            repo_url="https://github.com/test/repo.git",
-            branch="main",
+            workspace_path='/tmp/test_repo',
+            repo_url='https://github.com/test/repo.git',
+            branch='main',
             timeout=600,  # Custom timeout
         )
 
         assert result is True
         mock_run.assert_called_once_with(
             [
-                "git",
-                "clone",
-                "--branch",
-                "main",
-                "https://github.com/test/repo.git",
-                "/tmp/test_repo",
+                'git',
+                'clone',
+                '--branch',
+                'main',
+                'https://github.com/test/repo.git',
+                '/tmp/test_repo',
             ],
             capture_output=True,
             text=True,
@@ -293,7 +293,7 @@ async def test_clone_or_init_git_repo_custom_timeout(service):
 
 
 @patch(
-    "openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser"
+    'openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser'
 )
 def test_create_condenser_default_agent_with_none_max_size(mock_condenser_class):
     """Test _create_condenser for DEFAULT agent with condenser_max_size = None uses default."""
@@ -301,7 +301,7 @@ def test_create_condenser_default_agent_with_none_max_size(mock_condenser_class)
     mock_user_context = Mock(spec=UserContext)
     with patch.object(
         AppConversationServiceBase,
-        "__abstractmethods__",
+        '__abstractmethods__',
         set(),
     ):
         service = AppConversationServiceBase(
@@ -310,7 +310,7 @@ def test_create_condenser_default_agent_with_none_max_size(mock_condenser_class)
         )
         mock_llm = MagicMock()
         mock_llm_copy = MagicMock()
-        mock_llm_copy.usage_id = "condenser"
+        mock_llm_copy.usage_id = 'condenser'
         mock_llm.model_copy.return_value = mock_llm_copy
         mock_condenser_instance = MagicMock()
         mock_condenser_class.return_value = mock_condenser_instance
@@ -322,15 +322,15 @@ def test_create_condenser_default_agent_with_none_max_size(mock_condenser_class)
         mock_condenser_class.assert_called_once()
         call_kwargs = mock_condenser_class.call_args[1]
         # When condenser_max_size is None, max_size should not be passed (uses SDK default of 240)
-        assert "max_size" not in call_kwargs
+        assert 'max_size' not in call_kwargs
         # keep_first is never passed (uses SDK default of 2)
-        assert "keep_first" not in call_kwargs
-        assert call_kwargs["llm"].usage_id == "condenser"
+        assert 'keep_first' not in call_kwargs
+        assert call_kwargs['llm'].usage_id == 'condenser'
         mock_llm.model_copy.assert_called_once()
 
 
 @patch(
-    "openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser"
+    'openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser'
 )
 def test_create_condenser_default_agent_with_custom_max_size(mock_condenser_class):
     """Test _create_condenser for DEFAULT agent with custom condenser_max_size."""
@@ -338,7 +338,7 @@ def test_create_condenser_default_agent_with_custom_max_size(mock_condenser_clas
     mock_user_context = Mock(spec=UserContext)
     with patch.object(
         AppConversationServiceBase,
-        "__abstractmethods__",
+        '__abstractmethods__',
         set(),
     ):
         service = AppConversationServiceBase(
@@ -347,7 +347,7 @@ def test_create_condenser_default_agent_with_custom_max_size(mock_condenser_clas
         )
         mock_llm = MagicMock()
         mock_llm_copy = MagicMock()
-        mock_llm_copy.usage_id = "condenser"
+        mock_llm_copy.usage_id = 'condenser'
         mock_llm.model_copy.return_value = mock_llm_copy
         mock_condenser_instance = MagicMock()
         mock_condenser_class.return_value = mock_condenser_instance
@@ -358,15 +358,15 @@ def test_create_condenser_default_agent_with_custom_max_size(mock_condenser_clas
         # Assert
         mock_condenser_class.assert_called_once()
         call_kwargs = mock_condenser_class.call_args[1]
-        assert call_kwargs["max_size"] == 150  # Custom value should be used
+        assert call_kwargs['max_size'] == 150  # Custom value should be used
         # keep_first is never passed (uses SDK default of 2)
-        assert "keep_first" not in call_kwargs
-        assert call_kwargs["llm"].usage_id == "condenser"
+        assert 'keep_first' not in call_kwargs
+        assert call_kwargs['llm'].usage_id == 'condenser'
         mock_llm.model_copy.assert_called_once()
 
 
 @patch(
-    "openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser"
+    'openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser'
 )
 def test_create_condenser_plan_agent_with_none_max_size(mock_condenser_class):
     """Test _create_condenser for PLAN agent with condenser_max_size = None uses default."""
@@ -374,7 +374,7 @@ def test_create_condenser_plan_agent_with_none_max_size(mock_condenser_class):
     mock_user_context = Mock(spec=UserContext)
     with patch.object(
         AppConversationServiceBase,
-        "__abstractmethods__",
+        '__abstractmethods__',
         set(),
     ):
         service = AppConversationServiceBase(
@@ -383,7 +383,7 @@ def test_create_condenser_plan_agent_with_none_max_size(mock_condenser_class):
         )
         mock_llm = MagicMock()
         mock_llm_copy = MagicMock()
-        mock_llm_copy.usage_id = "planning_condenser"
+        mock_llm_copy.usage_id = 'planning_condenser'
         mock_llm.model_copy.return_value = mock_llm_copy
         mock_condenser_instance = MagicMock()
         mock_condenser_class.return_value = mock_condenser_instance
@@ -395,15 +395,15 @@ def test_create_condenser_plan_agent_with_none_max_size(mock_condenser_class):
         mock_condenser_class.assert_called_once()
         call_kwargs = mock_condenser_class.call_args[1]
         # When condenser_max_size is None, max_size should not be passed (uses SDK default of 240)
-        assert "max_size" not in call_kwargs
+        assert 'max_size' not in call_kwargs
         # keep_first is never passed (uses SDK default of 2)
-        assert "keep_first" not in call_kwargs
-        assert call_kwargs["llm"].usage_id == "planning_condenser"
+        assert 'keep_first' not in call_kwargs
+        assert call_kwargs['llm'].usage_id == 'planning_condenser'
         mock_llm.model_copy.assert_called_once()
 
 
 @patch(
-    "openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser"
+    'openhands.app_server.app_conversation.app_conversation_service_base.LLMSummarizingCondenser'
 )
 def test_create_condenser_plan_agent_with_custom_max_size(mock_condenser_class):
     """Test _create_condenser for PLAN agent with custom condenser_max_size."""
@@ -411,7 +411,7 @@ def test_create_condenser_plan_agent_with_custom_max_size(mock_condenser_class):
     mock_user_context = Mock(spec=UserContext)
     with patch.object(
         AppConversationServiceBase,
-        "__abstractmethods__",
+        '__abstractmethods__',
         set(),
     ):
         service = AppConversationServiceBase(
@@ -420,7 +420,7 @@ def test_create_condenser_plan_agent_with_custom_max_size(mock_condenser_class):
         )
         mock_llm = MagicMock()
         mock_llm_copy = MagicMock()
-        mock_llm_copy.usage_id = "planning_condenser"
+        mock_llm_copy.usage_id = 'planning_condenser'
         mock_llm.model_copy.return_value = mock_llm_copy
         mock_condenser_instance = MagicMock()
         mock_condenser_class.return_value = mock_condenser_instance
@@ -431,10 +431,10 @@ def test_create_condenser_plan_agent_with_custom_max_size(mock_condenser_class):
         # Assert
         mock_condenser_class.assert_called_once()
         call_kwargs = mock_condenser_class.call_args[1]
-        assert call_kwargs["max_size"] == 200  # Custom value should be used
+        assert call_kwargs['max_size'] == 200  # Custom value should be used
         # keep_first is never passed (uses SDK default of 2)
-        assert "keep_first" not in call_kwargs
-        assert call_kwargs["llm"].usage_id == "planning_condenser"
+        assert 'keep_first' not in call_kwargs
+        assert call_kwargs['llm'].usage_id == 'planning_condenser'
         mock_llm.model_copy.assert_called_once()
 
 
@@ -443,12 +443,12 @@ def test_create_condenser_plan_agent_with_custom_max_size(mock_condenser_class):
 # =============================================================================
 
 
-@pytest.mark.parametrize("value", [None, "", "none", "NoNe"])
+@pytest.mark.parametrize('value', [None, '', 'none', 'NoNe'])
 def test_create_security_analyzer_returns_none_for_empty_values(value):
     """_create_security_analyzer_from_string returns None for empty/none values."""
     # Arrange
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_create_security_analyzer_from_string",)
+        MockUserInfo(), bind_methods=('_create_security_analyzer_from_string',)
     )
 
     # Act
@@ -461,9 +461,9 @@ def test_create_security_analyzer_returns_none_for_empty_values(value):
 def test_create_security_analyzer_returns_llm_analyzer():
     """_create_security_analyzer_from_string returns LLMSecurityAnalyzer for llm string."""
     # Arrange
-    security_analyzer_str = "llm"
+    security_analyzer_str = 'llm'
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_create_security_analyzer_from_string",)
+        MockUserInfo(), bind_methods=('_create_security_analyzer_from_string',)
     )
 
     # Act
@@ -478,14 +478,14 @@ def test_create_security_analyzer_returns_llm_analyzer():
 def test_create_security_analyzer_logs_warning_for_unknown_value():
     """_create_security_analyzer_from_string logs warning and returns None for unknown."""
     # Arrange
-    unknown_value = "custom"
+    unknown_value = 'custom'
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_create_security_analyzer_from_string",)
+        MockUserInfo(), bind_methods=('_create_security_analyzer_from_string',)
     )
 
     # Act
     with patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base._logger"
+        'openhands.app_server.app_conversation.app_conversation_service_base._logger'
     ) as mock_logger:
         result = service._create_security_analyzer_from_string(unknown_value)
 
@@ -498,9 +498,9 @@ def test_select_confirmation_policy_when_disabled_returns_never_confirm():
     """_select_confirmation_policy returns NeverConfirm when confirmation_mode is False."""
     # Arrange
     confirmation_mode = False
-    security_analyzer = "llm"
+    security_analyzer = 'llm'
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_select_confirmation_policy",)
+        MockUserInfo(), bind_methods=('_select_confirmation_policy',)
     )
 
     # Act
@@ -516,9 +516,9 @@ def test_select_confirmation_policy_llm_returns_confirm_risky():
     """_select_confirmation_policy uses ConfirmRisky when analyzer is llm."""
     # Arrange
     confirmation_mode = True
-    security_analyzer = "llm"
+    security_analyzer = 'llm'
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_select_confirmation_policy",)
+        MockUserInfo(), bind_methods=('_select_confirmation_policy',)
     )
 
     # Act
@@ -530,7 +530,7 @@ def test_select_confirmation_policy_llm_returns_confirm_risky():
     assert isinstance(policy, ConfirmRisky)
 
 
-@pytest.mark.parametrize("security_analyzer", [None, "", "none", "custom"])
+@pytest.mark.parametrize('security_analyzer', [None, '', 'none', 'custom'])
 def test_select_confirmation_policy_non_llm_returns_always_confirm(
     security_analyzer,
 ):
@@ -538,7 +538,7 @@ def test_select_confirmation_policy_non_llm_returns_always_confirm(
     # Arrange
     confirmation_mode = True
     service, _ = _create_service_with_mock_user_context(
-        MockUserInfo(), bind_methods=("_select_confirmation_policy",)
+        MockUserInfo(), bind_methods=('_select_confirmation_policy',)
     )
 
     # Act
@@ -554,24 +554,24 @@ def test_select_confirmation_policy_non_llm_returns_always_confirm(
 async def test_set_security_analyzer_skips_when_no_session_key():
     """_set_security_analyzer_from_settings exits early without session_api_key."""
     # Arrange
-    agent_server_url = "https://agent.example.com"
+    agent_server_url = 'https://agent.example.com'
     conversation_id = uuid4()
     httpx_client = AsyncMock()
     service, _ = _create_service_with_mock_user_context(
         MockUserInfo(),
         bind_methods=(
-            "_create_security_analyzer_from_string",
-            "_set_security_analyzer_from_settings",
+            '_create_security_analyzer_from_string',
+            '_set_security_analyzer_from_settings',
         ),
     )
 
-    with patch.object(service, "_create_security_analyzer_from_string") as mock_create:
+    with patch.object(service, '_create_security_analyzer_from_string') as mock_create:
         # Act
         await service._set_security_analyzer_from_settings(
             agent_server_url=agent_server_url,
             session_api_key=None,
             conversation_id=conversation_id,
-            security_analyzer_str="llm",
+            security_analyzer_str='llm',
             httpx_client=httpx_client,
         )
 
@@ -584,32 +584,32 @@ async def test_set_security_analyzer_skips_when_no_session_key():
 async def test_set_security_analyzer_skips_when_analyzer_none():
     """_set_security_analyzer_from_settings skips API call when analyzer resolves to None."""
     # Arrange
-    agent_server_url = "https://agent.example.com"
-    session_api_key = "session-key"
+    agent_server_url = 'https://agent.example.com'
+    session_api_key = 'session-key'
     conversation_id = uuid4()
     httpx_client = AsyncMock()
     service, _ = _create_service_with_mock_user_context(
         MockUserInfo(),
         bind_methods=(
-            "_create_security_analyzer_from_string",
-            "_set_security_analyzer_from_settings",
+            '_create_security_analyzer_from_string',
+            '_set_security_analyzer_from_settings',
         ),
     )
 
     with patch.object(
-        service, "_create_security_analyzer_from_string", return_value=None
+        service, '_create_security_analyzer_from_string', return_value=None
     ) as mock_create:
         # Act
         await service._set_security_analyzer_from_settings(
             agent_server_url=agent_server_url,
             session_api_key=session_api_key,
             conversation_id=conversation_id,
-            security_analyzer_str="none",
+            security_analyzer_str='none',
             httpx_client=httpx_client,
         )
 
     # Assert
-    mock_create.assert_called_once_with("none")
+    mock_create.assert_called_once_with('none')
     httpx_client.post.assert_not_called()
 
 
@@ -627,10 +627,10 @@ class DummyAnalyzer:
 async def test_set_security_analyzer_successfully_calls_agent_server():
     """_set_security_analyzer_from_settings posts analyzer payload when available."""
     # Arrange
-    agent_server_url = "https://agent.example.com"
-    session_api_key = "session-key"
+    agent_server_url = 'https://agent.example.com'
+    session_api_key = 'session-key'
     conversation_id = uuid4()
-    analyzer_payload = {"type": "llm"}
+    analyzer_payload = {'type': 'llm'}
     httpx_client = AsyncMock()
     http_response = MagicMock()
     http_response.raise_for_status = MagicMock()
@@ -638,8 +638,8 @@ async def test_set_security_analyzer_successfully_calls_agent_server():
     service, _ = _create_service_with_mock_user_context(
         MockUserInfo(),
         bind_methods=(
-            "_create_security_analyzer_from_string",
-            "_set_security_analyzer_from_settings",
+            '_create_security_analyzer_from_string',
+            '_set_security_analyzer_from_settings',
         ),
     )
 
@@ -648,11 +648,11 @@ async def test_set_security_analyzer_successfully_calls_agent_server():
     with (
         patch.object(
             service,
-            "_create_security_analyzer_from_string",
+            '_create_security_analyzer_from_string',
             return_value=analyzer,
         ) as mock_create,
         patch(
-            "openhands.app_server.app_conversation.app_conversation_service_base._logger"
+            'openhands.app_server.app_conversation.app_conversation_service_base._logger'
         ) as mock_logger,
     ):
         # Act
@@ -660,16 +660,16 @@ async def test_set_security_analyzer_successfully_calls_agent_server():
             agent_server_url=agent_server_url,
             session_api_key=session_api_key,
             conversation_id=conversation_id,
-            security_analyzer_str="llm",
+            security_analyzer_str='llm',
             httpx_client=httpx_client,
         )
 
     # Assert
-    mock_create.assert_called_once_with("llm")
+    mock_create.assert_called_once_with('llm')
     httpx_client.post.assert_awaited_once_with(
-        f"{agent_server_url}/api/conversations/{conversation_id}/security_analyzer",
-        json={"security_analyzer": analyzer_payload},
-        headers={"X-Session-API-Key": session_api_key},
+        f'{agent_server_url}/api/conversations/{conversation_id}/security_analyzer',
+        json={'security_analyzer': analyzer_payload},
+        headers={'X-Session-API-Key': session_api_key},
         timeout=30.0,
     )
     http_response.raise_for_status.assert_called_once()
@@ -680,17 +680,17 @@ async def test_set_security_analyzer_successfully_calls_agent_server():
 async def test_set_security_analyzer_logs_warning_on_failure():
     """_set_security_analyzer_from_settings warns but does not raise on errors."""
     # Arrange
-    agent_server_url = "https://agent.example.com"
-    session_api_key = "session-key"
+    agent_server_url = 'https://agent.example.com'
+    session_api_key = 'session-key'
     conversation_id = uuid4()
-    analyzer_payload = {"type": "llm"}
+    analyzer_payload = {'type': 'llm'}
     httpx_client = AsyncMock()
-    httpx_client.post.side_effect = RuntimeError("network down")
+    httpx_client.post.side_effect = RuntimeError('network down')
     service, _ = _create_service_with_mock_user_context(
         MockUserInfo(),
         bind_methods=(
-            "_create_security_analyzer_from_string",
-            "_set_security_analyzer_from_settings",
+            '_create_security_analyzer_from_string',
+            '_set_security_analyzer_from_settings',
         ),
     )
 
@@ -699,11 +699,11 @@ async def test_set_security_analyzer_logs_warning_on_failure():
     with (
         patch.object(
             service,
-            "_create_security_analyzer_from_string",
+            '_create_security_analyzer_from_string',
             return_value=analyzer,
         ) as mock_create,
         patch(
-            "openhands.app_server.app_conversation.app_conversation_service_base._logger"
+            'openhands.app_server.app_conversation.app_conversation_service_base._logger'
         ) as mock_logger,
     ):
         # Act
@@ -711,12 +711,12 @@ async def test_set_security_analyzer_logs_warning_on_failure():
             agent_server_url=agent_server_url,
             session_api_key=session_api_key,
             conversation_id=conversation_id,
-            security_analyzer_str="llm",
+            security_analyzer_str='llm',
             httpx_client=httpx_client,
         )
 
     # Assert
-    mock_create.assert_called_once_with("llm")
+    mock_create.assert_called_once_with('llm')
     httpx_client.post.assert_awaited_once()
     mock_logger.warning.assert_called()
 
@@ -741,7 +741,7 @@ def _create_service_with_mock_user_context(
     # Create a simple mock service and set required attribute
     service = MagicMock()
     service.user_context = mock_user_context
-    methods_to_bind = ["_configure_git_user_settings"]
+    methods_to_bind = ['_configure_git_user_settings']
     if bind_methods:
         methods_to_bind.extend(bind_methods)
         # Remove potential duplicates while keeping order
@@ -758,14 +758,14 @@ def _create_service_with_mock_user_context(
 @pytest.fixture
 def mock_workspace():
     """Create a mock workspace instance for testing."""
-    return MockWorkspace(working_dir="/workspace/project")
+    return MockWorkspace(working_dir='/workspace/project')
 
 
 @pytest.mark.asyncio
 async def test_configure_git_user_settings_both_name_and_email(mock_workspace):
     """Test configuring both git user name and email."""
     user_info = MockUserInfo(
-        git_user_name="Test User", git_user_email="test@example.com"
+        git_user_name='Test User', git_user_email='test@example.com'
     )
     service, mock_user_context = _create_service_with_mock_user_context(user_info)
 
@@ -779,19 +779,19 @@ async def test_configure_git_user_settings_both_name_and_email(mock_workspace):
 
     # Check git config user.name call
     mock_workspace.execute_command.assert_any_call(
-        'git config --global user.name "Test User"', "/workspace/project"
+        'git config --global user.name "Test User"', '/workspace/project'
     )
 
     # Check git config user.email call
     mock_workspace.execute_command.assert_any_call(
-        'git config --global user.email "test@example.com"', "/workspace/project"
+        'git config --global user.email "test@example.com"', '/workspace/project'
     )
 
 
 @pytest.mark.asyncio
 async def test_configure_git_user_settings_only_name(mock_workspace):
     """Test configuring only git user name."""
-    user_info = MockUserInfo(git_user_name="Test User", git_user_email=None)
+    user_info = MockUserInfo(git_user_name='Test User', git_user_email=None)
     service, _ = _create_service_with_mock_user_context(user_info)
 
     await service._configure_git_user_settings(mock_workspace)
@@ -799,14 +799,14 @@ async def test_configure_git_user_settings_only_name(mock_workspace):
     # Verify only user.name was configured
     assert mock_workspace.execute_command.call_count == 1
     mock_workspace.execute_command.assert_called_once_with(
-        'git config --global user.name "Test User"', "/workspace/project"
+        'git config --global user.name "Test User"', '/workspace/project'
     )
 
 
 @pytest.mark.asyncio
 async def test_configure_git_user_settings_only_email(mock_workspace):
     """Test configuring only git user email."""
-    user_info = MockUserInfo(git_user_name=None, git_user_email="test@example.com")
+    user_info = MockUserInfo(git_user_name=None, git_user_email='test@example.com')
     service, _ = _create_service_with_mock_user_context(user_info)
 
     await service._configure_git_user_settings(mock_workspace)
@@ -814,7 +814,7 @@ async def test_configure_git_user_settings_only_email(mock_workspace):
     # Verify only user.email was configured
     assert mock_workspace.execute_command.call_count == 1
     mock_workspace.execute_command.assert_called_once_with(
-        'git config --global user.email "test@example.com"', "/workspace/project"
+        'git config --global user.email "test@example.com"', '/workspace/project'
     )
 
 
@@ -833,7 +833,7 @@ async def test_configure_git_user_settings_neither_set(mock_workspace):
 @pytest.mark.asyncio
 async def test_configure_git_user_settings_empty_strings(mock_workspace):
     """Test when git user name and email are empty strings."""
-    user_info = MockUserInfo(git_user_name="", git_user_email="")
+    user_info = MockUserInfo(git_user_name='', git_user_email='')
     service, _ = _create_service_with_mock_user_context(user_info)
 
     await service._configure_git_user_settings(mock_workspace)
@@ -848,7 +848,7 @@ async def test_configure_git_user_settings_get_user_info_fails(mock_workspace):
     user_info = MockUserInfo()
     service, mock_user_context = _create_service_with_mock_user_context(user_info)
     mock_user_context.get_user_info = AsyncMock(
-        side_effect=Exception("User info error")
+        side_effect=Exception('User info error')
     )
 
     # Should not raise exception, just log warning
@@ -862,14 +862,14 @@ async def test_configure_git_user_settings_get_user_info_fails(mock_workspace):
 async def test_configure_git_user_settings_name_command_fails(mock_workspace):
     """Test handling when git config user.name command fails."""
     user_info = MockUserInfo(
-        git_user_name="Test User", git_user_email="test@example.com"
+        git_user_name='Test User', git_user_email='test@example.com'
     )
     service, _ = _create_service_with_mock_user_context(user_info)
 
     # Make the first command fail (user.name), second succeed (user.email)
     mock_workspace.execute_command = AsyncMock(
         side_effect=[
-            MockCommandResult(exit_code=1, stderr="Permission denied"),
+            MockCommandResult(exit_code=1, stderr='Permission denied'),
             MockCommandResult(exit_code=0),
         ]
     )
@@ -885,7 +885,7 @@ async def test_configure_git_user_settings_name_command_fails(mock_workspace):
 async def test_configure_git_user_settings_email_command_fails(mock_workspace):
     """Test handling when git config user.email command fails."""
     user_info = MockUserInfo(
-        git_user_name="Test User", git_user_email="test@example.com"
+        git_user_name='Test User', git_user_email='test@example.com'
     )
     service, _ = _create_service_with_mock_user_context(user_info)
 
@@ -893,7 +893,7 @@ async def test_configure_git_user_settings_email_command_fails(mock_workspace):
     mock_workspace.execute_command = AsyncMock(
         side_effect=[
             MockCommandResult(exit_code=0),
-            MockCommandResult(exit_code=1, stderr="Permission denied"),
+            MockCommandResult(exit_code=1, stderr='Permission denied'),
         ]
     )
 
@@ -908,7 +908,7 @@ async def test_configure_git_user_settings_email_command_fails(mock_workspace):
 async def test_configure_git_user_settings_special_characters_in_name(mock_workspace):
     """Test git user name with special characters."""
     user_info = MockUserInfo(
-        git_user_name="Test O'Brien", git_user_email="test@example.com"
+        git_user_name="Test O'Brien", git_user_email='test@example.com'
     )
     service, _ = _create_service_with_mock_user_context(user_info)
 
@@ -916,7 +916,7 @@ async def test_configure_git_user_settings_special_characters_in_name(mock_works
 
     # Verify the name is passed with special characters
     mock_workspace.execute_command.assert_any_call(
-        'git config --global user.name "Test O\'Brien"', "/workspace/project"
+        'git config --global user.name "Test O\'Brien"', '/workspace/project'
     )
 
 
@@ -932,17 +932,17 @@ class TestMergeSkills:
         """Test merging skill lists with no duplicate names."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
 
             skill1 = Mock(spec=Skill)
-            skill1.name = "skill1"
+            skill1.name = 'skill1'
             skill2 = Mock(spec=Skill)
-            skill2.name = "skill2"
+            skill2.name = 'skill2'
             skill3 = Mock(spec=Skill)
-            skill3.name = "skill3"
+            skill3.name = 'skill3'
 
             skill_lists = [[skill1], [skill2], [skill3]]
 
@@ -952,27 +952,27 @@ class TestMergeSkills:
             # Assert
             assert len(result) == 3
             names = {s.name for s in result}
-            assert names == {"skill1", "skill2", "skill3"}
+            assert names == {'skill1', 'skill2', 'skill3'}
 
     def test_merges_skills_with_duplicates_later_wins(self):
         """Test that later skill lists override earlier ones for duplicate names."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
 
             skill1_v1 = Mock(spec=Skill)
-            skill1_v1.name = "skill1"
-            skill1_v1.version = "v1"
+            skill1_v1.name = 'skill1'
+            skill1_v1.version = 'v1'
 
             skill1_v2 = Mock(spec=Skill)
-            skill1_v2.name = "skill1"
-            skill1_v2.version = "v2"
+            skill1_v2.name = 'skill1'
+            skill1_v2.version = 'v2'
 
             skill2 = Mock(spec=Skill)
-            skill2.name = "skill2"
+            skill2.name = 'skill2'
 
             skill_lists = [[skill1_v1], [skill1_v2, skill2]]
 
@@ -981,8 +981,8 @@ class TestMergeSkills:
 
             # Assert
             assert len(result) == 2
-            skill1_result = next(s for s in result if s.name == "skill1")
-            assert skill1_result.version == "v2"
+            skill1_result = next(s for s in result if s.name == 'skill1')
+            assert skill1_result.version == 'v2'
 
 
 class TestLoadAndMergeAllSkills:
@@ -990,13 +990,13 @@ class TestLoadAndMergeAllSkills:
 
     @pytest.mark.asyncio
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server"
+        'openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_org_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_org_config'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config'
     )
     async def test_loads_skills_successfully(
         self,
@@ -1007,56 +1007,56 @@ class TestLoadAndMergeAllSkills:
         """Test successfully loading skills from agent-server."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
 
             mock_workspace = AsyncMock()
-            mock_workspace.working_dir = "/workspace"
+            mock_workspace.working_dir = '/workspace'
 
             from openhands.app_server.sandbox.sandbox_models import ExposedUrl
 
             sandbox = Mock(spec=SandboxInfo)
             exposed_url = ExposedUrl(
-                name="AGENT_SERVER", url="http://localhost:8000", port=8000
+                name='AGENT_SERVER', url='http://localhost:8000', port=8000
             )
             sandbox.exposed_urls = [exposed_url]
-            sandbox.session_api_key = "test-api-key"
+            sandbox.session_api_key = 'test-api-key'
 
             skill1 = Mock(spec=Skill)
-            skill1.name = "skill1"
+            skill1.name = 'skill1'
             skill2 = Mock(spec=Skill)
-            skill2.name = "skill2"
+            skill2.name = 'skill2'
 
             mock_load_skills.return_value = [skill1, skill2]
-            mock_build_org_config.return_value = {"repository": "owner/repo"}
-            mock_build_sandbox_config.return_value = {"exposed_urls": []}
+            mock_build_org_config.return_value = {'repository': 'owner/repo'}
+            mock_build_sandbox_config.return_value = {'exposed_urls': []}
 
             # Act
             result = await service.load_and_merge_all_skills(
-                sandbox, "owner/repo", "/workspace", "http://localhost:8000"
+                sandbox, 'owner/repo', '/workspace', 'http://localhost:8000'
             )
 
             # Assert
             assert len(result) == 2
-            assert result[0].name == "skill1"
-            assert result[1].name == "skill2"
+            assert result[0].name == 'skill1'
+            assert result[1].name == 'skill2'
             mock_load_skills.assert_called_once()
             call_kwargs = mock_load_skills.call_args[1]
-            assert call_kwargs["agent_server_url"] == "http://localhost:8000"
-            assert call_kwargs["session_api_key"] == "test-api-key"
-            assert call_kwargs["project_dir"] == "/workspace/repo"
+            assert call_kwargs['agent_server_url'] == 'http://localhost:8000'
+            assert call_kwargs['session_api_key'] == 'test-api-key'
+            assert call_kwargs['project_dir'] == '/workspace/repo'
 
     @pytest.mark.asyncio
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server"
+        'openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server'
     )
     async def test_returns_empty_list_when_no_agent_server_url(self, mock_load_skills):
         """Test returns empty list when agent-server URL is not available."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
@@ -1066,14 +1066,14 @@ class TestLoadAndMergeAllSkills:
 
             sandbox = Mock(spec=SandboxInfo)
             exposed_url = ExposedUrl(
-                name="VSCODE", url="http://localhost:8080", port=8080
+                name='VSCODE', url='http://localhost:8080', port=8080
             )
             sandbox.exposed_urls = [exposed_url]
 
             # Act - pass empty string to simulate no agent server URL
             # This should still call load_skills_from_agent_server but it will fail
             result = await service.load_and_merge_all_skills(
-                sandbox, "owner/repo", "/workspace", ""
+                sandbox, 'owner/repo', '/workspace', ''
             )
 
             # Assert - should return empty list when agent_server_url is empty
@@ -1081,13 +1081,13 @@ class TestLoadAndMergeAllSkills:
 
     @pytest.mark.asyncio
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server"
+        'openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_org_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_org_config'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config'
     )
     async def test_uses_working_dir_when_no_repository(
         self,
@@ -1098,7 +1098,7 @@ class TestLoadAndMergeAllSkills:
         """Test uses working_dir as project_dir when no repository is selected."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
@@ -1108,10 +1108,10 @@ class TestLoadAndMergeAllSkills:
 
             sandbox = Mock(spec=SandboxInfo)
             exposed_url = ExposedUrl(
-                name="AGENT_SERVER", url="http://localhost:8000", port=8000
+                name='AGENT_SERVER', url='http://localhost:8000', port=8000
             )
             sandbox.exposed_urls = [exposed_url]
-            sandbox.session_api_key = "test-key"
+            sandbox.session_api_key = 'test-key'
 
             mock_load_skills.return_value = []
             mock_build_org_config.return_value = None
@@ -1119,22 +1119,22 @@ class TestLoadAndMergeAllSkills:
 
             # Act
             await service.load_and_merge_all_skills(
-                sandbox, None, "/workspace", "http://localhost:8000"
+                sandbox, None, '/workspace', 'http://localhost:8000'
             )
 
             # Assert
             call_kwargs = mock_load_skills.call_args[1]
-            assert call_kwargs["project_dir"] == "/workspace"
+            assert call_kwargs['project_dir'] == '/workspace'
 
     @pytest.mark.asyncio
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server"
+        'openhands.app_server.app_conversation.app_conversation_service_base.load_skills_from_agent_server'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_org_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_org_config'
     )
     @patch(
-        "openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config"
+        'openhands.app_server.app_conversation.app_conversation_service_base.build_sandbox_config'
     )
     async def test_handles_exception_gracefully(
         self,
@@ -1145,7 +1145,7 @@ class TestLoadAndMergeAllSkills:
         """Test handles exceptions during skill loading."""
         # Arrange
         mock_user_context = Mock(spec=UserContext)
-        with patch.object(AppConversationServiceBase, "__abstractmethods__", set()):
+        with patch.object(AppConversationServiceBase, '__abstractmethods__', set()):
             service = AppConversationServiceBase(
                 init_git_in_empty_workspace=True, user_context=mock_user_context
             )
@@ -1155,16 +1155,16 @@ class TestLoadAndMergeAllSkills:
 
             sandbox = Mock(spec=SandboxInfo)
             exposed_url = ExposedUrl(
-                name="AGENT_SERVER", url="http://localhost:8000", port=8000
+                name='AGENT_SERVER', url='http://localhost:8000', port=8000
             )
             sandbox.exposed_urls = [exposed_url]
-            sandbox.session_api_key = "test-key"
+            sandbox.session_api_key = 'test-key'
 
-            mock_load_skills.side_effect = Exception("Network error")
+            mock_load_skills.side_effect = Exception('Network error')
 
             # Act
             result = await service.load_and_merge_all_skills(
-                sandbox, "owner/repo", "/workspace", "http://localhost:8000"
+                sandbox, 'owner/repo', '/workspace', 'http://localhost:8000'
             )
 
             # Assert

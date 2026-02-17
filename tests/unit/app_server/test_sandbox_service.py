@@ -66,7 +66,7 @@ def create_sandbox_info(
     status: SandboxStatus,
     created_at: datetime,
     created_by_user_id: str | None = None,
-    sandbox_spec_id: str = "test-spec",
+    sandbox_spec_id: str = 'test-spec',
 ) -> SandboxInfo:
     """Helper function to create SandboxInfo objects for testing."""
     return SandboxInfo(
@@ -74,7 +74,7 @@ def create_sandbox_info(
         created_by_user_id=created_by_user_id,
         sandbox_spec_id=sandbox_spec_id,
         status=status,
-        session_api_key="test-api-key" if status == SandboxStatus.RUNNING else None,
+        session_api_key='test-api-key' if status == SandboxStatus.RUNNING else None,
         created_at=created_at,
     )
 
@@ -112,9 +112,9 @@ class TestCleanupOldSandboxes:
         # Setup: 3 running sandboxes, limit is 5
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=3)),
-            create_sandbox_info("sb2", SandboxStatus.RUNNING, now - timedelta(hours=2)),
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb2', SandboxStatus.RUNNING, now - timedelta(hours=2)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         mock_sandbox_service.search_sandboxes_mock.return_value = SandboxPage(
@@ -135,19 +135,19 @@ class TestCleanupOldSandboxes:
         now = datetime.now(timezone.utc)
         sandboxes = [
             create_sandbox_info(
-                "sb1", SandboxStatus.RUNNING, now - timedelta(hours=5)
+                'sb1', SandboxStatus.RUNNING, now - timedelta(hours=5)
             ),  # oldest
             create_sandbox_info(
-                "sb2", SandboxStatus.RUNNING, now - timedelta(hours=4)
+                'sb2', SandboxStatus.RUNNING, now - timedelta(hours=4)
             ),  # second oldest
             create_sandbox_info(
-                "sb3", SandboxStatus.RUNNING, now - timedelta(hours=3)
+                'sb3', SandboxStatus.RUNNING, now - timedelta(hours=3)
             ),  # should be stopped
             create_sandbox_info(
-                "sb4", SandboxStatus.RUNNING, now - timedelta(hours=2)
+                'sb4', SandboxStatus.RUNNING, now - timedelta(hours=2)
             ),  # should remain
             create_sandbox_info(
-                "sb5", SandboxStatus.RUNNING, now - timedelta(hours=1)
+                'sb5', SandboxStatus.RUNNING, now - timedelta(hours=1)
             ),  # newest
         ]
 
@@ -160,7 +160,7 @@ class TestCleanupOldSandboxes:
         result = await mock_sandbox_service.pause_old_sandboxes(max_num_sandboxes=2)
 
         # Verify: Should pause the 2 oldest sandboxes
-        assert result == ["sb1", "sb2", "sb3"]
+        assert result == ['sb1', 'sb2', 'sb3']
         assert mock_sandbox_service.pause_sandbox_mock.call_count == 3
 
     @pytest.mark.asyncio
@@ -169,15 +169,15 @@ class TestCleanupOldSandboxes:
         # Setup: Mix of running and non-running sandboxes
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=5)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=5)),
             create_sandbox_info(
-                "sb2", SandboxStatus.PAUSED, now - timedelta(hours=4)
+                'sb2', SandboxStatus.PAUSED, now - timedelta(hours=4)
             ),  # should be ignored
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=3)),
             create_sandbox_info(
-                "sb4", SandboxStatus.ERROR, now - timedelta(hours=2)
+                'sb4', SandboxStatus.ERROR, now - timedelta(hours=2)
             ),  # should be ignored
-            create_sandbox_info("sb5", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb5', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         mock_sandbox_service.search_sandboxes_mock.return_value = SandboxPage(
@@ -190,8 +190,8 @@ class TestCleanupOldSandboxes:
 
         # Verify: Should stop only 1 sandbox (the oldest running one)
         assert len(result) == 1
-        assert "sb1" in result
-        mock_sandbox_service.pause_sandbox_mock.assert_called_once_with("sb1")
+        assert 'sb1' in result
+        mock_sandbox_service.pause_sandbox_mock.assert_called_once_with('sb1')
 
     @pytest.mark.asyncio
     async def test_cleanup_with_pagination(self, mock_sandbox_service):
@@ -201,19 +201,19 @@ class TestCleanupOldSandboxes:
 
         # First page
         page1_sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=3)),
-            create_sandbox_info("sb2", SandboxStatus.RUNNING, now - timedelta(hours=2)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb2', SandboxStatus.RUNNING, now - timedelta(hours=2)),
         ]
 
         # Second page
         page2_sandboxes = [
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         def search_side_effect(page_id=None, limit=100):
             if page_id is None:
-                return SandboxPage(items=page1_sandboxes, next_page_id="page2")
-            elif page_id == "page2":
+                return SandboxPage(items=page1_sandboxes, next_page_id='page2')
+            elif page_id == 'page2':
                 return SandboxPage(items=page2_sandboxes, next_page_id=None)
 
         mock_sandbox_service.search_sandboxes_mock.side_effect = search_side_effect
@@ -224,7 +224,7 @@ class TestCleanupOldSandboxes:
 
         # Verify: Should stop the oldest sandbox
         assert len(result) == 1
-        assert "sb1" in result
+        assert 'sb1' in result
         assert mock_sandbox_service.search_sandboxes_mock.call_count == 2
 
     @pytest.mark.asyncio
@@ -233,10 +233,10 @@ class TestCleanupOldSandboxes:
         # Setup: 4 running sandboxes, limit is 2
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=4)),
-            create_sandbox_info("sb2", SandboxStatus.RUNNING, now - timedelta(hours=3)),
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=2)),
-            create_sandbox_info("sb4", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=4)),
+            create_sandbox_info('sb2', SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=2)),
+            create_sandbox_info('sb4', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         mock_sandbox_service.search_sandboxes_mock.return_value = SandboxPage(
@@ -245,7 +245,7 @@ class TestCleanupOldSandboxes:
 
         # Setup: First pause fails, second succeeds
         def pause_side_effect(sandbox_id):
-            if sandbox_id == "sb1":
+            if sandbox_id == 'sb1':
                 return False  # Simulate failure
             return True
 
@@ -256,7 +256,7 @@ class TestCleanupOldSandboxes:
 
         # Verify: Should only include successfully paused sandbox
         assert len(result) == 1
-        assert "sb2" in result
+        assert 'sb2' in result
         assert mock_sandbox_service.pause_sandbox_mock.call_count == 2
 
     @pytest.mark.asyncio
@@ -265,9 +265,9 @@ class TestCleanupOldSandboxes:
         # Setup: 3 running sandboxes, limit is 1
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=3)),
-            create_sandbox_info("sb2", SandboxStatus.RUNNING, now - timedelta(hours=2)),
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb2', SandboxStatus.RUNNING, now - timedelta(hours=2)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         mock_sandbox_service.search_sandboxes_mock.return_value = SandboxPage(
@@ -276,8 +276,8 @@ class TestCleanupOldSandboxes:
 
         # Setup: First pause raises exception, second succeeds
         def pause_side_effect(sandbox_id):
-            if sandbox_id == "sb1":
-                raise Exception("Delete failed")
+            if sandbox_id == 'sb1':
+                raise Exception('Delete failed')
             return True
 
         mock_sandbox_service.pause_sandbox_mock.side_effect = pause_side_effect
@@ -287,7 +287,7 @@ class TestCleanupOldSandboxes:
 
         # Verify: Should only include successfully paused sandbox
         assert len(result) == 1
-        assert "sb2" in result
+        assert 'sb2' in result
         assert mock_sandbox_service.pause_sandbox_mock.call_count == 2
 
     @pytest.mark.asyncio
@@ -295,13 +295,13 @@ class TestCleanupOldSandboxes:
         """Test cleanup raises ValueError for invalid max_num_sandboxes."""
         # Test zero
         with pytest.raises(
-            ValueError, match="max_num_sandboxes must be greater than 0"
+            ValueError, match='max_num_sandboxes must be greater than 0'
         ):
             await mock_sandbox_service.pause_old_sandboxes(max_num_sandboxes=0)
 
         # Test negative
         with pytest.raises(
-            ValueError, match="max_num_sandboxes must be greater than 0"
+            ValueError, match='max_num_sandboxes must be greater than 0'
         ):
             await mock_sandbox_service.pause_old_sandboxes(max_num_sandboxes=-1)
 
@@ -311,12 +311,12 @@ class TestCleanupOldSandboxes:
         # Setup: Sandboxes in random order by creation time
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb_newest", SandboxStatus.RUNNING, now),  # newest
+            create_sandbox_info('sb_newest', SandboxStatus.RUNNING, now),  # newest
             create_sandbox_info(
-                "sb_oldest", SandboxStatus.RUNNING, now - timedelta(hours=5)
+                'sb_oldest', SandboxStatus.RUNNING, now - timedelta(hours=5)
             ),  # oldest
             create_sandbox_info(
-                "sb_middle", SandboxStatus.RUNNING, now - timedelta(hours=2)
+                'sb_middle', SandboxStatus.RUNNING, now - timedelta(hours=2)
             ),  # middle
         ]
 
@@ -330,13 +330,13 @@ class TestCleanupOldSandboxes:
 
         # Verify: Should stop the 2 oldest sandboxes in order
         assert len(result) == 2
-        assert "sb_oldest" in result
-        assert "sb_middle" in result
+        assert 'sb_oldest' in result
+        assert 'sb_middle' in result
 
         # Verify pause was called in the correct order (oldest first)
         calls = mock_sandbox_service.pause_sandbox_mock.call_args_list
-        assert calls[0][0][0] == "sb_oldest"
-        assert calls[1][0][0] == "sb_middle"
+        assert calls[0][0][0] == 'sb_oldest'
+        assert calls[1][0][0] == 'sb_middle'
 
     @pytest.mark.asyncio
     async def test_cleanup_exact_limit(self, mock_sandbox_service):
@@ -344,9 +344,9 @@ class TestCleanupOldSandboxes:
         # Setup: Exactly 3 running sandboxes, limit is 3
         now = datetime.now(timezone.utc)
         sandboxes = [
-            create_sandbox_info("sb1", SandboxStatus.RUNNING, now - timedelta(hours=3)),
-            create_sandbox_info("sb2", SandboxStatus.RUNNING, now - timedelta(hours=2)),
-            create_sandbox_info("sb3", SandboxStatus.RUNNING, now - timedelta(hours=1)),
+            create_sandbox_info('sb1', SandboxStatus.RUNNING, now - timedelta(hours=3)),
+            create_sandbox_info('sb2', SandboxStatus.RUNNING, now - timedelta(hours=2)),
+            create_sandbox_info('sb3', SandboxStatus.RUNNING, now - timedelta(hours=1)),
         ]
 
         mock_sandbox_service.search_sandboxes_mock.return_value = SandboxPage(

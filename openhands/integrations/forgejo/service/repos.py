@@ -17,19 +17,19 @@ class ForgejoReposMixin(ForgejoMixinBase):
         public: bool,
         app_mode: AppMode,
     ) -> list[Repository]:  # type: ignore[override]
-        url = f"{self.BASE_URL}/repos/search"
+        url = f'{self.BASE_URL}/repos/search'
         params = {
-            "q": query,
-            "limit": per_page,
-            "sort": sort,
-            "order": order,
-            "mode": "source",
+            'q': query,
+            'limit': per_page,
+            'sort': sort,
+            'order': order,
+            'mode': 'source',
         }
 
         response, _ = await self._make_request(url, params)
-        repos = response.get("data", []) if isinstance(response, dict) else []
+        repos = response.get('data', []) if isinstance(response, dict) else []
         if public:
-            repos = [repo for repo in repos if not repo.get("private", False)]
+            repos = [repo for repo in repos if not repo.get('private', False)]
         return [self._parse_repository(repo) for repo in repos]
 
     async def get_all_repositories(
@@ -41,24 +41,24 @@ class ForgejoReposMixin(ForgejoMixinBase):
         page = 1
         last_link_header: str | None = None
 
-        url = f"{self.BASE_URL}/user/repos"
+        url = f'{self.BASE_URL}/user/repos'
         forgejo_sort = self._map_sort(sort)
 
         while len(collected) < max_repos:
             params = {
-                "page": str(page),
-                "limit": str(per_page),
-                "sort": forgejo_sort,
+                'page': str(page),
+                'limit': str(per_page),
+                'sort': forgejo_sort,
             }
             response, headers = await self._make_request(url, params)
-            last_link_header = headers.get("Link")
+            last_link_header = headers.get('Link')
 
             page_repos = response if isinstance(response, list) else []
             if not page_repos:
                 break
 
             collected.extend(page_repos)
-            if 'rel="next"' not in (last_link_header or ""):
+            if 'rel="next"' not in (last_link_header or ''):
                 break
 
             page += 1
@@ -78,11 +78,11 @@ class ForgejoReposMixin(ForgejoMixinBase):
         query: str | None = None,
     ) -> list[Repository]:  # type: ignore[override]
         _ = installation_id
-        url = f"{self.BASE_URL}/user/repos"
+        url = f'{self.BASE_URL}/user/repos'
         params = {
-            "page": str(page),
-            "limit": str(per_page),
-            "sort": self._map_sort(sort),
+            'page': str(page),
+            'limit': str(per_page),
+            'sort': self._map_sort(sort),
         }
 
         response, headers = await self._make_request(url, params)
@@ -93,10 +93,10 @@ class ForgejoReposMixin(ForgejoMixinBase):
             repos = [
                 repo
                 for repo in repos
-                if lowered in (repo.get("full_name") or "").lower()
+                if lowered in (repo.get('full_name') or '').lower()
             ]
 
-        link_header = headers.get("Link")
+        link_header = headers.get('Link')
         return [self._parse_repository(repo, link_header=link_header) for repo in repos]
 
     async def get_repository_details_from_repo_name(
@@ -105,5 +105,5 @@ class ForgejoReposMixin(ForgejoMixinBase):
         owner, repo = self._split_repo(repository)
         url = self._build_repo_api_url(owner, repo)
         response, headers = await self._make_request(url)
-        link_header = headers.get("Link")
+        link_header = headers.get('Link')
         return self._parse_repository(response, link_header=link_header)

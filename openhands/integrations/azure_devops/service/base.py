@@ -30,8 +30,8 @@ class AzureDevOpsMixinBase(BaseGitService, HTTPClient):
                 self.token = latest_token
 
         return {
-            "Authorization": f"Bearer {self.token.get_secret_value() if self.token else ''}",
-            "Content-Type": "application/json",
+            'Authorization': f'Bearer {self.token.get_secret_value() if self.token else ""}',
+            'Content-Type': 'application/json',
         }
 
     async def get_latest_token(self) -> SecretStr | None:  # type: ignore[override]
@@ -44,15 +44,15 @@ class AzureDevOpsMixinBase(BaseGitService, HTTPClient):
         method: RequestMethod = RequestMethod.GET,
     ) -> tuple[Any, dict]:  # type: ignore[override]
         """Make HTTP request to Azure DevOps API."""
-        raise NotImplementedError("Implemented in AzureDevOpsServiceImpl")
+        raise NotImplementedError('Implemented in AzureDevOpsServiceImpl')
 
     def _parse_repository(self, repository: str) -> tuple[str, str, str]:
         """Parse repository string into organization, project, and repo name."""
-        raise NotImplementedError("Implemented in AzureDevOpsServiceImpl")
+        raise NotImplementedError('Implemented in AzureDevOpsServiceImpl')
 
     def _truncate_comment(self, comment: str, max_length: int = 1000) -> str:
         """Truncate comment to max length."""
-        raise NotImplementedError("Implemented in AzureDevOpsServiceImpl")
+        raise NotImplementedError('Implemented in AzureDevOpsServiceImpl')
 
     @staticmethod
     def _encode_url_component(component: str) -> str:
@@ -64,4 +64,4 @@ class AzureDevOpsMixinBase(BaseGitService, HTTPClient):
         Returns:
             URL-encoded string with spaces and special characters properly encoded
         """
-        return quote(component, safe="")
+        return quote(component, safe='')

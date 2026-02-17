@@ -20,31 +20,31 @@ from openhands.resolver.issue_handler_factory import IssueHandlerFactory
 @pytest.fixture
 def llm_config():
     return LLMConfig(
-        model="test-model",
-        api_key=SecretStr("test-key"),
+        model='test-model',
+        api_key=SecretStr('test-key'),
     )
 
 
 @pytest.fixture
 def factory_params(llm_config):
     return {
-        "owner": "test-owner",
-        "repo": "test-repo",
-        "token": "test-token",
-        "username": "test-user",
-        "llm_config": llm_config,
+        'owner': 'test-owner',
+        'repo': 'test-repo',
+        'token': 'test-token',
+        'username': 'test-user',
+        'llm_config': llm_config,
     }
 
 
 @pytest.fixture
 def azure_factory_params(llm_config):
     return {
-        "owner": "test-org/test-project",
-        "repo": "test-repo",
-        "token": "test-token",
-        "username": "test-user",
-        "base_domain": "dev.azure.com",
-        "llm_config": llm_config,
+        'owner': 'test-org/test-project',
+        'repo': 'test-repo',
+        'token': 'test-token',
+        'username': 'test-user',
+        'base_domain': 'dev.azure.com',
+        'llm_config': llm_config,
     }
 
 
@@ -52,64 +52,64 @@ test_cases = [
     # platform, issue_type, base_domain, expected_context_type, expected_handler_type, use_azure_params
     (
         ProviderType.GITHUB,
-        "issue",
-        "github.com",
+        'issue',
+        'github.com',
         ServiceContextIssue,
         GithubIssueHandler,
         False,
     ),
     (
         ProviderType.GITHUB,
-        "pr",
-        "github.com",
+        'pr',
+        'github.com',
         ServiceContextPR,
         GithubPRHandler,
         False,
     ),
     (
         ProviderType.GITLAB,
-        "issue",
-        "gitlab.com",
+        'issue',
+        'gitlab.com',
         ServiceContextIssue,
         GitlabIssueHandler,
         False,
     ),
     (
         ProviderType.GITLAB,
-        "pr",
-        "gitlab.com",
+        'pr',
+        'gitlab.com',
         ServiceContextPR,
         GitlabPRHandler,
         False,
     ),
     (
         ProviderType.FORGEJO,
-        "issue",
-        "codeberg.org",
+        'issue',
+        'codeberg.org',
         ServiceContextIssue,
         ForgejoIssueHandler,
         False,
     ),
     (
         ProviderType.FORGEJO,
-        "pr",
-        "codeberg.org",
+        'pr',
+        'codeberg.org',
         ServiceContextPR,
         ForgejoPRHandler,
         False,
     ),
     (
         ProviderType.AZURE_DEVOPS,
-        "issue",
-        "dev.azure.com",
+        'issue',
+        'dev.azure.com',
         ServiceContextIssue,
         AzureDevOpsIssueHandler,
         True,
     ),
     (
         ProviderType.AZURE_DEVOPS,
-        "pr",
-        "dev.azure.com",
+        'pr',
+        'dev.azure.com',
         ServiceContextPR,
         AzureDevOpsIssueHandler,
         True,
@@ -118,7 +118,7 @@ test_cases = [
 
 
 @pytest.mark.parametrize(
-    "platform,issue_type,base_domain,expected_context_type,expected_handler_type,use_azure_params",
+    'platform,issue_type,base_domain,expected_context_type,expected_handler_type,use_azure_params',
     test_cases,
 )
 def test_handler_creation(
@@ -134,7 +134,7 @@ def test_handler_creation(
     params = (
         azure_factory_params
         if use_azure_params
-        else {**factory_params, "base_domain": base_domain}
+        else {**factory_params, 'base_domain': base_domain}
     )
     factory = IssueHandlerFactory(**params, platform=platform, issue_type=issue_type)
 
@@ -148,9 +148,9 @@ def test_invalid_issue_type(factory_params):
     factory = IssueHandlerFactory(
         **factory_params,
         platform=ProviderType.GITHUB,
-        issue_type="invalid",
-        base_domain="github.com",
+        issue_type='invalid',
+        base_domain='github.com',
     )
 
-    with pytest.raises(ValueError, match="Invalid issue type: invalid"):
+    with pytest.raises(ValueError, match='Invalid issue type: invalid'):
         factory.create()

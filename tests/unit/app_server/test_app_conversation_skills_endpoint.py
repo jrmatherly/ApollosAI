@@ -9,7 +9,6 @@ from uuid import uuid4
 
 import pytest
 from fastapi import status
-from openhands.sdk.context.skills import KeywordTrigger, Skill, TaskTrigger
 
 from openhands.app_server.app_conversation.app_conversation_models import (
     AppConversation,
@@ -28,6 +27,7 @@ from openhands.app_server.sandbox.sandbox_models import (
 )
 from openhands.app_server.sandbox.sandbox_spec_models import SandboxSpecInfo
 from openhands.app_server.user.user_context import UserContext
+from openhands.sdk.context.skills import KeywordTrigger, Skill, TaskTrigger
 
 
 def _make_service_mock(
@@ -39,7 +39,7 @@ def _make_service_mock(
 ):
     """Create a mock service that passes the isinstance check and returns the desired values."""
 
-    mock_cls = type("AppConversationServiceMock", (MagicMock,), {})
+    mock_cls = type('AppConversationServiceMock', (MagicMock,), {})
     AppConversationServiceBase.register(mock_cls)
 
     service = mock_cls()
@@ -48,7 +48,7 @@ def _make_service_mock(
 
     async def _load_skills(*_args, **_kwargs):
         if raise_on_load:
-            raise Exception("Skill loading failed")
+            raise Exception('Skill loading failed')
         return skills_return or []
 
     service.load_and_merge_all_skills = AsyncMock(side_effect=_load_skills)
@@ -69,26 +69,26 @@ class TestGetConversationSkills:
         # Arrange
         conversation_id = uuid4()
         sandbox_id = str(uuid4())
-        working_dir = "/workspace"
+        working_dir = '/workspace'
 
         # Create mock conversation
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
-            selected_repository="owner/repo",
+            selected_repository='owner/repo',
             sandbox_status=SandboxStatus.RUNNING,
         )
 
         # Create mock sandbox with agent server URL
         mock_sandbox = SandboxInfo(
             id=sandbox_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             status=SandboxStatus.RUNNING,
             sandbox_spec_id=str(uuid4()),
-            session_api_key="test-api-key",
+            session_api_key='test-api-key',
             exposed_urls=[
-                ExposedUrl(name=AGENT_SERVER, url="http://localhost:8000", port=8000)
+                ExposedUrl(name=AGENT_SERVER, url='http://localhost:8000', port=8000)
             ],
         )
 
@@ -99,16 +99,16 @@ class TestGetConversationSkills:
 
         # Create mock skills - repo skill (no trigger)
         repo_skill = Skill(
-            name="repo_skill",
-            content="Repository skill content",
+            name='repo_skill',
+            content='Repository skill content',
             trigger=None,
         )
 
         # Create mock skills - knowledge skill (with KeywordTrigger)
         knowledge_skill = Skill(
-            name="knowledge_skill",
-            content="Knowledge skill content",
-            trigger=KeywordTrigger(keywords=["test", "help"]),
+            name='knowledge_skill',
+            content='Knowledge skill content',
+            trigger=KeywordTrigger(keywords=['test', 'help']),
         )
 
         # Mock services
@@ -137,30 +137,30 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_200_OK
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "skills" in data
-        assert len(data["skills"]) == 2
+        assert 'skills' in data
+        assert len(data['skills']) == 2
 
         # Check repo skill
         repo_skill_data = next(
-            (s for s in data["skills"] if s["name"] == "repo_skill"), None
+            (s for s in data['skills'] if s['name'] == 'repo_skill'), None
         )
         assert repo_skill_data is not None
-        assert repo_skill_data["type"] == "repo"
-        assert repo_skill_data["content"] == "Repository skill content"
-        assert repo_skill_data["triggers"] == []
+        assert repo_skill_data['type'] == 'repo'
+        assert repo_skill_data['content'] == 'Repository skill content'
+        assert repo_skill_data['triggers'] == []
 
         # Check knowledge skill
         knowledge_skill_data = next(
-            (s for s in data["skills"] if s["name"] == "knowledge_skill"), None
+            (s for s in data['skills'] if s['name'] == 'knowledge_skill'), None
         )
         assert knowledge_skill_data is not None
-        assert knowledge_skill_data["type"] == "knowledge"
-        assert knowledge_skill_data["content"] == "Knowledge skill content"
-        assert knowledge_skill_data["triggers"] == ["test", "help"]
+        assert knowledge_skill_data['type'] == 'knowledge'
+        assert knowledge_skill_data['content'] == 'Knowledge skill content'
+        assert knowledge_skill_data['triggers'] == ['test', 'help']
 
     async def test_get_skills_returns_404_when_conversation_not_found(self):
         """Test endpoint returns 404 when conversation doesn't exist.
@@ -191,12 +191,12 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "error" in data
-        assert str(conversation_id) in data["error"]
+        assert 'error' in data
+        assert str(conversation_id) in data['error']
 
     async def test_get_skills_returns_404_when_sandbox_not_found(self):
         """Test endpoint returns 404 when sandbox doesn't exist.
@@ -211,7 +211,7 @@ class TestGetConversationSkills:
 
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
             sandbox_status=SandboxStatus.RUNNING,
         )
@@ -237,12 +237,12 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "error" in data
-        assert "Sandbox not found" in data["error"]
+        assert 'error' in data
+        assert 'Sandbox not found' in data['error']
 
     async def test_get_skills_returns_404_when_sandbox_not_running(self):
         """Test endpoint returns 404 when sandbox is not in RUNNING state.
@@ -257,17 +257,17 @@ class TestGetConversationSkills:
 
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
             sandbox_status=SandboxStatus.PAUSED,
         )
 
         mock_sandbox = SandboxInfo(
             id=sandbox_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             status=SandboxStatus.PAUSED,
             sandbox_spec_id=str(uuid4()),
-            session_api_key="test-api-key",
+            session_api_key='test-api-key',
         )
 
         mock_user_context = MagicMock(spec=UserContext)
@@ -291,12 +291,12 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "error" in data
-        assert "not running" in data["error"]
+        assert 'error' in data
+        assert 'not running' in data['error']
 
     async def test_get_skills_handles_task_trigger_skills(self):
         """Test endpoint correctly handles skills with TaskTrigger.
@@ -311,31 +311,31 @@ class TestGetConversationSkills:
 
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
             sandbox_status=SandboxStatus.RUNNING,
         )
 
         mock_sandbox = SandboxInfo(
             id=sandbox_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             status=SandboxStatus.RUNNING,
             sandbox_spec_id=str(uuid4()),
-            session_api_key="test-api-key",
+            session_api_key='test-api-key',
             exposed_urls=[
-                ExposedUrl(name=AGENT_SERVER, url="http://localhost:8000", port=8000)
+                ExposedUrl(name=AGENT_SERVER, url='http://localhost:8000', port=8000)
             ],
         )
 
         mock_sandbox_spec = SandboxSpecInfo(
-            id=str(uuid4()), command=None, working_dir="/workspace"
+            id=str(uuid4()), command=None, working_dir='/workspace'
         )
 
         # Create task skill with TaskTrigger
         task_skill = Skill(
-            name="task_skill",
-            content="Task skill content",
-            trigger=TaskTrigger(triggers=["task", "execute"]),
+            name='task_skill',
+            content='Task skill content',
+            trigger=TaskTrigger(triggers=['task', 'execute']),
         )
 
         mock_user_context = MagicMock(spec=UserContext)
@@ -363,14 +363,14 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_200_OK
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert len(data["skills"]) == 1
-        skill_data = data["skills"][0]
-        assert skill_data["type"] == "knowledge"
-        assert skill_data["triggers"] == ["task", "execute"]
+        assert len(data['skills']) == 1
+        skill_data = data['skills'][0]
+        assert skill_data['type'] == 'knowledge'
+        assert skill_data['triggers'] == ['task', 'execute']
 
     async def test_get_skills_returns_500_on_skill_loading_error(self):
         """Test endpoint returns 500 when skill loading fails.
@@ -385,24 +385,24 @@ class TestGetConversationSkills:
 
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
             sandbox_status=SandboxStatus.RUNNING,
         )
 
         mock_sandbox = SandboxInfo(
             id=sandbox_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             status=SandboxStatus.RUNNING,
             sandbox_spec_id=str(uuid4()),
-            session_api_key="test-api-key",
+            session_api_key='test-api-key',
             exposed_urls=[
-                ExposedUrl(name=AGENT_SERVER, url="http://localhost:8000", port=8000)
+                ExposedUrl(name=AGENT_SERVER, url='http://localhost:8000', port=8000)
             ],
         )
 
         mock_sandbox_spec = SandboxSpecInfo(
-            id=str(uuid4()), command=None, working_dir="/workspace"
+            id=str(uuid4()), command=None, working_dir='/workspace'
         )
 
         mock_user_context = MagicMock(spec=UserContext)
@@ -430,12 +430,12 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "error" in data
-        assert "Error getting skills" in data["error"]
+        assert 'error' in data
+        assert 'Error getting skills' in data['error']
 
     async def test_get_skills_returns_empty_list_when_no_skills_loaded(self):
         """Test endpoint returns empty skills list when no skills are found.
@@ -450,24 +450,24 @@ class TestGetConversationSkills:
 
         mock_conversation = AppConversation(
             id=conversation_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             sandbox_id=sandbox_id,
             sandbox_status=SandboxStatus.RUNNING,
         )
 
         mock_sandbox = SandboxInfo(
             id=sandbox_id,
-            created_by_user_id="test-user",
+            created_by_user_id='test-user',
             status=SandboxStatus.RUNNING,
             sandbox_spec_id=str(uuid4()),
-            session_api_key="test-api-key",
+            session_api_key='test-api-key',
             exposed_urls=[
-                ExposedUrl(name=AGENT_SERVER, url="http://localhost:8000", port=8000)
+                ExposedUrl(name=AGENT_SERVER, url='http://localhost:8000', port=8000)
             ],
         )
 
         mock_sandbox_spec = SandboxSpecInfo(
-            id=str(uuid4()), command=None, working_dir="/workspace"
+            id=str(uuid4()), command=None, working_dir='/workspace'
         )
 
         mock_user_context = MagicMock(spec=UserContext)
@@ -495,9 +495,9 @@ class TestGetConversationSkills:
 
         # Assert
         assert response.status_code == status.HTTP_200_OK
-        content = response.body.decode("utf-8")
+        content = response.body.decode('utf-8')
         import json
 
         data = json.loads(content)
-        assert "skills" in data
-        assert len(data["skills"]) == 0
+        assert 'skills' in data
+        assert len(data['skills']) == 0

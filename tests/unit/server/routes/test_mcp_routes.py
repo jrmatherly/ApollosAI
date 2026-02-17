@@ -19,7 +19,7 @@ def test_mcp_server_no_stateless_http_deprecation_warning():
     to the http_app() method call.
     """
     with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
+        warnings.simplefilter('always')
 
         # Import the mcp_server which triggers FastMCP creation
         from openhands.server.routes.mcp import mcp_server
@@ -29,11 +29,11 @@ def test_mcp_server_no_stateless_http_deprecation_warning():
             warning
             for warning in w
             if issubclass(warning.category, DeprecationWarning)
-            and "stateless_http" in str(warning.message)
+            and 'stateless_http' in str(warning.message)
         ]
 
         assert len(stateless_http_warnings) == 0, (
-            f"Unexpected stateless_http deprecation warning: {stateless_http_warnings}"
+            f'Unexpected stateless_http deprecation warning: {stateless_http_warnings}'
         )
 
         # Verify mcp_server was created successfully
@@ -47,16 +47,16 @@ async def test_get_conversation_link_non_saas_mode():
     mock_service = AsyncMock(spec=GitService)
 
     # Test with non-SAAS mode
-    with patch("openhands.server.routes.mcp.server_config") as mock_config:
+    with patch('openhands.server.routes.mcp.server_config') as mock_config:
         mock_config.app_mode = AppMode.OPENHANDS
 
         # Call the function
         result = await get_conversation_link(
-            service=mock_service, conversation_id="test-convo-id", body="Original body"
+            service=mock_service, conversation_id='test-convo-id', body='Original body'
         )
 
         # Verify the result
-        assert result == "Original body"
+        assert result == 'Original body'
         # Verify that get_user was not called
         mock_service.get_user.assert_not_called()
 
@@ -67,27 +67,27 @@ async def test_get_conversation_link_saas_mode():
     # Mock GitService and user
     mock_service = AsyncMock(spec=GitService)
     mock_user = AsyncMock()
-    mock_user.login = "testuser"
+    mock_user.login = 'testuser'
     mock_service.get_user.return_value = mock_user
 
     # Test with SAAS mode
     with (
-        patch("openhands.server.routes.mcp.server_config") as mock_config,
+        patch('openhands.server.routes.mcp.server_config') as mock_config,
         patch(
-            "openhands.server.routes.mcp.CONVERSATION_URL",
-            "https://test.example.com/conversations/{}",
+            'openhands.server.routes.mcp.CONVERSATION_URL',
+            'https://test.example.com/conversations/{}',
         ),
     ):
         mock_config.app_mode = AppMode.SAAS
 
         # Call the function
         result = await get_conversation_link(
-            service=mock_service, conversation_id="test-convo-id", body="Original body"
+            service=mock_service, conversation_id='test-convo-id', body='Original body'
         )
 
         # Verify the result
-        expected_link = "@testuser can click here to [continue refining the PR](https://test.example.com/conversations/test-convo-id)"
-        assert result == f"Original body\n\n{expected_link}"
+        expected_link = '@testuser can click here to [continue refining the PR](https://test.example.com/conversations/test-convo-id)'
+        assert result == f'Original body\n\n{expected_link}'
 
         # Verify that get_user was called
         mock_service.get_user.assert_called_once()
@@ -99,27 +99,27 @@ async def test_get_conversation_link_empty_body():
     # Mock GitService and user
     mock_service = AsyncMock(spec=GitService)
     mock_user = AsyncMock()
-    mock_user.login = "testuser"
+    mock_user.login = 'testuser'
     mock_service.get_user.return_value = mock_user
 
     # Test with SAAS mode and empty body
     with (
-        patch("openhands.server.routes.mcp.server_config") as mock_config,
+        patch('openhands.server.routes.mcp.server_config') as mock_config,
         patch(
-            "openhands.server.routes.mcp.CONVERSATION_URL",
-            "https://test.example.com/conversations/{}",
+            'openhands.server.routes.mcp.CONVERSATION_URL',
+            'https://test.example.com/conversations/{}',
         ),
     ):
         mock_config.app_mode = AppMode.SAAS
 
         # Call the function
         result = await get_conversation_link(
-            service=mock_service, conversation_id="test-convo-id", body=""
+            service=mock_service, conversation_id='test-convo-id', body=''
         )
 
         # Verify the result
-        expected_link = "@testuser can click here to [continue refining the PR](https://test.example.com/conversations/test-convo-id)"
-        assert result == f"\n\n{expected_link}"
+        expected_link = '@testuser can click here to [continue refining the PR](https://test.example.com/conversations/test-convo-id)'
+        assert result == f'\n\n{expected_link}'
 
         # Verify that get_user was called
         mock_service.get_user.assert_called_once()

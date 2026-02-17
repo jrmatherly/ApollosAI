@@ -20,11 +20,11 @@ from openhands.server.utils import get_conversation_metadata
 from openhands.storage.data_models.conversation_metadata import ConversationMetadata
 
 app = APIRouter(
-    prefix="/api/conversations/{conversation_id}", dependencies=get_dependencies()
+    prefix='/api/conversations/{conversation_id}', dependencies=get_dependencies()
 )
 
 
-@app.get("/trajectory")
+@app.get('/trajectory')
 async def get_trajectory(
     metadata: ConversationMetadata = Depends(get_conversation_metadata),
 ) -> JSONResponse:
@@ -54,14 +54,14 @@ async def get_trajectory(
         async for event in async_store:
             trajectory.append(event_to_trajectory(event))
         return JSONResponse(
-            status_code=status.HTTP_200_OK, content={"trajectory": trajectory}
+            status_code=status.HTTP_200_OK, content={'trajectory': trajectory}
         )
     except Exception as e:
-        logger.error(f"Error getting trajectory: {e}", exc_info=True)
+        logger.error(f'Error getting trajectory: {e}', exc_info=True)
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
-                "trajectory": None,
-                "error": f"Error getting trajectory: {e}",
+                'trajectory': None,
+                'error': f'Error getting trajectory: {e}',
             },
         )

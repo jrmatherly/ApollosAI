@@ -12,12 +12,12 @@ from enum import Enum
 
 class ConversationStatus(Enum):
     # The conversation is starting
-    STARTING = "STARTING"
+    STARTING = 'STARTING'
     # The conversation is running - the agent may be working or idle
-    RUNNING = "RUNNING"
+    RUNNING = 'RUNNING'
     # The conversation has stopped (This is synonymous with `paused` in the runtime API.)
-    STOPPED = "STOPPED"
+    STOPPED = 'STOPPED'
     # The conversation has been archived and cannot be restarted.
-    ARCHIVED = "ARCHIVED"
+    ARCHIVED = 'ARCHIVED'
     # Something has gone wrong with the conversation (The runtime rather than the agent)
-    ERROR = "ERROR"
+    ERROR = 'ERROR'

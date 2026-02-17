@@ -6,10 +6,10 @@ from .repos import ForgejoReposMixin
 from .resolver import ForgejoResolverMixin
 
 __all__ = [
-    "ForgejoMixinBase",
-    "ForgejoBranchesMixin",
-    "ForgejoFeaturesMixin",
-    "ForgejoPRsMixin",
-    "ForgejoReposMixin",
-    "ForgejoResolverMixin",
+    'ForgejoMixinBase',
+    'ForgejoBranchesMixin',
+    'ForgejoFeaturesMixin',
+    'ForgejoPRsMixin',
+    'ForgejoReposMixin',
+    'ForgejoResolverMixin',
 ]

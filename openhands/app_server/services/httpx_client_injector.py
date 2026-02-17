@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field
 
 from openhands.app_server.services.injector import Injector, InjectorState
 
-HTTPX_CLIENT_ATTR = "httpx_client"
-HTTPX_CLIENT_KEEP_OPEN_ATTR = "httpx_client_keep_open"
+HTTPX_CLIENT_ATTR = 'httpx_client'
+HTTPX_CLIENT_KEEP_OPEN_ATTR = 'httpx_client_keep_open'
 
 
 class HttpxClientInjector(BaseModel, Injector[httpx.AsyncClient]):
@@ -15,7 +15,7 @@ class HttpxClientInjector(BaseModel, Injector[httpx.AsyncClient]):
     context of server requests handshakes are minimized while connection pool leaks
     are prevented."""
 
-    timeout: int = Field(default=15, description="Default timeout on all http requests")
+    timeout: int = Field(default=15, description='Default timeout on all http requests')
 
     async def inject(
         self, state: InjectorState, request: Request | None = None

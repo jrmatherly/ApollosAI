@@ -4,7 +4,7 @@ from openhands.utils.environment import is_running_in_docker
 
 
 def replace_localhost_hostname_for_docker(
-    url: str, replacement: str = "host.docker.internal"
+    url: str, replacement: str = 'host.docker.internal'
 ) -> str:
     """Replace localhost hostname in URL with the specified replacement when running in Docker.
 
@@ -25,8 +25,8 @@ def replace_localhost_hostname_for_docker(
     if not is_running_in_docker():
         return url
     parsed = urlparse(url)
-    if parsed.hostname == "localhost":
+    if parsed.hostname == 'localhost':
         # Replace only the hostname part, preserving port and everything else
-        netloc = parsed.netloc.replace("localhost", replacement, 1)
+        netloc = parsed.netloc.replace('localhost', replacement, 1)
         return urlunparse(parsed._replace(netloc=netloc))
     return url

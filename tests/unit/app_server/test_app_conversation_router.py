@@ -19,7 +19,7 @@ from openhands.app_server.app_conversation.app_conversation_router import (
 from openhands.app_server.sandbox.sandbox_models import SandboxStatus
 
 
-def _make_mock_app_conversation(conversation_id=None, user_id="test-user"):
+def _make_mock_app_conversation(conversation_id=None, user_id='test-user'):
     """Create a mock AppConversation for testing."""
     if conversation_id is None:
         conversation_id = uuid4()
@@ -89,7 +89,7 @@ class TestBatchGetAppConversations:
         uuid1 = uuid4()
         uuid2 = uuid4()
         # Remove dashes from UUID strings
-        ids = [str(uuid1).replace("-", ""), str(uuid2).replace("-", "")]
+        ids = [str(uuid1).replace('-', ''), str(uuid2).replace('-', '')]
 
         mock_conversations = [
             _make_mock_app_conversation(uuid1),
@@ -120,7 +120,7 @@ class TestBatchGetAppConversations:
         """
         # Arrange
         valid_uuid = str(uuid4())
-        invalid_ids = ["not-a-uuid", "also-invalid", "12345"]
+        invalid_ids = ['not-a-uuid', 'also-invalid', '12345']
         ids = [valid_uuid] + invalid_ids
 
         mock_service = _make_mock_service()
@@ -133,7 +133,7 @@ class TestBatchGetAppConversations:
             )
 
         assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
-        assert "Invalid UUID format" in exc_info.value.detail
+        assert 'Invalid UUID format' in exc_info.value.detail
         # All invalid IDs should be mentioned in the error
         for invalid_id in invalid_ids:
             assert invalid_id in exc_info.value.detail
@@ -157,7 +157,7 @@ class TestBatchGetAppConversations:
             )
 
         assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
-        assert "Too many ids" in exc_info.value.detail
+        assert 'Too many ids' in exc_info.value.detail
 
     async def test_returns_empty_list_for_empty_input(self):
         """Test that empty input returns empty list.

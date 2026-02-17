@@ -7,8 +7,6 @@ from uuid import UUID
 
 from openhands.agent_server.models import EventPage, EventSortOrder
 from openhands.agent_server.sockets import page_iterator
-from openhands.sdk import Event
-
 from openhands.app_server.app_conversation.app_conversation_info_service import (
     AppConversationInfoService,
 )
@@ -17,6 +15,7 @@ from openhands.app_server.app_conversation.app_conversation_models import (
 )
 from openhands.app_server.event.event_service import EventService
 from openhands.app_server.event_callback.event_callback_models import EventKind
+from openhands.sdk import Event
 
 
 @dataclass
@@ -61,13 +60,13 @@ class EventServiceBase(EventService, ABC):
             conversation_info = await task
             if conversation_info and conversation_info.created_by_user_id:
                 path /= conversation_info.created_by_user_id
-        path = path / "v1_conversations" / conversation_id.hex
+        path = path / 'v1_conversations' / conversation_id.hex
         return path
 
     async def get_event(self, conversation_id: UUID, event_id: UUID) -> Event | None:
         """Get the event with the given id, or None if not found."""
         conversation_path = await self.get_conversation_path(conversation_id)
-        path = conversation_path / f"{event_id.hex}.json"
+        path = conversation_path / f'{event_id.hex}.json'
         loop = asyncio.get_running_loop()
         event: Event = await loop.run_in_executor(None, self._load_event, path)
         return event
@@ -151,10 +150,10 @@ class EventServiceBase(EventService, ABC):
 
     async def save_event(self, conversation_id: UUID, event: Event):
         if isinstance(event.id, str):
-            id_hex = event.id.replace("-", "")
+            id_hex = event.id.replace('-', '')
         else:
             id_hex = event.id.hex
-        path = (await self.get_conversation_path(conversation_id)) / f"{id_hex}.json"
+        path = (await self.get_conversation_path(conversation_id)) / f'{id_hex}.json'
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, self._store_event, path, event)
 

@@ -23,20 +23,20 @@ def ensure_conversation_found(
 ) -> AppConversationInfo:
     """Ensure conversation info exists, otherwise raise a clear error."""
     if not app_conversation_info:
-        raise RuntimeError(f"Conversation not found: {conversation_id}")
+        raise RuntimeError(f'Conversation not found: {conversation_id}')
     return app_conversation_info
 
 
 def ensure_running_sandbox(sandbox: SandboxInfo | None, sandbox_id: str) -> SandboxInfo:
     """Ensure sandbox exists, is running, and has a session API key."""
     if not sandbox:
-        raise RuntimeError(f"Sandbox not found: {sandbox_id}")
+        raise RuntimeError(f'Sandbox not found: {sandbox_id}')
 
     if sandbox.status != SandboxStatus.RUNNING:
-        raise RuntimeError(f"Sandbox not running: {sandbox_id}")
+        raise RuntimeError(f'Sandbox not running: {sandbox_id}')
 
     if not sandbox.session_api_key:
-        raise RuntimeError(f"No session API key for sandbox: {sandbox.id}")
+        raise RuntimeError(f'No session API key for sandbox: {sandbox.id}')
 
     return sandbox
 
@@ -45,7 +45,7 @@ def get_agent_server_url_from_sandbox(sandbox: SandboxInfo) -> str:
     """Return the agent server URL from sandbox exposed URLs."""
     exposed_urls = sandbox.exposed_urls
     if not exposed_urls:
-        raise RuntimeError(f"No exposed URLs configured for sandbox {sandbox.id!r}")
+        raise RuntimeError(f'No exposed URLs configured for sandbox {sandbox.id!r}')
 
     try:
         agent_server_url = next(
@@ -55,7 +55,7 @@ def get_agent_server_url_from_sandbox(sandbox: SandboxInfo) -> str:
         )
     except StopIteration:
         raise RuntimeError(
-            f"No {AGENT_SERVER!r} URL found for sandbox {sandbox.id!r}"
+            f'No {AGENT_SERVER!r} URL found for sandbox {sandbox.id!r}'
         ) from None
 
     return replace_localhost_hostname_for_docker(agent_server_url)

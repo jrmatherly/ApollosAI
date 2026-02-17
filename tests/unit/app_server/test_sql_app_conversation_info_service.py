@@ -10,8 +10,6 @@ from typing import AsyncGenerator
 from uuid import uuid4
 
 import pytest
-from openhands.sdk.llm import MetricsSnapshot
-from openhands.sdk.llm.utils.metrics import TokenUsage
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
@@ -25,6 +23,8 @@ from openhands.app_server.app_conversation.sql_app_conversation_info_service imp
 from openhands.app_server.user.specifiy_user_context import SpecifyUserContext
 from openhands.app_server.utils.sql_utils import Base
 from openhands.integrations.service_types import ProviderType
+from openhands.sdk.llm import MetricsSnapshot
+from openhands.sdk.llm.utils.metrics import TokenUsage
 from openhands.storage.data_models.conversation_metadata import ConversationTrigger
 
 # Note: org_id column exists but foreign key constraint is not enforced in tests
@@ -37,9 +37,9 @@ from openhands.storage.data_models.conversation_metadata import ConversationTrig
 async def async_engine():
     """Create an async SQLite engine for testing."""
     engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
+        'sqlite+aiosqlite:///:memory:',
         poolclass=StaticPool,
-        connect_args={"check_same_thread": False},
+        connect_args={'check_same_thread': False},
         echo=False,
     )
 
@@ -76,7 +76,7 @@ def service_with_user(async_session) -> SQLAppConversationInfoService:
     """Create a SQLAppConversationInfoService instance with a user_id for testing."""
     return SQLAppConversationInfoService(
         db_session=async_session,
-        user_context=SpecifyUserContext(user_id="test_user_123"),
+        user_context=SpecifyUserContext(user_id='test_user_123'),
     )
 
 
@@ -85,15 +85,15 @@ def sample_conversation_info() -> AppConversationInfo:
     """Create a sample AppConversationInfo for testing."""
     return AppConversationInfo(
         id=uuid4(),
-        created_by_user_id="test_user_123",
-        sandbox_id="sandbox_123",
-        selected_repository="https://github.com/test/repo",
-        selected_branch="main",
+        created_by_user_id='test_user_123',
+        sandbox_id='sandbox_123',
+        selected_repository='https://github.com/test/repo',
+        selected_branch='main',
         git_provider=ProviderType.GITHUB,
-        title="Test Conversation",
+        title='Test Conversation',
         trigger=ConversationTrigger.GUI,
         pr_number=[123, 456],
-        llm_model="gpt-4",
+        llm_model='gpt-4',
         metrics=None,
         created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
         updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
@@ -109,14 +109,14 @@ def multiple_conversation_infos() -> list[AppConversationInfo]:
         AppConversationInfo(
             id=uuid4(),
             created_by_user_id=None,
-            sandbox_id=f"sandbox_{i}",
-            selected_repository=f"https://github.com/test/repo{i}",
-            selected_branch="main",
+            sandbox_id=f'sandbox_{i}',
+            selected_repository=f'https://github.com/test/repo{i}',
+            selected_branch='main',
             git_provider=ProviderType.GITHUB,
-            title=f"Test Conversation {i}",
+            title=f'Test Conversation {i}',
             trigger=ConversationTrigger.GUI,
             pr_number=[i * 100],
-            llm_model="gpt-4",
+            llm_model='gpt-4',
             metrics=None,
             created_at=base_time.replace(hour=12 + i),
             updated_at=base_time.replace(hour=12 + i, minute=30),
@@ -183,15 +183,15 @@ class TestSQLAppConversationInfoService:
         """Test round trip with all possible fields populated."""
         original_info = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_456",
-            sandbox_id="sandbox_full_test",
-            selected_repository="https://github.com/full/test",
-            selected_branch="feature/test",
+            created_by_user_id='test_user_456',
+            sandbox_id='sandbox_full_test',
+            selected_repository='https://github.com/full/test',
+            selected_branch='feature/test',
             git_provider=ProviderType.GITLAB,
-            title="Full Test Conversation",
+            title='Full Test Conversation',
             trigger=ConversationTrigger.RESOLVER,
             pr_number=[789, 101112],
-            llm_model="claude-3",
+            llm_model='claude-3',
             metrics=MetricsSnapshot(accumulated_token_usage=TokenUsage()),
             created_at=datetime(2024, 2, 15, 10, 30, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 2, 15, 11, 45, 0, tzinfo=timezone.utc),
@@ -221,8 +221,8 @@ class TestSQLAppConversationInfoService:
         """Test round trip with only required fields."""
         minimal_info = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="minimal_user",
-            sandbox_id="minimal_sandbox",
+            created_by_user_id='minimal_user',
+            sandbox_id='minimal_sandbox',
         )
 
         # Save and retrieve
@@ -316,11 +316,11 @@ class TestSQLAppConversationInfoService:
             await service.save_app_conversation_info(info)
 
         # Search for conversations with "1" in title
-        page = await service.search_app_conversation_info(title__contains="1")
+        page = await service.search_app_conversation_info(title__contains='1')
 
         # Should find "Test Conversation 1"
         assert len(page.items) == 1
-        assert "1" in page.items[0].title
+        assert '1' in page.items[0].title
 
     @pytest.mark.asyncio
     async def test_search_conversation_info_date_filters(
@@ -470,7 +470,7 @@ class TestSQLAppConversationInfoService:
             await service.save_app_conversation_info(info)
 
         # Count with title filter
-        count = await service.count_app_conversation_info(title__contains="1")
+        count = await service.count_app_conversation_info(title__contains='1')
         assert count == 1
 
         # Count with date filter
@@ -479,7 +479,7 @@ class TestSQLAppConversationInfoService:
         assert count == 4
 
         # Count with no matches
-        count = await service.count_app_conversation_info(title__contains="nonexistent")
+        count = await service.count_app_conversation_info(title__contains='nonexistent')
         assert count == 0
 
     @pytest.mark.asyncio
@@ -494,8 +494,8 @@ class TestSQLAppConversationInfoService:
 
         # Update the conversation info
         updated_info = sample_conversation_info.model_copy()
-        updated_info.title = "Updated Title"
-        updated_info.llm_model = "gpt-4-turbo"
+        updated_info.title = 'Updated Title'
+        updated_info.llm_model = 'gpt-4-turbo'
         updated_info.pr_number = [789]
 
         # Save the updated info
@@ -506,8 +506,8 @@ class TestSQLAppConversationInfoService:
             sample_conversation_info.id
         )
         assert retrieved_info is not None
-        assert retrieved_info.title == "Updated Title"
-        assert retrieved_info.llm_model == "gpt-4-turbo"
+        assert retrieved_info.title == 'Updated Title'
+        assert retrieved_info.llm_model == 'gpt-4-turbo'
         assert retrieved_info.pr_number == [789]
 
         # Verify other fields remain unchanged
@@ -525,7 +525,7 @@ class TestSQLAppConversationInfoService:
             await service.save_app_conversation_info(info)
 
         # Search with invalid page_id (should start from beginning)
-        page = await service.search_app_conversation_info(page_id="invalid")
+        page = await service.search_app_conversation_info(page_id='invalid')
         assert len(page.items) == len(multiple_conversation_infos)
 
     @pytest.mark.asyncio
@@ -574,9 +574,9 @@ class TestSQLAppConversationInfoService:
         parent_id = uuid4()
         parent_info = AppConversationInfo(
             id=parent_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent",
-            title="Parent Conversation",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent',
+            title='Parent Conversation',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -584,9 +584,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations
         sub_info_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub1",
-            title="Sub Conversation 1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub1',
+            title='Sub Conversation 1',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 13, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 13, 30, 0, tzinfo=timezone.utc),
@@ -594,9 +594,9 @@ class TestSQLAppConversationInfoService:
 
         sub_info_2 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub2",
-            title="Sub Conversation 2",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub2',
+            title='Sub Conversation 2',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 14, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 14, 30, 0, tzinfo=timezone.utc),
@@ -613,7 +613,7 @@ class TestSQLAppConversationInfoService:
         # Should only return the parent conversation
         assert len(page.items) == 1
         assert page.items[0].id == parent_id
-        assert page.items[0].title == "Parent Conversation"
+        assert page.items[0].title == 'Parent Conversation'
         assert page.items[0].parent_conversation_id is None
 
     @pytest.mark.asyncio
@@ -626,9 +626,9 @@ class TestSQLAppConversationInfoService:
         parent_id = uuid4()
         parent_info = AppConversationInfo(
             id=parent_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent",
-            title="Parent Conversation",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent',
+            title='Parent Conversation',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -636,9 +636,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations
         sub_info_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub1",
-            title="Sub Conversation 1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub1',
+            title='Sub Conversation 1',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 13, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 13, 30, 0, tzinfo=timezone.utc),
@@ -646,9 +646,9 @@ class TestSQLAppConversationInfoService:
 
         sub_info_2 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub2",
-            title="Sub Conversation 2",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub2',
+            title='Sub Conversation 2',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 14, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 14, 30, 0, tzinfo=timezone.utc),
@@ -694,9 +694,9 @@ class TestSQLAppConversationInfoService:
         parent_id = uuid4()
         parent_info = AppConversationInfo(
             id=parent_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent",
-            title="Parent Conversation",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent',
+            title='Parent Conversation',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -704,9 +704,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations with different titles
         sub_info_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub1",
-            title="Sub Conversation Alpha",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub1',
+            title='Sub Conversation Alpha',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 13, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 13, 30, 0, tzinfo=timezone.utc),
@@ -714,9 +714,9 @@ class TestSQLAppConversationInfoService:
 
         sub_info_2 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub2",
-            title="Sub Conversation Beta",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub2',
+            title='Sub Conversation Beta',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 14, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 14, 30, 0, tzinfo=timezone.utc),
@@ -728,27 +728,27 @@ class TestSQLAppConversationInfoService:
         await service.save_app_conversation_info(sub_info_2)
 
         # Search with title filter and include_sub_conversations=False (default)
-        page = await service.search_app_conversation_info(title__contains="Alpha")
+        page = await service.search_app_conversation_info(title__contains='Alpha')
         # Should only find parent if it matches, but parent doesn't have "Alpha"
         # So should find nothing or only sub if we include them
         assert len(page.items) == 0
 
         # Search with title filter and include_sub_conversations=True
         page = await service.search_app_conversation_info(
-            title__contains="Alpha", include_sub_conversations=True
+            title__contains='Alpha', include_sub_conversations=True
         )
         # Should find the sub-conversation with "Alpha" in title
         assert len(page.items) == 1
-        assert page.items[0].title == "Sub Conversation Alpha"
+        assert page.items[0].title == 'Sub Conversation Alpha'
         assert page.items[0].parent_conversation_id == parent_id
 
         # Search with title filter for "Parent" and include_sub_conversations=True
         page = await service.search_app_conversation_info(
-            title__contains="Parent", include_sub_conversations=True
+            title__contains='Parent', include_sub_conversations=True
         )
         # Should find the parent conversation
         assert len(page.items) == 1
-        assert page.items[0].title == "Parent Conversation"
+        assert page.items[0].title == 'Parent Conversation'
         assert page.items[0].parent_conversation_id is None
 
     @pytest.mark.asyncio
@@ -761,9 +761,9 @@ class TestSQLAppConversationInfoService:
         parent_id = uuid4()
         parent_info = AppConversationInfo(
             id=parent_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent",
-            title="Parent Conversation",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent',
+            title='Parent Conversation',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -771,9 +771,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations at different times
         sub_info_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub1",
-            title="Sub Conversation 1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub1',
+            title='Sub Conversation 1',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 13, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 13, 30, 0, tzinfo=timezone.utc),
@@ -781,9 +781,9 @@ class TestSQLAppConversationInfoService:
 
         sub_info_2 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub2",
-            title="Sub Conversation 2",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub2',
+            title='Sub Conversation 2',
             parent_conversation_id=parent_id,
             created_at=datetime(2024, 1, 1, 14, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 14, 30, 0, tzinfo=timezone.utc),
@@ -819,9 +819,9 @@ class TestSQLAppConversationInfoService:
         parent1_id = uuid4()
         parent1_info = AppConversationInfo(
             id=parent1_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent1",
-            title="Parent 1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent1',
+            title='Parent 1',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -830,9 +830,9 @@ class TestSQLAppConversationInfoService:
         parent2_id = uuid4()
         parent2_info = AppConversationInfo(
             id=parent2_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent2",
-            title="Parent 2",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent2',
+            title='Parent 2',
             created_at=datetime(2024, 1, 1, 13, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 13, 30, 0, tzinfo=timezone.utc),
         )
@@ -840,9 +840,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations for parent1
         sub1_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub1_1",
-            title="Sub 1-1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub1_1',
+            title='Sub 1-1',
             parent_conversation_id=parent1_id,
             created_at=datetime(2024, 1, 1, 14, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 14, 30, 0, tzinfo=timezone.utc),
@@ -851,9 +851,9 @@ class TestSQLAppConversationInfoService:
         # Create sub-conversations for parent2
         sub2_1 = AppConversationInfo(
             id=uuid4(),
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_sub2_1",
-            title="Sub 2-1",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_sub2_1',
+            title='Sub 2-1',
             parent_conversation_id=parent2_id,
             created_at=datetime(2024, 1, 1, 15, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 15, 30, 0, tzinfo=timezone.utc),
@@ -897,9 +897,9 @@ class TestSQLAppConversationInfoService:
         parent_id = uuid4()
         parent_info = AppConversationInfo(
             id=parent_id,
-            created_by_user_id="test_user_123",
-            sandbox_id="sandbox_parent",
-            title="Parent Conversation",
+            created_by_user_id='test_user_123',
+            sandbox_id='sandbox_parent',
+            title='Parent Conversation',
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
             updated_at=datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc),
         )
@@ -909,9 +909,9 @@ class TestSQLAppConversationInfoService:
         for i in range(5):
             sub_info = AppConversationInfo(
                 id=uuid4(),
-                created_by_user_id="test_user_123",
-                sandbox_id=f"sandbox_sub{i}",
-                title=f"Sub Conversation {i}",
+                created_by_user_id='test_user_123',
+                sandbox_id=f'sandbox_sub{i}',
+                title=f'Sub Conversation {i}',
                 parent_conversation_id=parent_id,
                 created_at=datetime(2024, 1, 1, 13 + i, 0, 0, tzinfo=timezone.utc),
                 updated_at=datetime(2024, 1, 1, 13 + i, 30, 0, tzinfo=timezone.utc),

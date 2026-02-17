@@ -5,4 +5,4 @@
 #   - V1 application server (in this repo): openhands/app_server/
 # Unless you are working on deprecation, please avoid extending this legacy file and consult the V1 codepaths above.
 # Tag: Legacy-V0
-TROUBLESHOOTING_URL = "https://docs.all-hands.dev/usage/troubleshooting"
+TROUBLESHOOTING_URL = 'https://docs.all-hands.dev/usage/troubleshooting'

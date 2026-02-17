@@ -42,9 +42,9 @@ def mock_sandbox_spec_service():
     """Mock SandboxSpecService for testing."""
     mock_service = AsyncMock()
     mock_spec = MagicMock()
-    mock_spec.id = "test-image:latest"
-    mock_spec.initial_env = {"TEST_VAR": "test_value"}
-    mock_spec.working_dir = "/workspace"
+    mock_spec.id = 'test-image:latest'
+    mock_spec.initial_env = {'TEST_VAR': 'test_value'}
+    mock_spec.working_dir = '/workspace'
     mock_service.get_default_sandbox_spec.return_value = mock_spec
     mock_service.get_sandbox_spec.return_value = mock_spec
     return mock_service
@@ -66,19 +66,19 @@ def service(mock_sandbox_spec_service, mock_httpx_client, mock_docker_client):
     """Create DockerSandboxService instance for testing."""
     return DockerSandboxService(
         sandbox_spec_service=mock_sandbox_spec_service,
-        container_name_prefix="oh-test-",
+        container_name_prefix='oh-test-',
         host_port=3000,
-        container_url_pattern="http://localhost:{port}",
+        container_url_pattern='http://localhost:{port}',
         mounts=[
-            VolumeMount(host_path="/tmp/test", container_path="/workspace", mode="rw")
+            VolumeMount(host_path='/tmp/test', container_path='/workspace', mode='rw')
         ],
         exposed_ports=[
             ExposedPort(
-                name=AGENT_SERVER, description="Agent server", container_port=8000
+                name=AGENT_SERVER, description='Agent server', container_port=8000
             ),
-            ExposedPort(name=VSCODE, description="VSCode server", container_port=8001),
+            ExposedPort(name=VSCODE, description='VSCode server', container_port=8001),
         ],
-        health_check_path="/health",
+        health_check_path='/health',
         httpx_client=mock_httpx_client,
         max_num_sandboxes=3,
         docker_client=mock_docker_client,
@@ -89,19 +89,19 @@ def service(mock_sandbox_spec_service, mock_httpx_client, mock_docker_client):
 def mock_running_container():
     """Create a mock running Docker container."""
     container = MagicMock()
-    container.name = "oh-test-abc123"
-    container.status = "running"
-    container.image.tags = ["spec456"]
+    container.name = 'oh-test-abc123'
+    container.status = 'running'
+    container.image.tags = ['spec456']
     container.attrs = {
-        "Created": "2024-01-15T10:30:00.000000000Z",
-        "Config": {
-            "Env": ["OH_SESSION_API_KEYS_0=session_key_123", "OTHER_VAR=other_value"],
-            "WorkingDir": "/workspace",
+        'Created': '2024-01-15T10:30:00.000000000Z',
+        'Config': {
+            'Env': ['OH_SESSION_API_KEYS_0=session_key_123', 'OTHER_VAR=other_value'],
+            'WorkingDir': '/workspace',
         },
-        "NetworkSettings": {
-            "Ports": {
-                "8000/tcp": [{"HostPort": "12345"}],
-                "8001/tcp": [{"HostPort": "12346"}],
+        'NetworkSettings': {
+            'Ports': {
+                '8000/tcp': [{'HostPort': '12345'}],
+                '8001/tcp': [{'HostPort': '12346'}],
             }
         },
     }
@@ -112,13 +112,13 @@ def mock_running_container():
 def mock_paused_container():
     """Create a mock paused Docker container."""
     container = MagicMock()
-    container.name = "oh-test-def456"
-    container.status = "paused"
-    container.image.tags = ["spec456"]
+    container.name = 'oh-test-def456'
+    container.status = 'paused'
+    container.image.tags = ['spec456']
     container.attrs = {
-        "Created": "2024-01-15T10:30:00.000000000Z",
-        "Config": {"Env": []},
-        "NetworkSettings": {"Ports": {}},
+        'Created': '2024-01-15T10:30:00.000000000Z',
+        'Config': {'Env': []},
+        'NetworkSettings': {'Ports': {}},
     }
     return container
 
@@ -127,13 +127,13 @@ def mock_paused_container():
 def mock_exited_container():
     """Create a mock exited Docker container."""
     container = MagicMock()
-    container.name = "oh-test-ghi789"
-    container.status = "exited"
-    container.labels = {"created_by_user_id": "user123", "sandbox_spec_id": "spec456"}
+    container.name = 'oh-test-ghi789'
+    container.status = 'exited'
+    container.labels = {'created_by_user_id': 'user123', 'sandbox_spec_id': 'spec456'}
     container.attrs = {
-        "Created": "2024-01-15T10:30:00.000000000Z",
-        "Config": {"Env": []},
-        "NetworkSettings": {"Ports": {}},
+        'Created': '2024-01-15T10:30:00.000000000Z',
+        'Config': {'Env': []},
+        'NetworkSettings': {'Ports': {}},
     }
     return container
 
@@ -164,17 +164,17 @@ class TestDockerSandboxService:
         running_sandbox = next(
             s for s in result.items if s.status == SandboxStatus.RUNNING
         )
-        assert running_sandbox.id == "oh-test-abc123"
+        assert running_sandbox.id == 'oh-test-abc123'
         assert running_sandbox.created_by_user_id is None
-        assert running_sandbox.sandbox_spec_id == "spec456"
-        assert running_sandbox.session_api_key == "session_key_123"
+        assert running_sandbox.sandbox_spec_id == 'spec456'
+        assert running_sandbox.session_api_key == 'session_key_123'
         assert len(running_sandbox.exposed_urls) == 2
 
         # Verify paused container
         paused_sandbox = next(
             s for s in result.items if s.status == SandboxStatus.PAUSED
         )
-        assert paused_sandbox.id == "oh-test-def456"
+        assert paused_sandbox.id == 'oh-test-def456'
         assert paused_sandbox.session_api_key is None
         assert paused_sandbox.exposed_urls is None
 
@@ -184,18 +184,18 @@ class TestDockerSandboxService:
         containers = []
         for i in range(5):
             container = MagicMock()
-            container.name = f"oh-test-container{i}"
-            container.status = "running"
-            container.image.tags = ["spec456"]
+            container.name = f'oh-test-container{i}'
+            container.status = 'running'
+            container.image.tags = ['spec456']
             container.attrs = {
-                "Created": f"2024-01-{15 + i:02d}T10:30:00.000000000Z",
-                "Config": {
-                    "Env": [
-                        f"OH_SESSION_API_KEYS_0=session_key_{i}",
-                        f"OTHER_VAR=value_{i}",
+                'Created': f'2024-01-{15 + i:02d}T10:30:00.000000000Z',
+                'Config': {
+                    'Env': [
+                        f'OH_SESSION_API_KEYS_0=session_key_{i}',
+                        f'OTHER_VAR=value_{i}',
                     ]
                 },
-                "NetworkSettings": {"Ports": {}},
+                'NetworkSettings': {'Ports': {}},
             }
             containers.append(container)
 
@@ -207,10 +207,10 @@ class TestDockerSandboxService:
 
         # Verify first page
         assert len(result.items) == 3
-        assert result.next_page_id == "3"
+        assert result.next_page_id == '3'
 
         # Execute - second page
-        result = await service.search_sandboxes(page_id="3", limit=3)
+        result = await service.search_sandboxes(page_id='3', limit=3)
 
         # Verify second page
         assert len(result.items) == 2
@@ -225,7 +225,7 @@ class TestDockerSandboxService:
         service.httpx_client.get.return_value.raise_for_status.return_value = None
 
         # Execute
-        result = await service.search_sandboxes(page_id="invalid")
+        result = await service.search_sandboxes(page_id='invalid')
 
         # Verify - should start from beginning
         assert len(result.items) == 1
@@ -234,7 +234,7 @@ class TestDockerSandboxService:
         """Test handling of Docker API errors."""
         # Setup
         service.docker_client.containers.list.side_effect = APIError(
-            "Docker daemon error"
+            'Docker daemon error'
         )
 
         # Execute
@@ -249,24 +249,24 @@ class TestDockerSandboxService:
         """Test that search filters containers by name prefix."""
         # Setup
         matching_container = MagicMock()
-        matching_container.name = "oh-test-abc123"
-        matching_container.status = "running"
-        matching_container.image.tags = ["spec456"]
+        matching_container.name = 'oh-test-abc123'
+        matching_container.status = 'running'
+        matching_container.image.tags = ['spec456']
         matching_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": [
-                    "OH_SESSION_API_KEYS_0=matching_session_key",
-                    "OTHER_VAR=matching_value",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': [
+                    'OH_SESSION_API_KEYS_0=matching_session_key',
+                    'OTHER_VAR=matching_value',
                 ]
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
 
         non_matching_container = MagicMock()
-        non_matching_container.name = "other-container"
-        non_matching_container.status = "running"
-        non_matching_container.image.tags = (["other"],)
+        non_matching_container.name = 'other-container'
+        non_matching_container.status = 'running'
+        non_matching_container.image.tags = (['other'],)
 
         service.docker_client.containers.list.return_value = [
             matching_container,
@@ -279,7 +279,7 @@ class TestDockerSandboxService:
 
         # Verify - only matching container should be included
         assert len(result.items) == 1
-        assert result.items[0].id == "oh-test-abc123"
+        assert result.items[0].id == 'oh-test-abc123'
 
     async def test_get_sandbox_success(self, service, mock_running_container):
         """Test successful retrieval of specific sandbox."""
@@ -288,25 +288,25 @@ class TestDockerSandboxService:
         service.httpx_client.get.return_value.raise_for_status.return_value = None
 
         # Execute
-        result = await service.get_sandbox("oh-test-abc123")
+        result = await service.get_sandbox('oh-test-abc123')
 
         # Verify
         assert result is not None
-        assert result.id == "oh-test-abc123"
+        assert result.id == 'oh-test-abc123'
         assert result.status == SandboxStatus.RUNNING
 
         # Verify Docker client was called correctly
-        service.docker_client.containers.get.assert_called_once_with("oh-test-abc123")
+        service.docker_client.containers.get.assert_called_once_with('oh-test-abc123')
 
     async def test_get_sandbox_not_found(self, service):
         """Test handling when sandbox is not found."""
         # Setup
         service.docker_client.containers.get.side_effect = NotFound(
-            "Container not found"
+            'Container not found'
         )
 
         # Execute
-        result = await service.get_sandbox("oh-test-nonexistent")
+        result = await service.get_sandbox('oh-test-nonexistent')
 
         # Verify
         assert result is None
@@ -314,7 +314,7 @@ class TestDockerSandboxService:
     async def test_get_sandbox_wrong_prefix(self, service):
         """Test handling when sandbox ID doesn't match prefix."""
         # Execute
-        result = await service.get_sandbox("wrong-prefix-abc123")
+        result = await service.get_sandbox('wrong-prefix-abc123')
 
         # Verify
         assert result is None
@@ -324,41 +324,41 @@ class TestDockerSandboxService:
         """Test handling of Docker API errors during get."""
         # Setup
         service.docker_client.containers.get.side_effect = APIError(
-            "Docker daemon error"
+            'Docker daemon error'
         )
 
         # Execute
-        result = await service.get_sandbox("oh-test-abc123")
+        result = await service.get_sandbox('oh-test-abc123')
 
         # Verify
         assert result is None
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_success(self, mock_urandom, mock_encodebytes, service):
         """Test successful sandbox startup."""
         # Setup
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
 
         service.docker_client.containers.run.return_value = mock_container
 
         with (
-            patch.object(service, "_find_unused_port", side_effect=[12345, 12346]),
+            patch.object(service, '_find_unused_port', side_effect=[12345, 12346]),
             patch.object(
-                service, "pause_old_sandboxes", return_value=[]
+                service, 'pause_old_sandboxes', return_value=[]
             ) as mock_cleanup,
         ):
             # Execute
@@ -366,7 +366,7 @@ class TestDockerSandboxService:
 
         # Verify
         assert result is not None
-        assert result.id == "oh-test-test_container_id"
+        assert result.id == 'oh-test-test_container_id'
 
         # Verify cleanup was called with the correct limit
         mock_cleanup.assert_called_once_with(2)
@@ -375,45 +375,45 @@ class TestDockerSandboxService:
         service.docker_client.containers.run.assert_called_once()
         call_args = service.docker_client.containers.run.call_args
 
-        assert call_args[1]["image"] == "test-image:latest"
-        assert call_args[1]["name"] == "oh-test-test_container_id"
-        assert "OH_SESSION_API_KEYS_0" in call_args[1]["environment"]
+        assert call_args[1]['image'] == 'test-image:latest'
+        assert call_args[1]['name'] == 'oh-test-test_container_id'
+        assert 'OH_SESSION_API_KEYS_0' in call_args[1]['environment']
         assert (
-            call_args[1]["environment"]["OH_SESSION_API_KEYS_0"] == "test_session_key"
+            call_args[1]['environment']['OH_SESSION_API_KEYS_0'] == 'test_session_key'
         )
-        assert call_args[1]["ports"] == {8000: 12345, 8001: 12346}
-        assert call_args[1]["working_dir"] == "/workspace"
-        assert call_args[1]["detach"] is True
+        assert call_args[1]['ports'] == {8000: 12345, 8001: 12346}
+        assert call_args[1]['working_dir'] == '/workspace'
+        assert call_args[1]['detach'] is True
 
     async def test_start_sandbox_with_spec_id(self, service, mock_sandbox_spec_service):
         """Test starting sandbox with specific spec ID."""
         # Setup
         mock_container = MagicMock()
-        mock_container.name = "oh-test-abc123"
-        mock_container.status = "running"
-        mock_container.image.tags = ["spec456"]
+        mock_container.name = 'oh-test-abc123'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['spec456']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": [
-                    "OH_SESSION_API_KEYS_0=test_session_key",
-                    "OTHER_VAR=test_value",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': [
+                    'OH_SESSION_API_KEYS_0=test_session_key',
+                    'OTHER_VAR=test_value',
                 ]
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
         service.docker_client.containers.run.return_value = mock_container
 
         with (
-            patch.object(service, "_find_unused_port", return_value=12345),
-            patch.object(service, "pause_old_sandboxes", return_value=[]),
+            patch.object(service, '_find_unused_port', return_value=12345),
+            patch.object(service, 'pause_old_sandboxes', return_value=[]),
         ):
             # Execute
-            await service.start_sandbox(sandbox_spec_id="custom-spec")
+            await service.start_sandbox(sandbox_spec_id='custom-spec')
 
         # Verify
         mock_sandbox_spec_service.get_sandbox_spec.assert_called_once_with(
-            "custom-spec"
+            'custom-spec'
         )
 
     async def test_start_sandbox_spec_not_found(
@@ -425,66 +425,66 @@ class TestDockerSandboxService:
 
         # Execute & Verify
         with (
-            patch.object(service, "pause_old_sandboxes", return_value=[]),
-            pytest.raises(ValueError, match="Sandbox Spec not found"),
+            patch.object(service, 'pause_old_sandboxes', return_value=[]),
+            pytest.raises(ValueError, match='Sandbox Spec not found'),
         ):
-            await service.start_sandbox(sandbox_spec_id="nonexistent")
+            await service.start_sandbox(sandbox_spec_id='nonexistent')
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_with_sandbox_id(
         self, mock_urandom, mock_encodebytes, service
     ):
         """Test starting sandbox with a specified sandbox_id."""
         # Setup - only need urandom for session key
-        mock_urandom.return_value = b"session_key"
-        mock_encodebytes.return_value = "test_session_key"
+        mock_urandom.return_value = b'session_key'
+        mock_encodebytes.return_value = 'test_session_key'
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-custom_sandbox_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-custom_sandbox_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
 
         service.docker_client.containers.run.return_value = mock_container
 
         with (
-            patch.object(service, "_find_unused_port", side_effect=[12345, 12346]),
-            patch.object(service, "pause_old_sandboxes", return_value=[]),
+            patch.object(service, '_find_unused_port', side_effect=[12345, 12346]),
+            patch.object(service, 'pause_old_sandboxes', return_value=[]),
         ):
             # Execute with custom sandbox_id
-            result = await service.start_sandbox(sandbox_id="custom_sandbox_id")
+            result = await service.start_sandbox(sandbox_id='custom_sandbox_id')
 
         # Verify
         assert result is not None
-        assert result.id == "oh-test-custom_sandbox_id"
+        assert result.id == 'oh-test-custom_sandbox_id'
 
         # Verify container was created with the custom sandbox ID in the name
         call_args = service.docker_client.containers.run.call_args
-        assert call_args[1]["name"] == "oh-test-custom_sandbox_id"
+        assert call_args[1]['name'] == 'oh-test-custom_sandbox_id'
 
     async def test_start_sandbox_docker_error(self, service):
         """Test handling of Docker errors during sandbox startup."""
         # Setup
         service.docker_client.containers.run.side_effect = APIError(
-            "Failed to create container"
+            'Failed to create container'
         )
 
         with (
-            patch.object(service, "_find_unused_port", return_value=12345),
-            patch.object(service, "pause_old_sandboxes", return_value=[]),
-            pytest.raises(SandboxError, match="Failed to start container"),
+            patch.object(service, '_find_unused_port', return_value=12345),
+            patch.object(service, 'pause_old_sandboxes', return_value=[]),
+            pytest.raises(SandboxError, match='Failed to start container'),
         ):
             await service.start_sandbox()
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_with_extra_hosts(
         self,
         mock_urandom,
@@ -495,50 +495,50 @@ class TestDockerSandboxService:
     ):
         """Test that extra_hosts are passed to container creation."""
         # Setup
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service with extra_hosts
         service_with_extra_hosts = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,
             extra_hosts={
-                "host.docker.internal": "host-gateway",
-                "custom.host": "192.168.1.100",
+                'host.docker.internal': 'host-gateway',
+                'custom.host': '192.168.1.100',
             },
             docker_client=mock_docker_client,
         )
 
         with (
             patch.object(
-                service_with_extra_hosts, "_find_unused_port", return_value=12345
+                service_with_extra_hosts, '_find_unused_port', return_value=12345
             ),
             patch.object(
-                service_with_extra_hosts, "pause_old_sandboxes", return_value=[]
+                service_with_extra_hosts, 'pause_old_sandboxes', return_value=[]
             ),
         ):
             # Execute
@@ -547,13 +547,13 @@ class TestDockerSandboxService:
         # Verify extra_hosts was passed to container creation
         mock_docker_client.containers.run.assert_called_once()
         call_args = mock_docker_client.containers.run.call_args
-        assert call_args[1]["extra_hosts"] == {
-            "host.docker.internal": "host-gateway",
-            "custom.host": "192.168.1.100",
+        assert call_args[1]['extra_hosts'] == {
+            'host.docker.internal': 'host-gateway',
+            'custom.host': '192.168.1.100',
         }
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_without_extra_hosts(
         self,
         mock_urandom,
@@ -564,35 +564,35 @@ class TestDockerSandboxService:
     ):
         """Test that extra_hosts is None when not configured."""
         # Setup
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service without extra_hosts (empty dict)
         service_without_extra_hosts = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,
             extra_hosts={},
@@ -601,10 +601,10 @@ class TestDockerSandboxService:
 
         with (
             patch.object(
-                service_without_extra_hosts, "_find_unused_port", return_value=12345
+                service_without_extra_hosts, '_find_unused_port', return_value=12345
             ),
             patch.object(
-                service_without_extra_hosts, "pause_old_sandboxes", return_value=[]
+                service_without_extra_hosts, 'pause_old_sandboxes', return_value=[]
             ),
         ):
             # Execute
@@ -613,10 +613,10 @@ class TestDockerSandboxService:
         # Verify extra_hosts is None when empty dict is provided
         mock_docker_client.containers.run.assert_called_once()
         call_args = mock_docker_client.containers.run.call_args
-        assert call_args[1]["extra_hosts"] is None
+        assert call_args[1]['extra_hosts'] is None
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_with_cors_origins(
         self,
         mock_urandom,
@@ -627,44 +627,44 @@ class TestDockerSandboxService:
     ):
         """Test that CORS origins are set when web_url is configured."""
         # Setup
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service with web_url configured for CORS
         service_with_cors = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://192.168.1.100:{port}",
+            container_url_pattern='http://192.168.1.100:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,
-            web_url="http://192.168.1.100:3000",
+            web_url='http://192.168.1.100:3000',
             docker_client=mock_docker_client,
         )
 
         with (
-            patch.object(service_with_cors, "_find_unused_port", return_value=12345),
-            patch.object(service_with_cors, "pause_old_sandboxes", return_value=[]),
+            patch.object(service_with_cors, '_find_unused_port', return_value=12345),
+            patch.object(service_with_cors, 'pause_old_sandboxes', return_value=[]),
         ):
             # Execute
             await service_with_cors.start_sandbox()
@@ -672,12 +672,12 @@ class TestDockerSandboxService:
         # Verify CORS origins environment variable was set
         mock_docker_client.containers.run.assert_called_once()
         call_args = mock_docker_client.containers.run.call_args
-        env_vars = call_args[1]["environment"]
-        assert "OH_ALLOW_CORS_ORIGINS_0" in env_vars
-        assert env_vars["OH_ALLOW_CORS_ORIGINS_0"] == "http://192.168.1.100:3000"
+        env_vars = call_args[1]['environment']
+        assert 'OH_ALLOW_CORS_ORIGINS_0' in env_vars
+        assert env_vars['OH_ALLOW_CORS_ORIGINS_0'] == 'http://192.168.1.100:3000'
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_without_cors_origins(
         self,
         mock_urandom,
@@ -688,35 +688,35 @@ class TestDockerSandboxService:
     ):
         """Test that CORS origins are not set when web_url is None."""
         # Setup
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key", "TEST_VAR=test_value"]
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key', 'TEST_VAR=test_value']
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service without web_url (local development mode)
         service_without_cors = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,
             web_url=None,  # No web_url configured
@@ -724,8 +724,8 @@ class TestDockerSandboxService:
         )
 
         with (
-            patch.object(service_without_cors, "_find_unused_port", return_value=12345),
-            patch.object(service_without_cors, "pause_old_sandboxes", return_value=[]),
+            patch.object(service_without_cors, '_find_unused_port', return_value=12345),
+            patch.object(service_without_cors, 'pause_old_sandboxes', return_value=[]),
         ):
             # Execute
             await service_without_cors.start_sandbox()
@@ -733,21 +733,21 @@ class TestDockerSandboxService:
         # Verify CORS origins environment variable was NOT set
         mock_docker_client.containers.run.assert_called_once()
         call_args = mock_docker_client.containers.run.call_args
-        env_vars = call_args[1]["environment"]
-        assert "OH_ALLOW_CORS_ORIGINS_0" not in env_vars
+        env_vars = call_args[1]['environment']
+        assert 'OH_ALLOW_CORS_ORIGINS_0' not in env_vars
 
     async def test_resume_sandbox_from_paused(self, service):
         """Test resuming a paused sandbox."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "paused"
+        mock_container.status = 'paused'
         service.docker_client.containers.get.return_value = mock_container
 
         with patch.object(
-            service, "pause_old_sandboxes", return_value=[]
+            service, 'pause_old_sandboxes', return_value=[]
         ) as mock_cleanup:
             # Execute
-            result = await service.resume_sandbox("oh-test-abc123")
+            result = await service.resume_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
@@ -760,14 +760,14 @@ class TestDockerSandboxService:
         """Test resuming an exited sandbox."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "exited"
+        mock_container.status = 'exited'
         service.docker_client.containers.get.return_value = mock_container
 
         with patch.object(
-            service, "pause_old_sandboxes", return_value=[]
+            service, 'pause_old_sandboxes', return_value=[]
         ) as mock_cleanup:
             # Execute
-            result = await service.resume_sandbox("oh-test-abc123")
+            result = await service.resume_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
@@ -779,10 +779,10 @@ class TestDockerSandboxService:
     async def test_resume_sandbox_wrong_prefix(self, service):
         """Test resuming sandbox with wrong prefix."""
         with patch.object(
-            service, "pause_old_sandboxes", return_value=[]
+            service, 'pause_old_sandboxes', return_value=[]
         ) as mock_cleanup:
             # Execute
-            result = await service.resume_sandbox("wrong-prefix-abc123")
+            result = await service.resume_sandbox('wrong-prefix-abc123')
 
         # Verify
         assert result is False
@@ -794,14 +794,14 @@ class TestDockerSandboxService:
         """Test resuming non-existent sandbox."""
         # Setup
         service.docker_client.containers.get.side_effect = NotFound(
-            "Container not found"
+            'Container not found'
         )
 
         with patch.object(
-            service, "pause_old_sandboxes", return_value=[]
+            service, 'pause_old_sandboxes', return_value=[]
         ) as mock_cleanup:
             # Execute
-            result = await service.resume_sandbox("oh-test-abc123")
+            result = await service.resume_sandbox('oh-test-abc123')
 
         # Verify
         assert result is False
@@ -812,11 +812,11 @@ class TestDockerSandboxService:
         """Test pausing a running sandbox."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "running"
+        mock_container.status = 'running'
         service.docker_client.containers.get.return_value = mock_container
 
         # Execute
-        result = await service.pause_sandbox("oh-test-abc123")
+        result = await service.pause_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
@@ -826,11 +826,11 @@ class TestDockerSandboxService:
         """Test pausing a non-running sandbox."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "paused"
+        mock_container.status = 'paused'
         service.docker_client.containers.get.return_value = mock_container
 
         # Execute
-        result = await service.pause_sandbox("oh-test-abc123")
+        result = await service.pause_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
@@ -840,21 +840,21 @@ class TestDockerSandboxService:
         """Test successful sandbox deletion."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "running"
+        mock_container.status = 'running'
         service.docker_client.containers.get.return_value = mock_container
 
         mock_volume = MagicMock()
         service.docker_client.volumes.get.return_value = mock_volume
 
         # Execute
-        result = await service.delete_sandbox("oh-test-abc123")
+        result = await service.delete_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
         mock_container.stop.assert_called_once_with(timeout=10)
         mock_container.remove.assert_called_once()
         service.docker_client.volumes.get.assert_called_once_with(
-            "openhands-workspace-oh-test-abc123"
+            'openhands-workspace-oh-test-abc123'
         )
         mock_volume.remove.assert_called_once()
 
@@ -862,12 +862,12 @@ class TestDockerSandboxService:
         """Test sandbox deletion when volume doesn't exist."""
         # Setup
         mock_container = MagicMock()
-        mock_container.status = "exited"
+        mock_container.status = 'exited'
         service.docker_client.containers.get.return_value = mock_container
-        service.docker_client.volumes.get.side_effect = NotFound("Volume not found")
+        service.docker_client.volumes.get.side_effect = NotFound('Volume not found')
 
         # Execute
-        result = await service.delete_sandbox("oh-test-abc123")
+        result = await service.delete_sandbox('oh-test-abc123')
 
         # Verify
         assert result is True
@@ -887,29 +887,29 @@ class TestDockerSandboxService:
         """Test Docker status to SandboxStatus conversion."""
         # Test all mappings
         assert (
-            service._docker_status_to_sandbox_status("running") == SandboxStatus.RUNNING
+            service._docker_status_to_sandbox_status('running') == SandboxStatus.RUNNING
         )
         assert (
-            service._docker_status_to_sandbox_status("paused") == SandboxStatus.PAUSED
+            service._docker_status_to_sandbox_status('paused') == SandboxStatus.PAUSED
         )
         assert (
-            service._docker_status_to_sandbox_status("exited") == SandboxStatus.PAUSED
+            service._docker_status_to_sandbox_status('exited') == SandboxStatus.PAUSED
         )
         assert (
-            service._docker_status_to_sandbox_status("created")
+            service._docker_status_to_sandbox_status('created')
             == SandboxStatus.STARTING
         )
         assert (
-            service._docker_status_to_sandbox_status("restarting")
+            service._docker_status_to_sandbox_status('restarting')
             == SandboxStatus.STARTING
         )
         assert (
-            service._docker_status_to_sandbox_status("removing")
+            service._docker_status_to_sandbox_status('removing')
             == SandboxStatus.MISSING
         )
-        assert service._docker_status_to_sandbox_status("dead") == SandboxStatus.ERROR
+        assert service._docker_status_to_sandbox_status('dead') == SandboxStatus.ERROR
         assert (
-            service._docker_status_to_sandbox_status("unknown") == SandboxStatus.ERROR
+            service._docker_status_to_sandbox_status('unknown') == SandboxStatus.ERROR
         )
 
     def test_get_container_env_vars(self, service):
@@ -917,12 +917,12 @@ class TestDockerSandboxService:
         # Setup
         mock_container = MagicMock()
         mock_container.attrs = {
-            "Config": {
-                "Env": [
-                    "VAR1=value1",
-                    "VAR2=value2",
-                    "VAR_NO_VALUE",
-                    "VAR3=value=with=equals",
+            'Config': {
+                'Env': [
+                    'VAR1=value1',
+                    'VAR2=value2',
+                    'VAR_NO_VALUE',
+                    'VAR3=value=with=equals',
                 ]
             }
         }
@@ -932,10 +932,10 @@ class TestDockerSandboxService:
 
         # Verify
         assert result == {
-            "VAR1": "value1",
-            "VAR2": "value2",
-            "VAR_NO_VALUE": None,
-            "VAR3": "value=with=equals",
+            'VAR1': 'value1',
+            'VAR2': 'value2',
+            'VAR_NO_VALUE': None,
+            'VAR3': 'value=with=equals',
         }
 
     async def test_container_to_sandbox_info_running(
@@ -947,39 +947,39 @@ class TestDockerSandboxService:
 
         # Verify
         assert result is not None
-        assert result.id == "oh-test-abc123"
+        assert result.id == 'oh-test-abc123'
         assert result.created_by_user_id is None
-        assert result.sandbox_spec_id == "spec456"
+        assert result.sandbox_spec_id == 'spec456'
         assert result.status == SandboxStatus.RUNNING
-        assert result.session_api_key == "session_key_123"
+        assert result.session_api_key == 'session_key_123'
         assert len(result.exposed_urls) == 2
 
         # Check exposed URLs
         agent_url = next(url for url in result.exposed_urls if url.name == AGENT_SERVER)
-        assert agent_url.url == "http://localhost:12345"
+        assert agent_url.url == 'http://localhost:12345'
 
         vscode_url = next(url for url in result.exposed_urls if url.name == VSCODE)
         assert (
             vscode_url.url
-            == "http://localhost:12346/?tkn=session_key_123&folder=/workspace"
+            == 'http://localhost:12346/?tkn=session_key_123&folder=/workspace'
         )
 
     async def test_container_to_sandbox_info_invalid_created_time(self, service):
         """Test conversion with invalid creation timestamp."""
         # Setup
         container = MagicMock()
-        container.name = "oh-test-abc123"
-        container.status = "running"
-        container.image.tags = ["spec456"]
+        container.name = 'oh-test-abc123'
+        container.status = 'running'
+        container.image.tags = ['spec456']
         container.attrs = {
-            "Created": "invalid-timestamp",
-            "Config": {
-                "Env": [
-                    "OH_SESSION_API_KEYS_0=test_session_key",
-                    "OTHER_VAR=test_value",
+            'Created': 'invalid-timestamp',
+            'Config': {
+                'Env': [
+                    'OH_SESSION_API_KEYS_0=test_session_key',
+                    'OTHER_VAR=test_value',
                 ]
             },
-            "NetworkSettings": {"Ports": {}},
+            'NetworkSettings': {'Ports': {}},
         }
 
         # Execute
@@ -990,7 +990,7 @@ class TestDockerSandboxService:
         assert isinstance(result.created_at, datetime)
 
     @patch(
-        "openhands.app_server.utils.docker_utils.is_running_in_docker",
+        'openhands.app_server.utils.docker_utils.is_running_in_docker',
         return_value=True,
     )
     async def test_container_to_checked_sandbox_info_health_check_success(
@@ -1009,15 +1009,15 @@ class TestDockerSandboxService:
         assert result is not None
         assert result.status == SandboxStatus.RUNNING
         assert result.exposed_urls is not None
-        assert result.session_api_key == "session_key_123"
+        assert result.session_api_key == 'session_key_123'
 
         # Verify health check was called with Docker-internal URL
         service.httpx_client.get.assert_called_once_with(
-            "http://host.docker.internal:12345/health"
+            'http://host.docker.internal:12345/health'
         )
 
     @patch(
-        "openhands.app_server.utils.docker_utils.is_running_in_docker",
+        'openhands.app_server.utils.docker_utils.is_running_in_docker',
         return_value=False,
     )
     async def test_container_to_checked_sandbox_info_health_check_success_not_in_docker(
@@ -1036,11 +1036,11 @@ class TestDockerSandboxService:
         assert result is not None
         assert result.status == SandboxStatus.RUNNING
         assert result.exposed_urls is not None
-        assert result.session_api_key == "session_key_123"
+        assert result.session_api_key == 'session_key_123'
 
         # Verify health check was called with original localhost URL
         service.httpx_client.get.assert_called_once_with(
-            "http://localhost:12345/health"
+            'http://localhost:12345/health'
         )
 
     async def test_container_to_checked_sandbox_info_health_check_failure(
@@ -1048,7 +1048,7 @@ class TestDockerSandboxService:
     ):
         """Test health check failure."""
         # Setup
-        service.httpx_client.get.side_effect = httpx.HTTPError("Health check failed")
+        service.httpx_client.get.side_effect = httpx.HTTPError('Health check failed')
 
         # Execute
         result = await service._container_to_checked_sandbox_info(
@@ -1096,21 +1096,21 @@ class TestVolumeMount:
 
     def test_volume_mount_creation(self):
         """Test VolumeMount creation with default mode."""
-        mount = VolumeMount(host_path="/host", container_path="/container")
-        assert mount.host_path == "/host"
-        assert mount.container_path == "/container"
-        assert mount.mode == "rw"
+        mount = VolumeMount(host_path='/host', container_path='/container')
+        assert mount.host_path == '/host'
+        assert mount.container_path == '/container'
+        assert mount.mode == 'rw'
 
     def test_volume_mount_custom_mode(self):
         """Test VolumeMount creation with custom mode."""
-        mount = VolumeMount(host_path="/host", container_path="/container", mode="ro")
-        assert mount.mode == "ro"
+        mount = VolumeMount(host_path='/host', container_path='/container', mode='ro')
+        assert mount.mode == 'ro'
 
     def test_volume_mount_immutable(self):
         """Test that VolumeMount is immutable."""
-        mount = VolumeMount(host_path="/host", container_path="/container")
+        mount = VolumeMount(host_path='/host', container_path='/container')
         with pytest.raises(ValueError):  # Should raise validation error
-            mount.host_path = "/new_host"
+            mount.host_path = '/new_host'
 
 
 class TestExposedPort:
@@ -1118,21 +1118,21 @@ class TestExposedPort:
 
     def test_exposed_port_creation(self):
         """Test ExposedPort creation with default port."""
-        port = ExposedPort(name="test", description="Test port")
-        assert port.name == "test"
-        assert port.description == "Test port"
+        port = ExposedPort(name='test', description='Test port')
+        assert port.name == 'test'
+        assert port.description == 'Test port'
         assert port.container_port == 8000
 
     def test_exposed_port_custom_port(self):
         """Test ExposedPort creation with custom port."""
-        port = ExposedPort(name="test", description="Test port", container_port=9000)
+        port = ExposedPort(name='test', description='Test port', container_port=9000)
         assert port.container_port == 9000
 
     def test_exposed_port_immutable(self):
         """Test that ExposedPort is immutable."""
-        port = ExposedPort(name="test", description="Test port")
+        port = ExposedPort(name='test', description='Test port')
         with pytest.raises(ValueError):  # Should raise validation error
-            port.name = "new_name"
+            port.name = 'new_name'
 
 
 class TestDockerSandboxServiceInjector:
@@ -1146,7 +1146,7 @@ class TestDockerSandboxServiceInjector:
 
         injector = DockerSandboxServiceInjector()
         assert injector.host_port == 3000
-        assert injector.container_url_pattern == "http://localhost:{port}"
+        assert injector.container_url_pattern == 'http://localhost:{port}'
 
     def test_custom_host_port(self):
         """Test custom host_port configuration."""
@@ -1164,9 +1164,9 @@ class TestDockerSandboxServiceInjector:
         )
 
         injector = DockerSandboxServiceInjector(
-            container_url_pattern="http://192.168.1.100:{port}"
+            container_url_pattern='http://192.168.1.100:{port}'
         )
-        assert injector.container_url_pattern == "http://192.168.1.100:{port}"
+        assert injector.container_url_pattern == 'http://192.168.1.100:{port}'
 
     def test_custom_configuration_combined(self):
         """Test combined custom configuration for remote access."""
@@ -1176,10 +1176,10 @@ class TestDockerSandboxServiceInjector:
 
         injector = DockerSandboxServiceInjector(
             host_port=4000,
-            container_url_pattern="http://192.168.1.100:{port}",
+            container_url_pattern='http://192.168.1.100:{port}',
         )
         assert injector.host_port == 4000
-        assert injector.container_url_pattern == "http://192.168.1.100:{port}"
+        assert injector.container_url_pattern == 'http://192.168.1.100:{port}'
 
     def test_use_host_network_default_value(self):
         """Test that use_host_network field defaults to False."""
@@ -1209,7 +1209,7 @@ class TestDockerSandboxServiceInjectorFromEnv:
         from unittest.mock import patch
 
         env_vars = {
-            "SANDBOX_HOST_PORT": "4000",
+            'SANDBOX_HOST_PORT': '4000',
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
@@ -1229,7 +1229,7 @@ class TestDockerSandboxServiceInjectorFromEnv:
         from unittest.mock import patch
 
         env_vars = {
-            "SANDBOX_CONTAINER_URL_PATTERN": "http://192.168.1.100:{port}",
+            'SANDBOX_CONTAINER_URL_PATTERN': 'http://192.168.1.100:{port}',
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
@@ -1241,7 +1241,7 @@ class TestDockerSandboxServiceInjectorFromEnv:
 
             config = config_from_env()
             assert config.sandbox is not None
-            assert config.sandbox.container_url_pattern == "http://192.168.1.100:{port}"
+            assert config.sandbox.container_url_pattern == 'http://192.168.1.100:{port}'
 
     def test_config_from_env_with_both_sandbox_vars(self):
         """Test that both SANDBOX_HOST_PORT and SANDBOX_CONTAINER_URL_PATTERN work together."""
@@ -1249,8 +1249,8 @@ class TestDockerSandboxServiceInjectorFromEnv:
         from unittest.mock import patch
 
         env_vars = {
-            "SANDBOX_HOST_PORT": "4000",
-            "SANDBOX_CONTAINER_URL_PATTERN": "http://192.168.1.100:{port}",
+            'SANDBOX_HOST_PORT': '4000',
+            'SANDBOX_CONTAINER_URL_PATTERN': 'http://192.168.1.100:{port}',
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
@@ -1263,7 +1263,7 @@ class TestDockerSandboxServiceInjectorFromEnv:
             config = config_from_env()
             assert config.sandbox is not None
             assert config.sandbox.host_port == 4000
-            assert config.sandbox.container_url_pattern == "http://192.168.1.100:{port}"
+            assert config.sandbox.container_url_pattern == 'http://192.168.1.100:{port}'
 
 
 class TestDockerSandboxServiceHostNetwork:
@@ -1276,19 +1276,19 @@ class TestDockerSandboxServiceHostNetwork:
         """Create DockerSandboxService instance with host network enabled."""
         return DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
                 ExposedPort(
-                    name=VSCODE, description="VSCode server", container_port=8001
+                    name=VSCODE, description='VSCode server', container_port=8001
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,
             docker_client=mock_docker_client,
@@ -1299,51 +1299,51 @@ class TestDockerSandboxServiceHostNetwork:
     def mock_host_network_container(self):
         """Create a mock container running with host network mode."""
         container = MagicMock()
-        container.name = "oh-test-abc123"
-        container.status = "running"
-        container.image.tags = ["spec456"]
+        container.name = 'oh-test-abc123'
+        container.status = 'running'
+        container.image.tags = ['spec456']
         container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": [
-                    "OH_SESSION_API_KEYS_0=session_key_123",
-                    "OTHER_VAR=other_value",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': [
+                    'OH_SESSION_API_KEYS_0=session_key_123',
+                    'OTHER_VAR=other_value',
                 ],
-                "WorkingDir": "/workspace",
+                'WorkingDir': '/workspace',
             },
-            "HostConfig": {
-                "NetworkMode": "host",
+            'HostConfig': {
+                'NetworkMode': 'host',
             },
-            "NetworkSettings": {
-                "Ports": None,
+            'NetworkSettings': {
+                'Ports': None,
             },
         }
         return container
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_with_host_network(
         self, mock_urandom, mock_encodebytes, service_with_host_network
     ):
         """Test starting sandbox with host network mode."""
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": [
-                    "OH_SESSION_API_KEYS_0=test_session_key",
-                    "TEST_VAR=test_value",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': [
+                    'OH_SESSION_API_KEYS_0=test_session_key',
+                    'TEST_VAR=test_value',
                 ],
-                "WorkingDir": "/workspace",
+                'WorkingDir': '/workspace',
             },
-            "HostConfig": {"NetworkMode": "host"},
-            "NetworkSettings": {"Ports": None},
+            'HostConfig': {'NetworkMode': 'host'},
+            'NetworkSettings': {'Ports': None},
         }
 
         service_with_host_network.docker_client.containers.run.return_value = (
@@ -1351,39 +1351,39 @@ class TestDockerSandboxServiceHostNetwork:
         )
 
         with patch.object(
-            service_with_host_network, "pause_old_sandboxes", return_value=[]
+            service_with_host_network, 'pause_old_sandboxes', return_value=[]
         ):
             result = await service_with_host_network.start_sandbox()
 
         assert result is not None
-        assert result.id == "oh-test-test_container_id"
+        assert result.id == 'oh-test-test_container_id'
 
         call_args = service_with_host_network.docker_client.containers.run.call_args
-        assert call_args[1]["network_mode"] == "host"
-        assert call_args[1]["ports"] is None
-        assert call_args[1]["extra_hosts"] is None
+        assert call_args[1]['network_mode'] == 'host'
+        assert call_args[1]['ports'] is None
+        assert call_args[1]['extra_hosts'] is None
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_host_network_uses_container_ports(
         self, mock_urandom, mock_encodebytes, service_with_host_network
     ):
         """Test that host network mode uses container ports directly in env vars."""
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key"],
-                "WorkingDir": "/workspace",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key'],
+                'WorkingDir': '/workspace',
             },
-            "HostConfig": {"NetworkMode": "host"},
-            "NetworkSettings": {"Ports": None},
+            'HostConfig': {'NetworkMode': 'host'},
+            'NetworkSettings': {'Ports': None},
         }
 
         service_with_host_network.docker_client.containers.run.return_value = (
@@ -1391,14 +1391,14 @@ class TestDockerSandboxServiceHostNetwork:
         )
 
         with patch.object(
-            service_with_host_network, "pause_old_sandboxes", return_value=[]
+            service_with_host_network, 'pause_old_sandboxes', return_value=[]
         ):
             await service_with_host_network.start_sandbox()
 
         call_args = service_with_host_network.docker_client.containers.run.call_args
-        env_vars = call_args[1]["environment"]
-        assert env_vars[AGENT_SERVER] == "8000"
-        assert env_vars[VSCODE] == "8001"
+        env_vars = call_args[1]['environment']
+        assert env_vars[AGENT_SERVER] == '8000'
+        assert env_vars[VSCODE] == '8001'
 
     async def test_container_to_sandbox_info_host_network(
         self, service_with_host_network, mock_host_network_container
@@ -1409,25 +1409,25 @@ class TestDockerSandboxServiceHostNetwork:
         )
 
         assert result is not None
-        assert result.id == "oh-test-abc123"
+        assert result.id == 'oh-test-abc123'
         assert result.status == SandboxStatus.RUNNING
-        assert result.session_api_key == "session_key_123"
+        assert result.session_api_key == 'session_key_123'
         assert len(result.exposed_urls) == 2
 
         agent_url = next(url for url in result.exposed_urls if url.name == AGENT_SERVER)
-        assert agent_url.url == "http://localhost:8000"
+        assert agent_url.url == 'http://localhost:8000'
         assert agent_url.port == 8000
 
         vscode_url = next(url for url in result.exposed_urls if url.name == VSCODE)
         assert (
             vscode_url.url
-            == "http://localhost:8001/?tkn=session_key_123&folder=/workspace"
+            == 'http://localhost:8001/?tkn=session_key_123&folder=/workspace'
         )
         assert vscode_url.port == 8001
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service._logger")
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service._logger')
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_host_network_warns_multiple_sandboxes(
         self,
         mock_urandom,
@@ -1438,57 +1438,57 @@ class TestDockerSandboxServiceHostNetwork:
         mock_docker_client,
     ):
         """Test that warning is logged when use_host_network=True and max_num_sandboxes > 1."""
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key"],
-                "WorkingDir": "/workspace",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key'],
+                'WorkingDir': '/workspace',
             },
-            "HostConfig": {"NetworkMode": "host"},
-            "NetworkSettings": {"Ports": None},
+            'HostConfig': {'NetworkMode': 'host'},
+            'NetworkSettings': {'Ports': None},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service with host network AND max_num_sandboxes > 1
         service = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=3,  # > 1
             docker_client=mock_docker_client,
             use_host_network=True,
         )
 
-        with patch.object(service, "pause_old_sandboxes", return_value=[]):
+        with patch.object(service, 'pause_old_sandboxes', return_value=[]):
             await service.start_sandbox()
 
         # Verify warning was logged about port collision risk
         mock_logger.warning.assert_called_once()
         warning_message = mock_logger.warning.call_args[0][0]
         assert (
-            "Host network mode is enabled with max_num_sandboxes > 1" in warning_message
+            'Host network mode is enabled with max_num_sandboxes > 1' in warning_message
         )
-        assert "port collision" in warning_message.lower()
+        assert 'port collision' in warning_message.lower()
 
-    @patch("openhands.app_server.sandbox.docker_sandbox_service._logger")
-    @patch("openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes")
-    @patch("os.urandom")
+    @patch('openhands.app_server.sandbox.docker_sandbox_service._logger')
+    @patch('openhands.app_server.sandbox.docker_sandbox_service.base62.encodebytes')
+    @patch('os.urandom')
     async def test_start_sandbox_host_network_no_warning_single_sandbox(
         self,
         mock_urandom,
@@ -1499,44 +1499,44 @@ class TestDockerSandboxServiceHostNetwork:
         mock_docker_client,
     ):
         """Test that no warning is logged when use_host_network=True and max_num_sandboxes=1."""
-        mock_urandom.side_effect = [b"container_id", b"session_key"]
-        mock_encodebytes.side_effect = ["test_container_id", "test_session_key"]
+        mock_urandom.side_effect = [b'container_id', b'session_key']
+        mock_encodebytes.side_effect = ['test_container_id', 'test_session_key']
 
         mock_container = MagicMock()
-        mock_container.name = "oh-test-test_container_id"
-        mock_container.status = "running"
-        mock_container.image.tags = ["test-image:latest"]
+        mock_container.name = 'oh-test-test_container_id'
+        mock_container.status = 'running'
+        mock_container.image.tags = ['test-image:latest']
         mock_container.attrs = {
-            "Created": "2024-01-15T10:30:00.000000000Z",
-            "Config": {
-                "Env": ["OH_SESSION_API_KEYS_0=test_session_key"],
-                "WorkingDir": "/workspace",
+            'Created': '2024-01-15T10:30:00.000000000Z',
+            'Config': {
+                'Env': ['OH_SESSION_API_KEYS_0=test_session_key'],
+                'WorkingDir': '/workspace',
             },
-            "HostConfig": {"NetworkMode": "host"},
-            "NetworkSettings": {"Ports": None},
+            'HostConfig': {'NetworkMode': 'host'},
+            'NetworkSettings': {'Ports': None},
         }
         mock_docker_client.containers.run.return_value = mock_container
 
         # Create service with host network AND max_num_sandboxes = 1
         service = DockerSandboxService(
             sandbox_spec_service=mock_sandbox_spec_service,
-            container_name_prefix="oh-test-",
+            container_name_prefix='oh-test-',
             host_port=3000,
-            container_url_pattern="http://localhost:{port}",
+            container_url_pattern='http://localhost:{port}',
             mounts=[],
             exposed_ports=[
                 ExposedPort(
-                    name=AGENT_SERVER, description="Agent server", container_port=8000
+                    name=AGENT_SERVER, description='Agent server', container_port=8000
                 ),
             ],
-            health_check_path="/health",
+            health_check_path='/health',
             httpx_client=mock_httpx_client,
             max_num_sandboxes=1,  # = 1, no warning expected
             docker_client=mock_docker_client,
             use_host_network=True,
         )
 
-        with patch.object(service, "pause_old_sandboxes", return_value=[]):
+        with patch.object(service, 'pause_old_sandboxes', return_value=[]):
             await service.start_sandbox()
 
         # Verify no warning was logged about port collision

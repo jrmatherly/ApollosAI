@@ -7,4 +7,4 @@
 # Tag: Legacy-V0
 from openhands.runtime.browser.utils import browse
 
-__all__ = ["browse"]
+__all__ = ['browse']

@@ -5,46 +5,46 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from openhands.agent_server.models import EventPage, EventSortOrder
-from openhands.sdk import Event
 
+from openhands.agent_server.models import EventPage, EventSortOrder
 from openhands.app_server.config import depends_event_service
 from openhands.app_server.event.event_service import EventService
 from openhands.app_server.event_callback.event_callback_models import EventKind
+from openhands.sdk import Event
 
-router = APIRouter(prefix="/conversation/{conversation_id}/events", tags=["Events"])
+router = APIRouter(prefix='/conversation/{conversation_id}/events', tags=['Events'])
 event_service_dependency = depends_event_service()
 
 
 # Read methods
 
 
-@router.get("/search")
+@router.get('/search')
 async def search_events(
     conversation_id: str,
     kind__eq: Annotated[
         EventKind | None,
-        Query(title="Optional filter by event kind"),
+        Query(title='Optional filter by event kind'),
     ] = None,
     timestamp__gte: Annotated[
         datetime | None,
-        Query(title="Optional filter by timestamp greater than or equal to"),
+        Query(title='Optional filter by timestamp greater than or equal to'),
     ] = None,
     timestamp__lt: Annotated[
         datetime | None,
-        Query(title="Optional filter by timestamp less than"),
+        Query(title='Optional filter by timestamp less than'),
     ] = None,
     sort_order: Annotated[
         EventSortOrder,
-        Query(title="Sort order for results"),
+        Query(title='Sort order for results'),
     ] = EventSortOrder.TIMESTAMP,
     page_id: Annotated[
         str | None,
-        Query(title="Optional next_page_id from the previously returned page"),
+        Query(title='Optional next_page_id from the previously returned page'),
     ] = None,
     limit: Annotated[
         int,
-        Query(title="The max number of results in the page", gt=0, lte=100),
+        Query(title='The max number of results in the page', gt=0, lte=100),
     ] = 100,
     event_service: EventService = event_service_dependency,
 ) -> EventPage:
@@ -62,20 +62,20 @@ async def search_events(
     )
 
 
-@router.get("/count")
+@router.get('/count')
 async def count_events(
     conversation_id: str,
     kind__eq: Annotated[
         EventKind | None,
-        Query(title="Optional filter by event kind"),
+        Query(title='Optional filter by event kind'),
     ] = None,
     timestamp__gte: Annotated[
         datetime | None,
-        Query(title="Optional filter by timestamp greater than or equal to"),
+        Query(title='Optional filter by timestamp greater than or equal to'),
     ] = None,
     timestamp__lt: Annotated[
         datetime | None,
-        Query(title="Optional filter by timestamp less than"),
+        Query(title='Optional filter by timestamp less than'),
     ] = None,
     event_service: EventService = event_service_dependency,
 ) -> int:
@@ -88,7 +88,7 @@ async def count_events(
     )
 
 
-@router.get("")
+@router.get('')
 async def batch_get_events(
     conversation_id: str,
     id: Annotated[list[str], Query()],

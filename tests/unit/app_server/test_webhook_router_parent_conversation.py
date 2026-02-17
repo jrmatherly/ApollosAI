@@ -9,11 +9,10 @@ from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from openhands.agent_server.models import ConversationInfo, Success
-from openhands.sdk.conversation.state import ConversationExecutionStatus
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
+from openhands.agent_server.models import ConversationInfo, Success
 from openhands.app_server.app_conversation.app_conversation_models import (
     AppConversationInfo,
 )
@@ -24,6 +23,7 @@ from openhands.app_server.sandbox.sandbox_models import SandboxInfo, SandboxStat
 from openhands.app_server.user.specifiy_user_context import SpecifyUserContext
 from openhands.app_server.utils.sql_utils import Base
 from openhands.integrations.provider import ProviderType
+from openhands.sdk.conversation.state import ConversationExecutionStatus
 from openhands.storage.data_models.conversation_metadata import ConversationTrigger
 
 
@@ -31,9 +31,9 @@ from openhands.storage.data_models.conversation_metadata import ConversationTrig
 async def async_engine():
     """Create an async SQLite engine for testing."""
     engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
+        'sqlite+aiosqlite:///:memory:',
         poolclass=StaticPool,
-        connect_args={"check_same_thread": False},
+        connect_args={'check_same_thread': False},
         echo=False,
     )
 
@@ -63,7 +63,7 @@ def app_conversation_info_service(
 ) -> SQLAppConversationInfoService:
     """Create a SQLAppConversationInfoService instance for testing."""
     return SQLAppConversationInfoService(
-        db_session=async_session, user_context=SpecifyUserContext(user_id="user_123")
+        db_session=async_session, user_context=SpecifyUserContext(user_id='user_123')
     )
 
 
@@ -71,11 +71,11 @@ def app_conversation_info_service(
 def sandbox_info() -> SandboxInfo:
     """Create a test sandbox info."""
     return SandboxInfo(
-        id="sandbox_123",
+        id='sandbox_123',
         status=SandboxStatus.RUNNING,
-        session_api_key="test_session_key",
-        created_by_user_id="user_123",
-        sandbox_spec_id="spec_123",
+        session_api_key='test_session_key',
+        created_by_user_id='user_123',
+        sandbox_spec_id='spec_123',
     )
 
 
@@ -89,7 +89,7 @@ def mock_conversation_info() -> ConversationInfo:
     # Mock agent.llm.model structure
     conversation_info.agent = MagicMock()
     conversation_info.agent.llm = MagicMock()
-    conversation_info.agent.llm.model = "gpt-4"
+    conversation_info.agent.llm.model = 'gpt-4'
 
     # Mock stats.get_combined_metrics() structure
     conversation_info.stats = MagicMock()
@@ -129,17 +129,17 @@ class TestOnConversationUpdateParentConversationId:
         # Create existing conversation with parent
         existing_conv = AppConversationInfo(
             id=conversation_id,
-            title="Existing Conversation",
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
-            selected_repository="https://github.com/test/repo",
-            selected_branch="main",
+            title='Existing Conversation',
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
+            selected_repository='https://github.com/test/repo',
+            selected_branch='main',
             parent_conversation_id=parent_id,
         )
 
         # Mock valid_conversation to return existing conversation
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=existing_conv,
         ):
             # Act
@@ -185,15 +185,15 @@ class TestOnConversationUpdateParentConversationId:
         # Create existing conversation without parent
         existing_conv = AppConversationInfo(
             id=conversation_id,
-            title="Root Conversation",
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
+            title='Root Conversation',
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
             parent_conversation_id=None,
         )
 
         # Mock valid_conversation to return existing conversation
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=existing_conv,
         ):
             # Act
@@ -244,7 +244,7 @@ class TestOnConversationUpdateParentConversationId:
 
         # Mock valid_conversation to return stub (as it would for new conversation)
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=stub_conv,
         ):
             # Act
@@ -291,11 +291,11 @@ class TestOnConversationUpdateParentConversationId:
         # Create existing conversation with comprehensive metadata
         existing_conv = AppConversationInfo(
             id=conversation_id,
-            title="Full Metadata Conversation",
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
-            selected_repository="https://github.com/test/repo",
-            selected_branch="feature-branch",
+            title='Full Metadata Conversation',
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
+            selected_repository='https://github.com/test/repo',
+            selected_branch='feature-branch',
             git_provider=ProviderType.GITHUB,
             trigger=ConversationTrigger.RESOLVER,
             pr_number=[123, 456],
@@ -304,7 +304,7 @@ class TestOnConversationUpdateParentConversationId:
 
         # Mock valid_conversation to return existing conversation
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=existing_conv,
         ):
             # Act
@@ -326,8 +326,8 @@ class TestOnConversationUpdateParentConversationId:
         assert saved_conv.parent_conversation_id == parent_id
 
         # Verify other metadata is also preserved
-        assert saved_conv.selected_repository == "https://github.com/test/repo"
-        assert saved_conv.selected_branch == "feature-branch"
+        assert saved_conv.selected_repository == 'https://github.com/test/repo'
+        assert saved_conv.selected_branch == 'feature-branch'
         assert saved_conv.git_provider == ProviderType.GITHUB
         assert saved_conv.trigger == ConversationTrigger.RESOLVER
         assert saved_conv.pr_number == [123, 456]
@@ -360,9 +360,9 @@ class TestOnConversationUpdateParentConversationId:
         # Create initial conversation with parent
         initial_conv = AppConversationInfo(
             id=conversation_id,
-            title="Initial Title",
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
+            title='Initial Title',
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
             parent_conversation_id=parent_id,
         )
 
@@ -375,12 +375,12 @@ class TestOnConversationUpdateParentConversationId:
             )
             if saved:
                 # Override created_by_user_id for auth check
-                saved.created_by_user_id = "user_123"
+                saved.created_by_user_id = 'user_123'
                 return saved
             return initial_conv
 
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             side_effect=mock_valid_conv,
         ):
             # Act - Update multiple times
@@ -428,11 +428,11 @@ class TestOnConversationUpdateParentConversationId:
         # Create existing conversation
         existing_conv = AppConversationInfo(
             id=conversation_id,
-            title="To Be Deleted",
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
+            title='To Be Deleted',
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
             parent_conversation_id=parent_id,
-            llm_model="gpt-3.5-turbo",
+            llm_model='gpt-3.5-turbo',
         )
 
         # Save to DB for verification
@@ -443,7 +443,7 @@ class TestOnConversationUpdateParentConversationId:
 
         # Mock valid_conversation (though it won't be called for DELETING status)
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=existing_conv,
         ):
             # Act
@@ -462,7 +462,7 @@ class TestOnConversationUpdateParentConversationId:
         )
         assert saved_conv is not None
         assert saved_conv.parent_conversation_id == parent_id
-        assert saved_conv.llm_model == "gpt-3.5-turbo"  # Original model unchanged
+        assert saved_conv.llm_model == 'gpt-3.5-turbo'  # Original model unchanged
 
     @pytest.mark.asyncio
     async def test_parent_conversation_id_preserved_with_title_update(
@@ -493,14 +493,14 @@ class TestOnConversationUpdateParentConversationId:
         existing_conv = AppConversationInfo(
             id=conversation_id,
             title=None,
-            sandbox_id="sandbox_123",
-            created_by_user_id="user_123",
+            sandbox_id='sandbox_123',
+            created_by_user_id='user_123',
             parent_conversation_id=parent_id,
         )
 
         # Mock valid_conversation to return existing conversation
         with patch(
-            "openhands.app_server.event_callback.webhook_router.valid_conversation",
+            'openhands.app_server.event_callback.webhook_router.valid_conversation',
             return_value=existing_conv,
         ):
             # Act
@@ -519,4 +519,4 @@ class TestOnConversationUpdateParentConversationId:
         assert saved_conv is not None
         assert saved_conv.parent_conversation_id == parent_id
         assert saved_conv.title is not None  # Title should be generated
-        assert f"Conversation {conversation_id.hex}" in saved_conv.title
+        assert f'Conversation {conversation_id.hex}' in saved_conv.title

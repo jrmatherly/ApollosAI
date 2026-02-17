@@ -50,12 +50,12 @@ class ConversationStats:
             )
             if duplicate_services:
                 logger.error(
-                    f"Duplicate service IDs found between restored and service metrics: {duplicate_services}. "
-                    "This should not happen as registered services should be removed from restored_metrics. "
-                    "Proceeding by preferring service_to_metrics values for duplicates.",
+                    f'Duplicate service IDs found between restored and service metrics: {duplicate_services}. '
+                    'This should not happen as registered services should be removed from restored_metrics. '
+                    'Proceeding by preferring service_to_metrics values for duplicates.',
                     extra={
-                        "conversation_id": self.conversation_id,
-                        "duplicate_services": list(duplicate_services),
+                        'conversation_id': self.conversation_id,
+                        'duplicate_services': list(duplicate_services),
                     },
                 )
 
@@ -68,11 +68,11 @@ class ConversationStats:
             combined_metrics.update(self.service_to_metrics)
 
             pickled = pickle.dumps(combined_metrics)
-            serialized_metrics = base64.b64encode(pickled).decode("utf-8")
+            serialized_metrics = base64.b64encode(pickled).decode('utf-8')
             self.file_store.write(self.metrics_path, serialized_metrics)
             logger.info(
-                "Saved conversation stats",
-                extra={"conversation_id": self.conversation_id},
+                'Saved conversation stats',
+                extra={'conversation_id': self.conversation_id},
             )
 
     def maybe_restore_metrics(self):
@@ -83,7 +83,7 @@ class ConversationStats:
             encoded = self.file_store.read(self.metrics_path)
             pickled = base64.b64decode(encoded)
             self.restored_metrics = pickle.loads(pickled)
-            logger.info(f"restored metrics: {self.conversation_id}")
+            logger.info(f'restored metrics: {self.conversation_id}')
         except FileNotFoundError:
             pass
 
@@ -95,7 +95,7 @@ class ConversationStats:
 
     def get_metrics_for_service(self, service_id: str) -> Metrics:
         if service_id not in self.service_to_metrics:
-            raise Exception(f"LLM service does not exist {service_id}")
+            raise Exception(f'LLM service does not exist {service_id}')
 
         return self.service_to_metrics[service_id]
 
@@ -110,7 +110,7 @@ class ConversationStats:
 
         self.service_to_metrics[service_id] = llm.metrics
 
-    def merge_and_save(self, conversation_stats: "ConversationStats"):
+    def merge_and_save(self, conversation_stats: 'ConversationStats'):
         """
         Merge restored metrics from another ConversationStats into this one.
 
@@ -133,14 +133,14 @@ class ConversationStats:
         # If either side has active service metrics, log an error but proceed
         if self.service_to_metrics or conversation_stats.service_to_metrics:
             logger.error(
-                "merge_and_save should be used only when service_to_metrics are empty; "
-                "found active service metrics during merge. Proceeding anyway.",
+                'merge_and_save should be used only when service_to_metrics are empty; '
+                'found active service metrics during merge. Proceeding anyway.',
                 extra={
-                    "conversation_id": self.conversation_id,
-                    "self_service_to_metrics_keys": list(
+                    'conversation_id': self.conversation_id,
+                    'self_service_to_metrics_keys': list(
                         self.service_to_metrics.keys()
                     ),
-                    "incoming_service_to_metrics_keys": list(
+                    'incoming_service_to_metrics_keys': list(
                         conversation_stats.service_to_metrics.keys()
                     ),
                 },
@@ -149,7 +149,7 @@ class ConversationStats:
         # Drop zero-cost entries from restored metrics only
         def _drop_zero_cost(d: dict[str, Metrics]) -> None:
             to_delete = [
-                k for k, v in d.items() if getattr(v, "accumulated_cost", 0) == 0
+                k for k, v in d.items() if getattr(v, 'accumulated_cost', 0) == 0
             ]
             for k in to_delete:
                 del d[k]
@@ -163,6 +163,6 @@ class ConversationStats:
         # Save merged state
         self.save_metrics()
         logger.info(
-            "Merged conversation stats",
-            extra={"conversation_id": self.conversation_id},
+            'Merged conversation stats',
+            extra={'conversation_id': self.conversation_id},
         )
