@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [labeled]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ (github.head_ref && github.ref) || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   # Frontend lint fixes
   lint-fix-frontend:

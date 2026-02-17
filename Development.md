@@ -188,10 +188,34 @@ cd ./containers/dev
 
 You do need [Docker](https://docs.docker.com/engine/install/) installed on your host though.
 
+## ApollosAI Enterprise Server
+
+The `apollosai/` package provides the ApollosAI-specific enterprise auth layer (Entra ID OAuth2, JWT sessions, encrypted PostgreSQL storage).
+
+**Environment Variables**: See [docs/environment-variables.md](docs/environment-variables.md) for the full reference of all 11 env vars.
+
+**Running the Server**:
+```bash
+# Set required env vars (see docs/environment-variables.md), then:
+python -m apollosai.bootstrap   # Sets OPENHANDS_CONFIG_CLS
+make start-backend
+```
+
+**Running Tests**:
+```bash
+poetry run pytest tests/unit/test_apollosai*.py -v
+```
+
+**Database Migrations** (uses its own Alembic config, separate from enterprise):
+```bash
+cd apollosai && alembic -c alembic.ini upgrade head
+```
+
 ## Key Documentation Resources
 
 Here's a guide to the important documentation files in the repository:
 
+- [/docs/environment-variables.md](./docs/environment-variables.md): ApollosAI enterprise auth environment variable reference
 - [/README.md](./README.md): Main project overview, features, and basic setup instructions
 - [/Development.md](./Development.md) (this file): Comprehensive guide for developers working on ApollosAI
 - [/CONTRIBUTING.md](./CONTRIBUTING.md): Guidelines for contributing to the project, including code style and PR process

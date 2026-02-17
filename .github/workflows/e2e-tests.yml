@@ -8,6 +8,10 @@ on:
       - develop
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ (github.head_ref && github.ref) || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   e2e-tests:
     if: contains(github.event.pull_request.labels.*.name, 'end-to-end') || github.event_name == 'workflow_dispatch'

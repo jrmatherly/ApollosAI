@@ -45,6 +45,7 @@
     "backend_v1": "openhands/app_server/v1_router.py",
     "frontend": "frontend/src/entry.client.tsx",
     "enterprise": "enterprise/saas_server.py",
+    "apollosai": "apollosai/app_server.py",
     "docker": "containers/app/Dockerfile",
     "config": "config.template.toml"
   },
@@ -142,6 +143,36 @@
         "path": "enterprise/server/",
         "purpose": "17 API route modules (auth, billing, orgs, integrations)"
       }
+    },
+    "apollosai": {
+      "server_config": {
+        "path": "apollosai/server/config.py",
+        "purpose": "ApollosAIServerConfig (extends ServerConfig, app_mode=SAAS)"
+      },
+      "auth": {
+        "path": "apollosai/server/auth/",
+        "purpose": "Entra ID OAuth2, JWT sessions, MSAL client, auth errors, constants"
+      },
+      "v1_bridge": {
+        "path": "apollosai/server/auth/user_context.py",
+        "purpose": "EntraIDUserContextInjector (V0->V1 UserContext bridge)"
+      },
+      "routes": {
+        "path": "apollosai/server/routes/",
+        "purpose": "Auth routes: /auth/login, /auth/callback, /auth/logout"
+      },
+      "storage": {
+        "path": "apollosai/storage/",
+        "purpose": "PostgreSQL models (user, org, team, role, api_key, auth_token), encryption"
+      },
+      "migrations": {
+        "path": "apollosai/migrations/",
+        "purpose": "Alembic versions (separate from enterprise)"
+      },
+      "app_server": {
+        "path": "apollosai/app_server.py",
+        "purpose": "ApollosAI server entry point"
+      }
     }
   },
   "commands": {
@@ -154,7 +185,9 @@
     "frontend_lint": "cd frontend && npm run lint:fix",
     "frontend_build": "cd frontend && npm run build",
     "frontend_test": "cd frontend && npm run test",
-    "enterprise_test": "PYTHONPATH=\".:$PYTHONPATH\" poetry run --project=enterprise pytest --forked -n auto ./enterprise/tests/unit"
+    "enterprise_test": "PYTHONPATH=\".:$PYTHONPATH\" poetry run --project=enterprise pytest --forked -n auto ./enterprise/tests/unit",
+    "apollosai_test": "poetry run pytest tests/unit/test_apollosai*.py -v",
+    "apollosai_run": "python -m apollosai.bootstrap && make start-backend"
   },
   "conventions": {
     "python_quotes": "single inline, double docstrings",

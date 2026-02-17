@@ -23,7 +23,7 @@ OpenHands is an automated AI software engineer. It provides a platform where AI 
 - **Node Version**: 22.x+
 
 ### Enterprise
-- **Auth**: Keycloak
+- **Auth**: Keycloak (enterprise), Entra ID / Azure AD (apollosai)
 - **Billing**: Stripe
 - **Migrations**: Alembic
 - **Integrations**: GitHub, GitLab, Jira, Linear, Slack
@@ -49,6 +49,10 @@ frontend/           # React/TypeScript frontend
       ├── routes/   # Page routes
       └── types/    # TypeScript types
 enterprise/         # Enterprise features (separate license)
+apollosai/          # ApollosAI enterprise auth layer
+  ├── server/       # Config, auth (Entra ID), routes, lifespan
+  ├── storage/      # PostgreSQL models, stores, encryption
+  └── migrations/   # Alembic versions (separate from enterprise)
 tests/              # Python tests
   └── unit/         # Unit tests
 ```

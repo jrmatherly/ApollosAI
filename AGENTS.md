@@ -198,6 +198,78 @@ Each integration follows a consistent pattern with service classes, storage mode
 * If tests fail with import errors, verify `PYTHONPATH=".:$PYTHONPATH"` is set
 * **If GitHub CI fails but local linting passes**: Always use `--show-diff-on-failure` flag to match CI behavior exactly
 
+## ApollosAI Enterprise Auth Setup
+
+The `apollosai/` directory is the ApollosAI-specific enterprise authentication layer. It sits between the OpenHands core and the enterprise module, providing Entra ID OAuth2, JWT sessions, and encrypted PostgreSQL storage.
+
+### Prerequisites
+- Python 3.12, Poetry, Node.js 22.x (same as core OpenHands)
+- PostgreSQL instance (local or remote)
+- Microsoft Entra ID app registration (for production OAuth2 flow)
+
+### Development Setup
+
+Set minimal env vars for local development with auth bypass:
+
+```bash
+export APOLLOSAI_ALLOW_UNAUTHENTICATED=true
+export JWT_SECRET=dev-secret-at-least-32-characters-long
+export DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/apollosai_dev
+export APOLLOSAI_ENCRYPTION_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+```
+
+See [docs/environment-variables.md](docs/environment-variables.md) for the full env var reference.
+
+### Running Tests
+
+```bash
+# Full ApollosAI test suite
+poetry run pytest tests/unit/test_apollosai*.py --forked -n auto
+
+# Specific module
+poetry run pytest tests/unit/test_apollosai_auth.py -v
+
+# With coverage
+poetry run pytest tests/unit/test_apollosai*.py --cov=apollosai --cov-branch
+```
+
+### Running the Server
+
+```bash
+# Via bootstrap (sets OPENHANDS_CONFIG_CLS automatically)
+python -m apollosai.bootstrap
+# Then start normally
+make start-backend
+```
+
+### Database Migrations
+
+ApollosAI has its own Alembic configuration separate from `enterprise/migrations/`:
+
+```bash
+# Run migrations
+cd apollosai && alembic -c alembic.ini upgrade head
+
+# Create new migration
+cd apollosai && alembic -c alembic.ini revision --autogenerate -m "description"
+```
+
+### Auth Architecture Summary
+
+1. `ApollosAIServerConfig` extends `ServerConfig` with `app_mode=AppMode.SAAS`
+2. `EntraIDUserAuth` handles V0 server auth (JWT + Bearer token validation)
+3. `EntraIDUserContextInjector` bridges V0 auth into V1 `UserContext`
+4. Auth routes: `/auth/login` -> Entra ID -> `/auth/callback` -> JWT issued
+5. JWT tokens include `aud: 'apollosai'` claim, validated on decode
+6. Error hierarchy: `AuthError` -> `NoCredentialsError`, `InvalidTokenError`, `LicenseError`
+
+### Key Patterns
+
+- **Env var getters**: Use `get_entra_tenant_id()` not module-level constants (import caching breaks tests)
+- **JWT hard-fail**: Invalid token = hard error, never falls through to unauthenticated
+- **Separate Base**: `apollosai/storage/models/base.py` has its own `Base(DeclarativeBase)`, not shared with OpenHands
+- **postgres:// auto-conversion**: `database.py` converts `postgres://` to `postgresql+asyncpg://` for SQLAlchemy
+
 ## Template for Github Pull Request
 
 If you are starting a pull request (PR), please follow the template in `.github/pull_request_template.md`.

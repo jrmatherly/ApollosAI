@@ -97,6 +97,10 @@ ApollosAI/
 │   ├── storage/               # Database models & stores (74 models)
 │   ├── migrations/            # Alembic migrations (95 versions)
 │   └── tests/                 # Enterprise unit tests
+├── apollosai/                 # ApollosAI enterprise auth layer
+│   ├── server/                # Config, auth (Entra ID), routes, lifespan
+│   ├── storage/               # PostgreSQL models, stores, encryption
+│   └── migrations/            # Alembic versions (separate from enterprise)
 ├── tests/                     # Core test suite
 │   ├── unit/                  # Unit tests (178 files)
 │   ├── e2e/                   # End-to-end tests
@@ -367,7 +371,26 @@ Categories: Authentication (API keys, tokens), User management, Integration data
 ### 6.5 Enterprise Server Routes (17 modules)
 Auth, API keys, user, orgs, billing, OAuth device flow, webhooks, GitHub proxy, feedback, debugging, readiness, integration routes (Jira, Linear, Slack), MCP patch.
 
-### 6.6 Authentication Flow
+### 6.6 ApollosAI Auth Layer (`apollosai/`)
+The ApollosAI-specific enterprise authentication layer sits between OpenHands core and the enterprise module.
+
+| Component | Path | Purpose |
+|-----------|------|---------|
+| Server Config | `apollosai/server/config.py` | `ApollosAIServerConfig` (extends `ServerConfig`, `app_mode=SAAS`) |
+| Auth Handler | `apollosai/server/auth/entraid_auth.py` | `EntraIDUserAuth` — Entra ID OAuth2, JWT validation |
+| V1 Bridge | `apollosai/server/auth/user_context.py` | `EntraIDUserContextInjector` — V0->V1 `UserContext` bridge |
+| JWT Utils | `apollosai/server/auth/jwt_utils.py` | Token creation/validation, `aud: 'apollosai'` claim |
+| Auth Routes | `apollosai/server/routes/auth.py` | `/auth/login`, `/auth/callback`, `/auth/logout` |
+| Storage | `apollosai/storage/` | PostgreSQL models (user, org, team, role, api_key, auth_token) |
+| Encryption | `apollosai/storage/encrypt_utils.py` | AES-256-GCM field encryption (HKDF key derivation) |
+| Migrations | `apollosai/migrations/` | Alembic versions (separate config at `apollosai/alembic.ini`) |
+| Bootstrap | `apollosai/bootstrap.py` | Sets `OPENHANDS_CONFIG_CLS` env var |
+
+**Environment Variables**: See `docs/environment-variables.md` for the full reference (11 env vars).
+
+**Key Patterns**: Env var getter functions (not module-level constants), JWT hard-fail, separate `Base(DeclarativeBase)`.
+
+### 6.7 Authentication Flow (Enterprise)
 1. GitHub app OAuth -> short-lived token + refresh token
 2. Token stored in `GithubTokenManager`
 3. Cookie issued with `github_user_id`
@@ -391,7 +414,10 @@ Auth, API keys, user, orgs, billing, OAuth device flow, webhooks, GitHub proxy, 
 | `[mcp]` | `sse_servers`, `shttp_servers`, `stdio_servers` |
 | `[model_routing]` | `router_name` (noop_router, multimodal_router) |
 
-### 7.2 Frontend Environment
+### 7.2 ApollosAI Environment
+`docs/environment-variables.md` — Full reference for all 11 ApollosAI env vars (Entra ID, JWT, database, encryption).
+
+### 7.3 Frontend Environment
 `VITE_BACKEND_HOST`, `VITE_USE_TLS`, `VITE_INSECURE_SKIP_VERIFY`, `VITE_FRONTEND_PORT`, `VITE_MOCK_API`
 
 ---

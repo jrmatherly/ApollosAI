@@ -77,6 +77,32 @@ make start-backend
 poetry run pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.pre-commit-config.yaml
 ```
 
+## ApollosAI Development
+```bash
+# Set dev env vars (auth bypass mode)
+export APOLLOSAI_ALLOW_UNAUTHENTICATED=true
+export JWT_SECRET=dev-secret-at-least-32-characters-long
+export DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/apollosai_dev
+export APOLLOSAI_ENCRYPTION_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+
+# Run ApollosAI server
+python -m apollosai.bootstrap   # Sets OPENHANDS_CONFIG_CLS
+make start-backend
+
+# Run ApollosAI tests
+poetry run pytest tests/unit/test_apollosai*.py -v
+
+# Run specific module tests
+poetry run pytest tests/unit/test_apollosai_auth.py -v
+
+# Run with coverage
+poetry run pytest tests/unit/test_apollosai*.py --cov=apollosai --cov-branch
+
+# Alembic migrations (uses apollosai-specific config)
+cd apollosai && alembic -c alembic.ini upgrade head
+cd apollosai && alembic -c alembic.ini revision --autogenerate -m "description"
+```
+
 ## Git
 ```bash
 git fetch upstream && git rebase upstream/<branch>    # Sync with upstream

@@ -37,6 +37,12 @@ OpenHands Enterprise can also work with the CLI and SDK above.
 OpenHands Enterprise is source-available--you can see all the source code here in the enterprise/ directory,
 but you'll need to purchase a license if you want to run it for more than one month.
 
+### ApollosAI Enterprise Auth
+The `apollosai/` directory contains the ApollosAI-specific enterprise authentication layer built on top of OpenHands.
+It provides Microsoft Entra ID (Azure AD) OAuth2 authentication, JWT session management, and encrypted PostgreSQL storage.
+
+See [docs/environment-variables.md](docs/environment-variables.md) for configuration details.
+
 All our work is available under the MIT license, except for the `enterprise/` directory in this repository (see the [enterprise license](enterprise/LICENSE) for details).
 
 The core `openhands` and `agent-server` Docker images are fully MIT-licensed as well.

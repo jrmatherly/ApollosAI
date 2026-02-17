@@ -29,6 +29,10 @@ enterprise/          406 .py  - Enterprise features (Polyform license)
   storage/                    - 74 DB models/stores (PostgreSQL)
   migrations/                 - 92 Alembic versions
   server/                     - 17 API route modules
+apollosai/            35 .py  - ApollosAI enterprise auth layer
+  server/                     - Config, auth (Entra ID), routes, lifespan
+  storage/                    - PostgreSQL models, stores, encryption
+  migrations/                 - Alembic versions (separate from enterprise)
 tests/               204 .py  - Test suite
   unit/                       - Unit tests (pytest)
   e2e/                        - End-to-end tests
@@ -41,6 +45,7 @@ tests/               204 .py  - Test suite
 - **Backend API**: `openhands/server/app.py` (V0), `openhands/app_server/v1_router.py` (V1)
 - **Frontend**: `frontend/src/entry.client.tsx` via React Router
 - **Enterprise**: `enterprise/saas_server.py` (extends core server)
+- **ApollosAI**: `apollosai/app_server.py` (enterprise auth entry point)
 - **Docker**: `containers/app/Dockerfile` (multi-stage: Node+Python)
 - **Config**: `config.template.toml` (all runtime options)
 
@@ -57,6 +62,19 @@ tests/               204 .py  - Test suite
 - `storage/` - FileStore: Local, S3, GoogleCloud, InMemory, WebHook
 - `mcp/` - MCPClient, tool conversion, tool execution
 
+### ApollosAI Enterprise Auth (`apollosai/`)
+- `server/config.py` - ApollosAIServerConfig (extends ServerConfig, app_mode=SAAS)
+- `server/auth/` - Entra ID OAuth2, JWT sessions, MSAL client, auth errors
+- `server/auth/user_context.py` - EntraIDUserContextInjector (V0->V1 bridge)
+- `server/routes/auth.py` - `/auth/login`, `/auth/callback`, `/auth/logout`
+- `server/lifespan.py` - ApollosAILifespanService (custom startup/shutdown)
+- `storage/` - PostgreSQL models (user, org, team, role, api_key, auth_token), encrypted fields
+- `storage/database.py` - Async SQLAlchemy engine (auto-converts postgres:// URLs)
+- `storage/encrypt_utils.py` - AES-256-GCM field encryption (HKDF key derivation)
+- `migrations/` - Alembic versions (separate from enterprise/migrations/)
+- `bootstrap.py` - Sets OPENHANDS_CONFIG_CLS if not overridden
+- `app_server.py` - Entry point for ApollosAI server
+
 ### Frontend (TypeScript/React)
 - `api/` - Axios-based services: conversation, git, settings, billing, auth, events
 - `hooks/query/` - 57 query hooks (`use[Resource]` pattern)
@@ -72,6 +90,7 @@ tests/               204 .py  - Test suite
 - `dev_config/python/mypy.ini` - Mypy (strict optional, check untyped defs)
 - `dev_config/python/.pre-commit-config.yaml` - Pre-commit hooks (ruff, mypy, trailing-ws)
 - `frontend/.env` - VITE_BACKEND_HOST, VITE_USE_TLS, VITE_FRONTEND_PORT
+- `docs/environment-variables.md` - ApollosAI enterprise env var reference
 
 ## Quick Start
 
@@ -111,6 +130,8 @@ npm run test                  # Vitest
 - **Strategy**: Pluggable condenser implementations
 - **Query/Mutation**: TanStack hooks wrap all API calls (never call API from components)
 - **Type Guards**: 40+ predicates for runtime event discrimination
+- **Env Var Getters**: Lazy `get_*()` functions prevent import-time caching (apollosai auth)
+- **V0/V1 Bridge**: `EntraIDUserContextInjector` wraps V0 `EntraIDUserAuth` into V1 `UserContext`
 
 ## Conventions
 
