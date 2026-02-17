@@ -27,6 +27,8 @@ make help                     # List all available targets
 pre-commit run --config ./dev_config/python/.pre-commit-config.yaml           # Staged files
 pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.pre-commit-config.yaml  # All files (matches CI)
 ```
+- CI runs `pre-commit --all-files` — catches entire repo, not just your changed files. Always run `--all-files` locally before pushing.
+- `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry lock` after if needed.
 
 **Frontend**:
 ```bash
@@ -112,6 +114,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Ruff for linting/formatting (`dev_config/python/ruff.toml`), Mypy for type checking (`dev_config/python/mypy.ini`)
 - Ruff and Mypy exclude `third_party/` and `enterprise/` — enterprise has its own lint config at `enterprise/dev_config/`
 - `AppMode.OSS` is deprecated — use `AppMode.OPENHANDS`
+- Python package is `openhands/` (not `apollos/`) — CI workflows and imports must use `openhands.*` module paths
 
 **Frontend**:
 - `npm run dev:mock` / `npm run dev:mock:saas` — develop with MSW-mocked backend
