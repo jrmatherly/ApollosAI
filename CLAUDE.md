@@ -136,3 +136,22 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 - `AuthUserContext` (`openhands/app_server/user/auth_user_context.py`) is the reference V0→V1 bridge pattern
 - `UserContextInjector` caches via `InjectorState` attribute (`user_context`); see `Injector` base at `openhands/app_server/services/injector.py`
 - `OssAppLifespanService.run_alembic_on_startup` is a field — override it to `False` to skip OpenHands migrations (no need to override `__aenter__`)
+
+## ApollosAI Enterprise Auth Patterns
+
+**Security rules** (from Phase 1.5 review):
+- JWT validation failure = hard error. NEVER fall through from invalid-token to unauthenticated access
+- `APOLLOSAI_ALLOW_UNAUTHENTICATED` must parse explicitly: `.lower() in ('1', 'true', 'yes')` — Python truthy catches `'false'`/`'0'`
+- JWT_SECRET minimum 32 characters enforced at runtime. Separate `SESSION_SECRET` for Starlette SessionMiddleware
+- JWT tokens must include `aud: 'apollosai'` claim and validate on decode
+- Add `InvalidTokenError` to `apollosai/server/auth/auth_error.py` hierarchy
+- When converting module-level constants to getters: remove old constants AND add regression test verifying removal
+
+**Testing rules**:
+- Use `monkeypatch.setattr('time.time', ...)` for JWT expiry tests, not `time.sleep()`
+- Use specific `jwt.ExpiredSignatureError`/`jwt.InvalidSignatureError`, never `pytest.raises(Exception)`
+- Auth route tests must use `FastAPI TestClient`, not just check path existence
+- UserContextInjector subclasses must have async `inject()` tests, not just `issubclass`/`hasattr`
+- `asyncio_mode = "auto"` in `pyproject.toml` for pytest-asyncio
+
+**Plans:** `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — 14 tasks, reviewed and hardened
