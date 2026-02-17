@@ -105,3 +105,36 @@ class AuditLogResponse(BaseModel):
     details: dict | None = None
     ip_address: str | None = None
     created_at: datetime.datetime
+
+
+# --- MCP Servers (BYOMCP) ---
+
+
+class CreateMCPServerRequest(BaseModel):
+    """Request body for adding a user MCP server."""
+
+    name: str = Field(min_length=1, max_length=100)
+    server_type: str = Field(pattern=r'^(stdio|sse|shttp)$')
+    config_json: dict
+    description: str | None = None
+
+
+class UpdateMCPServerRequest(BaseModel):
+    """Request body for updating a user MCP server."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    config_json: dict | None = None
+    enabled: bool | None = None
+    description: str | None = None
+
+
+class MCPServerResponse(BaseModel):
+    """Response for a user MCP server."""
+
+    id: uuid.UUID
+    name: str
+    server_type: str
+    enabled: bool
+    approved: bool
+    description: str | None = None
+    created_at: datetime.datetime
