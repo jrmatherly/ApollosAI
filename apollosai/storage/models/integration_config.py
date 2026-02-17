@@ -19,11 +19,7 @@ class IntegrationConfig(TimestampMixin, Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('organization.id'))
-    integration_type: Mapped[IntegrationType] = mapped_column(
-        Enum(IntegrationType)
-    )
+    integration_type: Mapped[IntegrationType] = mapped_column(Enum(IntegrationType))
     enabled: Mapped[bool] = mapped_column(default=False)
     config_encrypted: Mapped[str | None] = mapped_column(Text, default=None)
-    webhook_secret_encrypted: Mapped[str | None] = mapped_column(
-        Text, default=None
-    )
+    webhook_secret_encrypted: Mapped[str | None] = mapped_column(Text, default=None)

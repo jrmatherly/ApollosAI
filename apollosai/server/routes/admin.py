@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,9 +15,9 @@ _require_admin = require_role('admin')
 
 @router.get('/api/admin/orgs/{org_id}/audit')
 async def list_audit_logs(
-    org_id: uuid.UUID = Path(...),
-    limit: int = Query(default=50, le=100),
-    offset: int = Query(default=0, ge=0),
+    org_id: uuid.UUID,
+    limit: int = 50,
+    offset: int = 0,
     user=Depends(_require_admin),
     session: AsyncSession = Depends(get_db_session),
 ):

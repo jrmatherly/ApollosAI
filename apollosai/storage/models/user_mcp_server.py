@@ -16,9 +16,7 @@ class MCPServerType(str, enum.Enum):
 class UserMCPServer(TimestampMixin, Base):
     __tablename__ = 'user_mcp_server'
     __table_args__ = (
-        Index(
-            'ix_user_mcp_server_user_org', 'user_id', 'org_id', 'enabled'
-        ),
+        Index('ix_user_mcp_server_user_org', 'user_id', 'org_id', 'enabled'),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ForeignKey, Index, JSON, Text, UniqueConstraint
+from sqlalchemy import JSON, ForeignKey, Index, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from apollosai.storage.models.base import Base, TimestampMixin
