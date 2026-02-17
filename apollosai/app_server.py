@@ -53,12 +53,16 @@ async def invalid_token_handler(request: Request, exc: InvalidTokenError):
 # Auth routes — login/callback/logout at /api/auth/*
 base_app.include_router(auth_router, prefix='/api')
 
-# Session middleware — required for auth flow state (request.session)
-# Use a SEPARATE secret for session middleware (not JWT_SECRET)
+# Session middleware — DB-backed server-side sessions
+# Starlette's cookie SessionMiddleware is kept as fallback for request.session
+# compatibility (auth flow stores state in request.session temporarily).
+# The DB session middleware stores persistent session data server-side.
 import secrets as _secrets  # noqa: E402
 import warnings as _warnings  # noqa: E402
 
 from starlette.middleware.sessions import SessionMiddleware  # noqa: E402
+
+from apollosai.server.middleware.db_session_middleware import DBSessionMiddleware  # noqa: E402
 
 _session_secret = os.environ.get('SESSION_SECRET', '')
 if not _session_secret:
@@ -70,7 +74,24 @@ if not _session_secret:
     )
     _session_secret = _secrets.token_urlsafe(32)
 
+# Cookie-based session for auth flow state (request.session)
 base_app.add_middleware(SessionMiddleware, secret_key=_session_secret)
+
+# DB-backed session middleware for persistent server-side session data
+def _get_db_session():
+    """Session factory for DB session middleware — uses the app's session maker."""
+    from apollosai.server.deps import get_session_maker
+    maker = get_session_maker()
+    if maker is None:
+        # During startup, DB may not be ready yet — return a no-op
+        return None
+    return maker()
+
+base_app.add_middleware(
+    DBSessionMiddleware,
+    session_factory=_get_db_session,
+    max_age=86400,
+)
 
 # CORS — required for frontend on different port/domain to reach API
 allowed_origins = os.environ.get(
