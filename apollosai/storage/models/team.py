@@ -17,6 +17,8 @@ class Team(TimestampMixin, Base):
     llm_model: Mapped[str | None] = mapped_column(default=None)
     llm_base_url: Mapped[str | None] = mapped_column(default=None)
     max_iterations: Mapped[int | None] = mapped_column(default=None)
-    _llm_api_key: Mapped[str | None] = mapped_column(String, default=None)
+    _llm_api_key: Mapped[str | None] = mapped_column(
+        'llm_api_key', String, default=None
+    )
 
     __table_args__ = (UniqueConstraint('org_id', 'name'),)

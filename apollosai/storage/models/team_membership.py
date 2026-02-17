@@ -14,6 +14,8 @@ class TeamMembership(TimestampMixin, Base):
     role_id: Mapped[int] = mapped_column(ForeignKey('role.id'))
 
     # Per-user LLM overrides
-    _llm_api_key: Mapped[str | None] = mapped_column(String, default=None)
+    _llm_api_key: Mapped[str | None] = mapped_column(
+        'llm_api_key', String, default=None
+    )
     llm_model: Mapped[str | None] = mapped_column(default=None)
     max_iterations: Mapped[int | None] = mapped_column(default=None)

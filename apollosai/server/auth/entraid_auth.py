@@ -47,6 +47,22 @@ class EntraIDUserAuth(UserAuth):
         config = load_openhands_config()
         return await ApollosAISettingsStore.get_instance(config, self.user_id)
 
+    async def get_user_settings(self) -> Settings | None:
+        """Get user settings, merging with config.toml values.
+
+        Overrides UserAuth.get_user_settings() to match DefaultUserAuth's
+        merge_with_config_settings() behavior (default_user_auth.py:66).
+        """
+        settings = self._settings
+        if settings:
+            return settings
+        settings_store = await self.get_user_settings_store()
+        settings = await settings_store.load()
+        if settings:
+            settings = settings.merge_with_config_settings()
+        self._settings = settings
+        return settings
+
     async def get_secrets_store(self) -> SecretsStore:
         from apollosai.storage.stores.secrets_store import ApollosAISecretsStore
         from openhands.core.config.utils import load_openhands_config
