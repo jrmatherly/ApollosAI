@@ -7,7 +7,7 @@
 
 <hr>
 
-🙌 Welcome to ApollosAI, a [community](COMMUNITY.md) focused on AI-driven development.
+🙌 Welcome to ApollosAI
 
 There are a few ways to work with ApollosAI:
 
