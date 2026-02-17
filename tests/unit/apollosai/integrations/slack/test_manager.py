@@ -35,14 +35,38 @@ def _make_app(manager):
 
 
 def test_url_verification_challenge():
-    """Slack url_verification should be echoed immediately."""
+    """Slack url_verification should be echoed after signature validation."""
     manager = SlackIntegrationManager(signing_secret=SIGNING_SECRET)
     app = _make_app(manager)
     client = TestClient(app)
-    payload = {'type': 'url_verification', 'challenge': 'abc123'}
-    resp = client.post('/webhook', json=payload)
+    payload = json.dumps({'type': 'url_verification', 'challenge': 'abc123'}).encode()
+    ts = int(time.time())
+    sig = _sign_request(payload, ts)
+    resp = client.post(
+        '/webhook',
+        content=payload,
+        headers={
+            'content-type': 'application/json',
+            'x-slack-request-timestamp': str(ts),
+            'x-slack-signature': sig,
+        },
+    )
     assert resp.status_code == 200
     assert resp.json()['challenge'] == 'abc123'
+
+
+def test_url_verification_requires_valid_signature():
+    """url_verification with invalid/missing signature should be rejected."""
+    manager = SlackIntegrationManager(signing_secret=SIGNING_SECRET)
+    app = _make_app(manager)
+    client = TestClient(app)
+    # Send url_verification with no signature headers
+    resp = client.post(
+        '/webhook', json={'type': 'url_verification', 'challenge': 'abc'}
+    )
+    assert resp.status_code == 401, (
+        'url_verification should be rejected without valid signature'
+    )
 
 
 # --- Webhook validation ---

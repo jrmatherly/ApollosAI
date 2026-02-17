@@ -14,6 +14,12 @@ from apollosai.bootstrap import ensure_config_cls  # noqa: E402
 
 ensure_config_cls()
 
+from apollosai.integrations.register_all import (  # noqa: E402
+    register_all_integrations,
+)
+
+register_all_integrations()
+
 # Now safe to import OpenHands — config class will be resolved via get_impl()
 import socketio  # noqa: E402
 from fastapi import Request  # noqa: E402
@@ -54,6 +60,14 @@ async def no_credentials_handler(request: Request, exc: NoCredentialsError):
 @base_app.exception_handler(InvalidTokenError)
 async def invalid_token_handler(request: Request, exc: InvalidTokenError):
     return JSONResponse(status_code=401, content={'error': 'Invalid or expired token'})
+
+
+from apollosai.server.auth.rbac import PermissionDeniedError  # noqa: E402
+
+
+@base_app.exception_handler(PermissionDeniedError)
+async def permission_denied_handler(request: Request, exc: PermissionDeniedError):
+    return JSONResponse(status_code=403, content={'error': 'Permission denied'})
 
 
 # Auth routes — login/callback/logout at /api/auth/*
@@ -110,10 +124,17 @@ def _get_db_session():
     return maker()
 
 
+_https_only = os.environ.get('APOLLOSAI_SESSION_INSECURE', '').lower() not in (
+    '1',
+    'true',
+    'yes',
+)
+
 base_app.add_middleware(
     DBSessionMiddleware,
     session_factory=_get_db_session,
     max_age=86400,
+    https_only=_https_only,
 )
 
 # CORS — required for frontend on different port/domain to reach API

@@ -3,6 +3,7 @@
 import hashlib
 import hmac
 import logging
+import os
 
 from fastapi import Request
 
@@ -39,8 +40,19 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
         Bitbucket sends the signature in the X-Hub-Signature header.
         """
         if self._webhook_secret is None:
-            logger.warning('No webhook secret configured — skipping validation')
-            return True
+            if os.environ.get('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', '').lower() in (
+                '1',
+                'true',
+                'yes',
+            ):
+                logger.warning(
+                    'Unsigned webhook accepted — APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS is set'
+                )
+                return True
+            logger.error(
+                'No webhook secret configured — rejecting request (fail-closed)'
+            )
+            return False
 
         signature = request.headers.get('x-hub-signature')
         if not signature:

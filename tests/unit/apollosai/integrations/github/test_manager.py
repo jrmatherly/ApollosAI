@@ -69,13 +69,23 @@ def test_validate_webhook_missing_signature():
     assert resp.status_code == 401
 
 
-def test_validate_webhook_no_secret_configured():
-    """When no secret is configured, validation is skipped."""
+def test_validate_webhook_no_secret_rejects(monkeypatch):
+    """When no secret is configured, webhooks are rejected (fail-closed)."""
+    monkeypatch.delenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', raising=False)
     manager = GitHubIntegrationManager(webhook_secret=None)
     app = _make_app(manager)
     client = TestClient(app)
     resp = client.post('/webhook', json={'action': 'opened'})
-    # No matching event, so it's skipped — but signature check passed
+    assert resp.status_code == 401
+
+
+def test_validate_webhook_no_secret_with_env_override(monkeypatch):
+    """APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS=true allows unsigned webhooks."""
+    monkeypatch.setenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', 'true')
+    manager = GitHubIntegrationManager(webhook_secret=None)
+    app = _make_app(manager)
+    client = TestClient(app)
+    resp = client.post('/webhook', json={'action': 'opened'})
     assert resp.status_code == 200
     assert resp.json()['status'] == 'skipped'
 

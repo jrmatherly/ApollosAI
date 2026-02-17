@@ -3,10 +3,11 @@
 import hashlib
 import hmac
 import logging
+import os
 import time
 
 from fastapi import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from apollosai.integrations.base import ApollosAIIntegrationManager
 from apollosai.integrations.models import (
@@ -43,8 +44,19 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
         Also rejects requests older than 5 minutes (replay protection).
         """
         if self._signing_secret is None:
-            logger.warning('No signing secret configured — skipping validation')
-            return True
+            if os.environ.get('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', '').lower() in (
+                '1',
+                'true',
+                'yes',
+            ):
+                logger.warning(
+                    'Unsigned webhook accepted — APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS is set'
+                )
+                return True
+            logger.error(
+                'No signing secret configured — rejecting request (fail-closed)'
+            )
+            return False
 
         timestamp = request.headers.get('x-slack-request-timestamp')
         signature = request.headers.get('x-slack-signature')
@@ -72,15 +84,15 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
 
         return hmac.compare_digest(signature, expected)
 
-    async def handle_webhook(self, request: Request) -> dict | JSONResponse:
+    async def handle_webhook(self, request: Request) -> dict | Response:
         """Override to handle Slack url_verification challenge.
 
-        Slack sends a challenge request during app setup that must be
-        echoed back immediately. Note: this responds before signature
-        validation per Slack's own documentation, which means any client
-        can confirm this endpoint is alive via url_verification.
+        Validates signature first, then checks for url_verification.
         """
-        # Peek at body for url_verification (must respond quickly)
+        # Validate signature before anything else
+        if not await self.validate_webhook(request):
+            return JSONResponse(status_code=401, content={'error': 'invalid_signature'})
+
         body = await request.body()
         content_type = request.headers.get('content-type', '')
 
@@ -94,11 +106,35 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
                     status_code=400, content={'error': 'invalid_payload'}
                 )
 
+            # Respond to url_verification after signature is verified
             if data.get('type') == 'url_verification':
                 return {'challenge': data.get('challenge', '')}
 
-        # For all other events, use the standard pipeline
-        return await super().handle_webhook(request)
+        # For all other events, parse and process
+        try:
+            if 'application/json' in content_type:
+                payload = json.loads(body)
+            else:
+                return JSONResponse(
+                    status_code=400, content={'error': 'unsupported_content_type'}
+                )
+        except Exception:
+            return JSONResponse(status_code=400, content={'error': 'invalid_payload'})
+
+        event = await self.parse_event(payload)
+        if event is None:
+            return {'status': 'skipped'}
+
+        context = await self.build_context(event)
+        logger.info(
+            'integration_event',
+            extra={
+                'source': self.source_type.value,
+                'event_type': event.event_type,
+                'external_id': event.external_id,
+            },
+        )
+        return {'status': 'processed', 'title': context.title}
 
     async def parse_event(self, payload: dict) -> IntegrationEvent | None:
         """Parse Slack Events API payload into an IntegrationEvent."""

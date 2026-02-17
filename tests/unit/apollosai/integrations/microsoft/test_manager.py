@@ -76,8 +76,39 @@ def test_validate_webhook_invalid_client_state():
     assert resp.status_code == 401
 
 
-def test_validate_webhook_no_client_state_configured():
-    """When no client state is configured, validation is skipped."""
+def test_validation_token_in_body_does_not_bypass_client_state():
+    """A validationToken in the JSON body must NOT bypass client_state check (C4)."""
+    manager = MicrosoftIntegrationManager(client_state=CLIENT_STATE)
+    payload = {
+        'validationToken': 'sneaky',
+        'value': [
+            {
+                'clientState': 'wrong-state',
+                'changeType': 'created',
+                'resource': 'me/messages/123',
+            }
+        ],
+    }
+    app = _make_app(manager)
+    client = TestClient(app)
+    resp = client.post('/webhook', json=payload)
+    assert resp.status_code == 401
+
+
+def test_validate_webhook_no_client_state_rejects(monkeypatch):
+    """When no client state is configured, webhooks are rejected (fail-closed)."""
+    monkeypatch.delenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', raising=False)
+    manager = MicrosoftIntegrationManager(client_state=None)
+    payload = {'value': []}
+    app = _make_app(manager)
+    client = TestClient(app)
+    resp = client.post('/webhook', json=payload)
+    assert resp.status_code == 401
+
+
+def test_validate_webhook_no_client_state_with_env_override(monkeypatch):
+    """APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS=true allows unsigned webhooks."""
+    monkeypatch.setenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', 'true')
     manager = MicrosoftIntegrationManager(client_state=None)
     payload = {'value': []}
     app = _make_app(manager)

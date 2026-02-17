@@ -6,9 +6,10 @@ to Microsoft 365 services (documents, email).
 
 import hmac
 import logging
+import os
 
 from fastapi import Request
-from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.responses import PlainTextResponse, Response
 
 from apollosai.integrations.base import ApollosAIIntegrationManager
 from apollosai.integrations.models import (
@@ -43,13 +44,19 @@ class MicrosoftIntegrationManager(ApollosAIIntegrationManager):
         that must match the one provided during subscription creation.
         """
         if self._client_state is None:
-            logger.warning('No client state configured — skipping validation')
-            return True
+            if os.environ.get('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', '').lower() in (
+                '1',
+                'true',
+                'yes',
+            ):
+                logger.warning(
+                    'Unsigned webhook accepted — APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS is set'
+                )
+                return True
+            logger.error('No client state configured — rejecting request (fail-closed)')
+            return False
 
         body = await request.body()
-        # For validation token requests, skip client_state check
-        if b'validationToken' in body or request.query_params.get('validationToken'):
-            return True
 
         try:
             import json
@@ -64,7 +71,7 @@ class MicrosoftIntegrationManager(ApollosAIIntegrationManager):
         except Exception:
             return False
 
-    async def handle_webhook(self, request: Request) -> dict | JSONResponse:
+    async def handle_webhook(self, request: Request) -> dict | Response:
         """Override to handle Graph subscription validation.
 
         Microsoft Graph sends a validation request with a validationToken

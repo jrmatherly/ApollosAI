@@ -4,7 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 
 from fastapi import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from apollosai.integrations.models import (
     ConversationContext,
@@ -53,7 +53,7 @@ class ApollosAIIntegrationManager(ABC):
         """Return OAuth config for integrations requiring OAuth. Default: None."""
         return None
 
-    async def handle_webhook(self, request: Request) -> dict | JSONResponse:
+    async def handle_webhook(self, request: Request) -> dict | Response:
         """Standard webhook processing pipeline.
 
         1. Validate signature (timing-safe HMAC comparison)
