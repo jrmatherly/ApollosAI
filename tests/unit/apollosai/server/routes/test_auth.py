@@ -158,7 +158,8 @@ class TestLogoutRoute:
         """Logout should return 200 with logged_out status."""
         response = client.post('/auth/logout')
         assert response.status_code == 200
-        assert response.json() == {'status': 'logged_out'}
+        data = response.json()
+        assert data['status'] == 'logged_out'
 
     def test_logout_clears_cookie(self, client):
         """Logout should clear the session cookie."""
@@ -167,3 +168,13 @@ class TestLogoutRoute:
         set_cookie = response.headers.get('set-cookie', '')
         # Cookie should either be cleared or session should be cleared
         assert 'session' in set_cookie.lower() or response.status_code == 200
+
+    def test_logout_returns_signout_url(self, client, monkeypatch):
+        """Logout should return MSAL signout URL."""
+        monkeypatch.setenv('ENTRA_TENANT_ID', 'test-tenant-id')
+        response = client.post('/auth/logout')
+        assert response.status_code == 200
+        data = response.json()
+        assert 'signout_url' in data
+        assert 'login.microsoftonline.com/test-tenant-id' in data['signout_url']
+        assert 'post_logout_redirect_uri' in data['signout_url']
