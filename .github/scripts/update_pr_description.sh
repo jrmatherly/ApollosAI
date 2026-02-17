@@ -17,8 +17,8 @@ DOCKER_RUN_COMMAND="docker run -it --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --add-host host.docker.internal:host-gateway \
   -e SANDBOX_RUNTIME_CONTAINER_IMAGE=ghcr.io/${REPO_OWNER}/runtime:${SHORT_SHA}-nikolaik \
-  --name apollos-app-${SHORT_SHA} \
-  ghcr.io/${REPO_OWNER}/apollos:${SHORT_SHA}"
+  --name openhands-app-${SHORT_SHA} \
+  ghcr.io/${REPO_OWNER}/openhands:${SHORT_SHA}"
 
 # Get the current PR body
 PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq .body)
