@@ -115,6 +115,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Ruff and Mypy exclude `third_party/` and `enterprise/` — enterprise has its own lint config at `enterprise/dev_config/`
 - `AppMode.OSS` is deprecated — use `AppMode.OPENHANDS`
 - Python package is `openhands/` (not `apollos/`) — CI workflows and imports must use `openhands.*` module paths
+- Container builds: `containers/build.sh -i openhands` maps to `./containers/app/` — no other image names have mappings
 
 **Frontend**:
 - `npm run dev:mock` / `npm run dev:mock:saas` — develop with MSW-mocked backend
@@ -156,5 +157,7 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 - Auth route tests must use `FastAPI TestClient`, not just check path existence
 - UserContextInjector subclasses must have async `inject()` tests, not just `issubclass`/`hasattr`
 - `asyncio_mode = "auto"` in `pyproject.toml` for pytest-asyncio
+- Custom pytest marks must be registered in `pytest.ini` under `[pytest] markers =` to avoid `PytestUnknownMarkWarning` in CI
+- Test helper classes starting with `Test` need `__test__ = False` to prevent `PytestCollectionWarning`
 
 **Plans:** `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — 14 tasks, reviewed and hardened
