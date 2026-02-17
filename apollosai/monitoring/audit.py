@@ -12,7 +12,7 @@ async def record_audit(
     *,
     actor_id: uuid.UUID,
     org_id: uuid.UUID,
-    action: AuditAction,
+    action: AuditAction | str,
     resource_type: str,
     resource_id: str,
     details: dict | None = None,

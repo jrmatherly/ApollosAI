@@ -39,7 +39,7 @@ async def list_mcp_servers(
         MCPServerResponse(
             id=srv.id,
             name=srv.name,
-            server_type=srv.server_type.value,
+            server_type=srv.server_type,
             enabled=srv.enabled,
             approved=srv.approved,
             description=srv.description,
@@ -61,7 +61,8 @@ async def create_mcp_server(
         user_id=user.user_id,
         org_id=org_id,
         name=body.name,
-        server_type=MCPServerType(body.server_type),
+        server_type=MCPServerType(body.server_type).value,
+        # TODO(phase3c): encrypt via SecretsStore before persisting
         config_encrypted=json.dumps(body.config_json),
         enabled=True,
         approved=False,  # requires admin approval
@@ -74,7 +75,7 @@ async def create_mcp_server(
     return MCPServerResponse(
         id=server.id,
         name=server.name,
-        server_type=server.server_type.value,
+        server_type=server.server_type,
         enabled=server.enabled,
         approved=server.approved,
         description=server.description,
@@ -104,6 +105,7 @@ async def update_mcp_server(
     if body.name is not None:
         server.name = body.name
     if body.config_json is not None:
+        # TODO(phase3c): encrypt via SecretsStore before persisting
         server.config_encrypted = json.dumps(body.config_json)
     if body.enabled is not None:
         server.enabled = body.enabled
@@ -116,7 +118,7 @@ async def update_mcp_server(
     return MCPServerResponse(
         id=server.id,
         name=server.name,
-        server_type=server.server_type.value,
+        server_type=server.server_type,
         enabled=server.enabled,
         approved=server.approved,
         description=server.description,

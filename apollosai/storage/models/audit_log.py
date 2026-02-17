@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import JSON, Enum, ForeignKey, Index, Text
+from sqlalchemy import JSON, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from apollosai.storage.models.base import Base, TimestampMixin
@@ -41,7 +41,7 @@ class AuditLog(TimestampMixin, Base):
         ForeignKey('user.id'), default=None
     )
     org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('organization.id'))
-    action: Mapped[AuditAction] = mapped_column(Enum(AuditAction))
+    action: Mapped[str] = mapped_column(String(50))
     resource_type: Mapped[str] = mapped_column()
     resource_id: Mapped[str] = mapped_column()
     details: Mapped[dict | None] = mapped_column(JSON, default=None)

@@ -71,7 +71,6 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
             pr = payload['pullrequest']
             repo = payload.get('repository', {})
             actor = payload.get('actor', {})
-            repo.get('full_name', '')
             repo_links = repo.get('links', {})
             repo_url = repo_links.get('html', {}).get('href')
 

@@ -40,6 +40,9 @@ async def receive_webhook(
             content={'error': f'Integration not registered: {integration_type}'},
         )
     try:
+        # TODO(phase3c): load IntegrationConfig from DB to get webhook_secret
+        # and pass to manager constructor. Currently managers have no credentials,
+        # so signature validation is skipped (returns True with a warning).
         manager = manager_cls()
         return await manager.handle_webhook(request)
     except Exception:

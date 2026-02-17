@@ -88,8 +88,9 @@ class ApollosAIMCPConfig(OpenHandsMCPConfig):
                 servers = result.scalars().all()
 
                 for srv in servers:
-                    if srv.server_type == MCPServerType.STDIO:
+                    if srv.server_type == MCPServerType.STDIO.value:
                         try:
+                            # TODO(phase3c): decrypt via SecretsStore
                             cfg = json.loads(srv.config_encrypted)
                         except (json.JSONDecodeError, TypeError):
                             logger.warning('Invalid config for MCP server %s', srv.id)

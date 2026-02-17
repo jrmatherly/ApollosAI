@@ -76,7 +76,9 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
         """Override to handle Slack url_verification challenge.
 
         Slack sends a challenge request during app setup that must be
-        echoed back immediately, before any signature validation.
+        echoed back immediately. Note: this responds before signature
+        validation per Slack's own documentation, which means any client
+        can confirm this endpoint is alive via url_verification.
         """
         # Peek at body for url_verification (must respond quickly)
         body = await request.body()

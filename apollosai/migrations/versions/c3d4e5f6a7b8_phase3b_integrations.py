@@ -21,19 +21,7 @@ def upgrade() -> None:
         'integration_config',
         sa.Column('id', sa.Uuid(), nullable=False),
         sa.Column('org_id', sa.Uuid(), nullable=False),
-        sa.Column(
-            'integration_type',
-            sa.Enum(
-                'GITHUB',
-                'JIRA',
-                'SLACK',
-                'BITBUCKET',
-                'MICROSOFT',
-                'OPENHANDS',
-                name='integrationtype',
-            ),
-            nullable=False,
-        ),
+        sa.Column('integration_type', sa.String(50), nullable=False),
         sa.Column('enabled', sa.Boolean(), nullable=False),
         sa.Column('config_encrypted', sa.Text(), nullable=True),
         sa.Column('webhook_secret_encrypted', sa.Text(), nullable=True),
@@ -100,11 +88,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Uuid(), nullable=False),
         sa.Column('org_id', sa.Uuid(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
-        sa.Column(
-            'server_type',
-            sa.Enum('STDIO', 'SSE', 'SHTTP', name='mcpservertype'),
-            nullable=False,
-        ),
+        sa.Column('server_type', sa.String(20), nullable=False),
         sa.Column('config_encrypted', sa.Text(), nullable=False),
         sa.Column('enabled', sa.Boolean(), nullable=False),
         sa.Column('description', sa.Text(), nullable=True),
@@ -135,11 +119,9 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_index('ix_user_mcp_server_user_org', table_name='user_mcp_server')
     op.drop_table('user_mcp_server')
-    op.execute('DROP TYPE IF EXISTS mcpservertype')
     op.drop_index(
         'ix_integration_conversation_conv',
         table_name='integration_conversation',
     )
     op.drop_table('integration_conversation')
     op.drop_table('integration_config')
-    op.execute('DROP TYPE IF EXISTS integrationtype')

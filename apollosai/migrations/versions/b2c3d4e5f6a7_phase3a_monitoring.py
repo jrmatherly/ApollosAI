@@ -22,26 +22,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Uuid(), nullable=False),
         sa.Column('actor_id', sa.Uuid(), nullable=True),
         sa.Column('org_id', sa.Uuid(), nullable=False),
-        sa.Column(
-            'action',
-            sa.Enum(
-                'MEMBER_INVITED',
-                'MEMBER_REMOVED',
-                'ROLE_CHANGED',
-                'INTEGRATION_CONFIGURED',
-                'MCP_SERVER_ADDED',
-                'MCP_SERVER_REMOVED',
-                'SETTINGS_UPDATED',
-                'API_KEY_CREATED',
-                'API_KEY_REVOKED',
-                'ORG_CREATED',
-                'ORG_UPDATED',
-                'TEAM_CREATED',
-                'TEAM_UPDATED',
-                name='auditaction',
-            ),
-            nullable=False,
-        ),
+        sa.Column('action', sa.String(50), nullable=False),
         sa.Column('resource_type', sa.String(), nullable=False),
         sa.Column('resource_id', sa.String(), nullable=False),
         sa.Column('details', sa.JSON(), nullable=True),
@@ -76,4 +57,3 @@ def downgrade() -> None:
     op.drop_index('ix_audit_log_actor', table_name='audit_log')
     op.drop_index('ix_audit_log_org_created', table_name='audit_log')
     op.drop_table('audit_log')
-    op.execute('DROP TYPE IF EXISTS auditaction')

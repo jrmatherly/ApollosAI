@@ -1,9 +1,8 @@
 import uuid
 
-from sqlalchemy import Enum, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
-from apollosai.integrations.models import IntegrationType
 from apollosai.storage.models.base import Base, TimestampMixin
 
 
@@ -19,7 +18,7 @@ class IntegrationConfig(TimestampMixin, Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('organization.id'))
-    integration_type: Mapped[IntegrationType] = mapped_column(Enum(IntegrationType))
+    integration_type: Mapped[str] = mapped_column(String(50))
     enabled: Mapped[bool] = mapped_column(default=False)
     config_encrypted: Mapped[str | None] = mapped_column(Text, default=None)
     webhook_secret_encrypted: Mapped[str | None] = mapped_column(Text, default=None)
