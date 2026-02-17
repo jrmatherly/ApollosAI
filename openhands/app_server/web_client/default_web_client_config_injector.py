@@ -37,6 +37,18 @@ class DefaultWebClientConfigInjector(WebClientConfigInjector):
         ),
     )
     github_app_slug: str | None = None
+    app_display_name: str | None = Field(
+        default_factory=lambda: os.environ.get('APP_DISPLAY_NAME')
+    )
+    app_logo_url: str | None = Field(
+        default_factory=lambda: os.environ.get('APP_LOGO_URL')
+    )
+    app_primary_color: str | None = Field(
+        default_factory=lambda: os.environ.get('APP_PRIMARY_COLOR')
+    )
+    app_favicon_url: str | None = Field(
+        default_factory=lambda: os.environ.get('APP_FAVICON_URL')
+    )
 
     async def get_web_client_config(self) -> WebClientConfig:
         from openhands.app_server.config import get_global_config
@@ -54,5 +66,9 @@ class DefaultWebClientConfigInjector(WebClientConfigInjector):
             error_message=self.error_message,
             updated_at=self.updated_at,
             github_app_slug=self.github_app_slug,
+            app_display_name=self.app_display_name,
+            app_logo_url=self.app_logo_url,
+            app_primary_color=self.app_primary_color,
+            app_favicon_url=self.app_favicon_url,
         )
         return result

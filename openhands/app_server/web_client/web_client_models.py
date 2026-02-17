@@ -27,3 +27,7 @@ class WebClientConfig(DiscriminatedUnionMixin):
     error_message: str | None
     updated_at: datetime
     github_app_slug: str | None
+    app_display_name: str | None = None
+    app_logo_url: str | None = None
+    app_primary_color: str | None = None
+    app_favicon_url: str | None = None
