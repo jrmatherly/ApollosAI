@@ -33,7 +33,7 @@ dependencies = [
   "deprecation>=2.1",
   "dirhash",
   "docker",
-  "fastapi>=0.129.0",
+  "fastapi>=0.129",
   "fastmcp>=2.12.4",
   "google-api-python-client>=2.164",
   "google-auth-httplib2",
@@ -62,7 +62,7 @@ dependencies = [
   "openhands-tools==1.11.4",
   "opentelemetry-api>=1.33.1",
   "opentelemetry-exporter-otlp-proto-grpc>=1.33.1",
-  "pathspec>=0.12.1,<1.0",
+  "pathspec>=0.12.1,<1",
   "pexpect",
   "pg8000>=1.31.5",
   "pillow>=12.1.1",
@@ -165,7 +165,7 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.12,<3.14"
 litellm = ">=1.74.3, !=1.64.4, !=1.67.*"           # avoid 1.64.4 (known bug) & 1.67.* (known bug #10272)
-openai = ">=2.8,<3"                                 # Relaxed: original issue was openai v1 line, not v2. Upper-bounded at <3.
+openai = ">=2.8,<3"                                # Relaxed: original issue was openai v1 line, not v2. Upper-bounded at <3.
 aiohttp = ">=3.9.0,!=3.11.13"                      # Pin to avoid yanked version 3.11.13
 google-genai = "*"                                 # To use litellm with Gemini Pro API
 google-api-python-client = "^2.164.0"              # For Google Sheets API
