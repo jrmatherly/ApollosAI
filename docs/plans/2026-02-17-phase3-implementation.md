@@ -50,10 +50,10 @@ Execute in order. Each phase depends on the previous one.
 | 17 | Per-org MCP config with BYOMCP + TTL cache |
 | 18 | Python dependency additions |
 
-### Phase 3C: Frontend Admin Panels
+### Phase 3C: Frontend Admin Panels + Review Remediation
 
 **File:** [`2026-02-17-phase3c-frontend.md`](2026-02-17-phase3c-frontend.md)
-**Tasks:** 19-32 | **Lines:** ~510
+**Tasks:** 19-37 | **Lines:** ~700
 
 | Task | Description |
 |------|-------------|
@@ -65,12 +65,17 @@ Execute in order. Each phase depends on the previous one.
 | 24 | Admin members panel |
 | 25 | Admin integrations panel |
 | 26 | Admin MCP panel |
-| 27 | Admin audit log viewer |
+| 27 | Admin audit log viewer (amended: M8 pagination prerequisite) |
 | 28 | Settings resolution UI |
 | 29 | Feature hiding (app_mode) |
-| 30 | Wire all routes + final integration |
-| 31 | i18n keys |
-| 32 | Final pre-commit + full test run |
+| 30 | Wire all routes + final integration (amended: M4 CORS, L1 error messages, stale class name fix) |
+| 31 | **NEW** MCP config cache safety (H6, L5) |
+| 32 | **NEW** Audit pagination backend (M8) |
+| 33 | **NEW** Service client refactor (H5, M3, H7, H9) |
+| 34 | **NEW** Replay protection + payload safety (M1, M5) |
+| 35 | **NEW** Resolve encryption TODOs (C3) |
+| 36 | i18n keys (was 31) |
+| 37 | Final pre-commit + full test run + cleanup (was 32, amended: L4, L7) |
 
 ---
 
@@ -79,6 +84,11 @@ Execute in order. Each phase depends on the previous one.
 - **Initial review:** 59 findings on design doc, 48 on implementation plan (see design doc "Review Amendments" section)
 - **Verification:** 16 findings verified against codebase — 13 confirmed, 1 corrected, 1 deferred, 1 not-an-issue
 - **Validation review:** 11 additional findings (0 critical, 3 high, 5 medium, 3 low) — see design doc "Validation Review" section
+- **Phase 3 code review:** 32 findings (4 Critical, 9 High, 11 Medium, 8 Low) from 3-agent parallel review — see `.scratchpad/phase3-review-findings.md`
+  - 9 must-fix/should-fix findings addressed in `.scratchpad/2026-02-17-phase3-review-fixes.md` (C1, C2, C4, H1, H2, H3, H4, H8, C3)
+  - 14 deferred findings incorporated into Phase 3C as Tasks 31-35 + amendments to Tasks 27, 30, 37
+  - 8 findings accepted as-is (M2, M6, M7, M9, M10, M11, L2, L3)
+  - 1 finding deferred pending investigation (L8 Jira HMAC)
 
 All findings incorporated inline in sub-plans with **REVIEW:** and **REVIEW V2:** prefixes.
 
@@ -90,10 +100,12 @@ All findings incorporated inline in sub-plans with **REVIEW:** and **REVIEW V2:*
 |-------|-------|-----------------|
 | 3A: Monitoring | 1-8 | Audit log, health endpoints, OTEL setup, monitoring listener, migrations |
 | 3B: Integrations | 9-18 | Base manager, registry, GitHub/Jira/Slack/Bitbucket/Microsoft managers, MCP config, dependencies |
-| 3C: Frontend | 19-32 | Branding, admin API services, hooks, 8 admin panels, settings provenance, feature hiding, i18n |
+| 3C: Frontend + Review | 19-37 | Branding, admin API services, hooks, 8 admin panels, settings provenance, feature hiding, review remediation (cache safety, pagination, client refactor, replay protection, encryption), i18n |
 
-**Total: 32 tasks across 3 phases, ~60-80 files created/modified**
+**Total: 37 tasks across 3 phases, ~70-90 files created/modified**
 
-**Estimated new test count:** ~80-120 tests across backend integration/monitoring/route tests
+**Review coverage:** 23 of 32 code review findings addressed (9 in fix batch + 14 in Phase 3C). 8 accepted as-is. 1 deferred.
+
+**Estimated new test count:** ~100-140 tests across backend integration/monitoring/route/validation tests
 
 **Archive:** Full original plan preserved at `2026-02-17-phase3-implementation-full.md`
