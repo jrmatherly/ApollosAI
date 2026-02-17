@@ -104,7 +104,7 @@ All findings incorporated inline in sub-plans with **REVIEW:** and **REVIEW V2:*
 
 **Total: 37 tasks across 3 phases, ~70-90 files created/modified**
 
-**Review coverage:** 23 of 32 code review findings addressed (9 in fix batch + 14 in Phase 3C). 8 accepted as-is. 1 deferred.
+**Review coverage:** 9 of 32 findings addressed in PR #7, 14 planned for Phase 3C (Tasks 31-35 + amendments). 8 accepted as-is. 1 deferred.
 
 **Estimated new test count:** ~100-140 tests across backend integration/monitoring/route/validation tests
 

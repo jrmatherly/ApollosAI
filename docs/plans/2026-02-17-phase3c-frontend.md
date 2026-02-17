@@ -921,8 +921,83 @@ git commit -m "chore: add Phase 3 i18n keys for admin panels, integrations, MCP"
 **Review findings addressed in this cleanup pass:**
 - L4 (SourceType alias creates naming confusion)
 - L7 (MonitoringListener tests only verify "does not raise")
+- C2 test gap (Jira, Bitbucket, Slack managers lack fail-closed regression tests)
 
-**Step 1: Remove SourceType alias (L4)**
+**Step 1: Add missing fail-closed tests for C2 (Jira, Bitbucket, Slack)**
+
+The PR #7 fix for C2 (fail-closed webhook validation) only added regression tests for GitHub and Microsoft managers. Jira, Bitbucket, and Slack managers have correct fail-closed code but no tests protecting against regression. Create `tests/unit/apollosai/integrations/test_fail_closed.py` with parametrized tests covering all 5 managers:
+
+```python
+"""Parametrized fail-closed tests for all integration managers (C2 regression protection)."""
+
+import json
+import pytest
+from fastapi import FastAPI, Request
+from starlette.testclient import TestClient
+
+from apollosai.integrations.bitbucket.manager import BitbucketIntegrationManager
+from apollosai.integrations.github.manager import GitHubIntegrationManager
+from apollosai.integrations.jira.manager import JiraIntegrationManager
+from apollosai.integrations.microsoft.manager import MicrosoftIntegrationManager
+from apollosai.integrations.slack.manager import SlackIntegrationManager
+
+MANAGERS = [
+    GitHubIntegrationManager,
+    JiraIntegrationManager,
+    SlackIntegrationManager,
+    BitbucketIntegrationManager,
+    MicrosoftIntegrationManager,
+]
+
+
+def _make_app(manager):
+    app = FastAPI()
+
+    @app.post('/webhook')
+    async def webhook(request: Request):
+        return await manager.handle_webhook(request)
+
+    return app
+
+
+@pytest.mark.parametrize('manager_cls', MANAGERS, ids=lambda c: c.__name__)
+def test_no_secret_rejects_webhook(manager_cls, monkeypatch):
+    """Managers without credentials must reject webhooks (fail closed)."""
+    monkeypatch.delenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', raising=False)
+    manager = manager_cls()
+    app = _make_app(manager)
+    client = TestClient(app)
+    resp = client.post(
+        '/webhook',
+        content=json.dumps({'type': 'event_callback'}).encode(),
+        headers={'content-type': 'application/json'},
+    )
+    assert resp.status_code == 401, (
+        f'{manager_cls.__name__} should reject when no secret configured'
+    )
+
+
+@pytest.mark.parametrize('manager_cls', MANAGERS, ids=lambda c: c.__name__)
+def test_allow_unsigned_env_permits_webhook(manager_cls, monkeypatch):
+    """APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS=true allows unsigned webhooks."""
+    monkeypatch.setenv('APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS', 'true')
+    manager = manager_cls()
+    app = _make_app(manager)
+    client = TestClient(app)
+    resp = client.post(
+        '/webhook',
+        content=json.dumps({
+            'type': 'event_callback',
+            'event': {'type': 'app_mention', 'text': 'hi', 'channel': 'C1', 'ts': '1'},
+        }).encode(),
+        headers={'content-type': 'application/json'},
+    )
+    assert resp.status_code != 401, (
+        f'{manager_cls.__name__} should allow when APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS=true'
+    )
+```
+
+**Step 2: Remove SourceType alias (L4)**
 
 In `apollosai/integrations/models.py`, remove:
 ```python
@@ -936,7 +1011,7 @@ grep -rn 'SourceType' apollosai/ tests/
 ```
 Replace all `SourceType` references with `IntegrationType` throughout the codebase.
 
-**Step 2: Improve MonitoringListener tests (L7)**
+**Step 3: Improve MonitoringListener tests (L7)**
 
 In `tests/unit/apollosai/monitoring/test_listener.py`, replace "does not raise" assertions with specific log verification:
 ```python
@@ -950,26 +1025,26 @@ def test_monitoring_listener_logs_event(caplog):
     assert caplog.records[0].__dict__['extra']['event_type'] == 'test_type'
 ```
 
-**Step 3: Run all backend tests**
+**Step 4: Run all backend tests**
 
 ```bash
 poetry run pytest tests/unit/apollosai/ -v --tb=short
 ```
 
-**Step 4: Run all frontend tests**
+**Step 5: Run all frontend tests**
 
 ```bash
 cd frontend && npm run test
 ```
 
-**Step 5: Run pre-commit on all files**
+**Step 6: Run pre-commit on all files**
 
 ```bash
 pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.pre-commit-config.yaml
 cd frontend && npm run lint:fix && npm run build
 ```
 
-**Step 6: Fix any issues, commit**
+**Step 7: Fix any issues, commit**
 
 ```bash
 # REVIEW: Never use `git add -A` — stage specific files per project convention
@@ -1055,6 +1130,6 @@ Implemented in `.scratchpad/2026-02-17-phase3-review-fixes.md`:
 
 **Total: 37 tasks, ~70-90 files created/modified**
 
-**Review coverage:** 23 of 32 findings addressed (9 in fix batch + 14 in Phase 3C). 8 findings accepted as-is. 1 deferred (L8 Jira HMAC).
+**Review coverage:** 9 of 32 findings addressed in PR #7, 14 planned for Phase 3C (Tasks 31-35 + amendments). 8 accepted as-is. 1 deferred (L8 Jira HMAC).
 
 **Estimated new test count**: ~100-140 tests across backend integration/monitoring/route/validation tests
