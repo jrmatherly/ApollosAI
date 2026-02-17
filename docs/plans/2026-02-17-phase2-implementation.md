@@ -2464,12 +2464,16 @@ git add -A && git commit -m "chore(apollosai): Phase 2 lint fixes"
 
 ## Task Dependency Graph
 
+> Updated per review: Task 4b (DI wiring) inserted, Task 17 depends on Task 15.
+
 ```
 Task 1 (DbSessionInjector) ─┐
 Task 2 (Lifespan wiring) ───┤
 Task 3 (Cleanup migration) ─┘
          │
 Task 4 (Phase 2 models + migration)
+         │
+Task 4b (DI wiring + shared conftest) ← NEW [C1+C2 fix]
          │
     ┌────┴────┐────────────┐
 Task 5     Task 6        Task 7
@@ -2483,17 +2487,19 @@ Task 8     Task 9
          │
 Task 10 (API Keys)
          │
-Task 11 (RBAC deps)
+Task 11 (RBAC deps + PermissionDeniedError handler)
          │
     ┌────┴────┐
 Task 12    Task 13
 (Org CRUD) (Team CRUD)
     └────┬────┘
          │
-    ┌────┴──────┬──────────┬────────┐
-Task 14     Task 15     Task 16   Task 17
-(JWT revoke)(Sessions)  (Rate lim)(MSAL out)
-    └────┬──────┴──────────┴────────┘
+    ┌────┴──────┬──────────┐
+Task 14     Task 15     Task 16
+(JWT revoke)(Sessions)  (Rate lim)
+    └────┬──────┘──────────┘
+         │
+Task 17 (MSAL signout) ← MUST follow Task 15 [L1 fix]
          │
 Task 18 (Login button)
          │
@@ -2506,9 +2512,72 @@ Task 21 (Verification)
 
 ## Summary
 
-- **21 tasks** across 6 layers
-- **~14 new files**, ~13 modified files
+- **22 tasks** across 6 layers (Task 4b added for DI wiring)
+- **~16 new files**, ~13 modified files
 - **Backend-first** (Tasks 1-17), then frontend (Tasks 18-20)
 - **TDD throughout**: write test → verify fail → implement → verify pass → commit
-- **1 new dependency**: `slowapi` (rate limiting)
-- Estimated: ~20 commits across the implementation
+- **2 new dependencies**: `slowapi` (rate limiting), `freezegun` (test clock control)
+- Estimated: ~22 commits across the implementation
+
+### Cross-Cutting Requirements (from review)
+
+These apply to ALL tasks:
+1. **Shared conftest**: Use `tests/unit/apollosai/conftest.py` (Task 4b) for `async_session` fixture — don't duplicate per task
+2. **`asyncio_mode = "auto"`**: Verify in `pyproject.toml` — `@pytest.mark.asyncio` decorators are redundant but harmless
+3. **`__test__ = False`**: Mark ALL test helper classes (not actual test classes) with `__test__ = False`
+4. **Custom pytest marks**: Register any new marks in `pytest.ini` under `[pytest] markers =`
+5. **Import style**: Use `from collections.abc import AsyncGenerator` (not `from typing`)
+6. **CORS tightening** [H4]: When mounting new routes (Tasks 11-13), restrict CORS methods/headers:
+   `allow_methods=['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']`, `allow_headers=['Content-Type', 'Authorization', 'Cookie']`
+7. **LLM API keys in plaintext** [H6-sec]: `Organization._default_llm_api_key`, `Team._llm_api_key`, `TeamMembership._llm_api_key` are plaintext. Future task: encrypt via `encrypted_secret` table or `encrypt_utils`
+8. **MEMORY.md fix** [L5-arch]: Update auth error hierarchy from `LicenseError` to `ExpiredError` to match actual code
+
+---
+
+## Review Findings Summary
+
+Reviewed 2026-02-17 by 3 parallel reviewers (security, architecture, testing).
+57 deduplicated findings from 75 raw. All Critical and High findings incorporated inline above.
+
+| Severity | Count | Status |
+|----------|-------|--------|
+| Critical | 10 | All incorporated into plan |
+| High | 16 | All incorporated into plan |
+| Medium | 19 | All incorporated into plan |
+| Low | 12 | All incorporated into plan |
+
+### Critical Findings (all addressed)
+
+| # | Finding | Fix Location |
+|---|---------|-------------|
+| C1 | Stores have no path to get DB sessions | Task 2 (module singleton), Task 4b (deps.py) |
+| C2 | RBAC session always None | Task 4b (get_db_session), Task 11 (Depends) |
+| C3 | API key timing attack | Task 10 (hmac.compare_digest) |
+| C4 | require_auth fabricates random UUID | Task 11 (DEV_MODE_USER_ID sentinel) |
+| C5 | Missing PermissionDeniedError handler | Task 11 (exception handler in app_server) |
+| C6 | Org name collision DoS | Task 8 (UUID suffix in org name) |
+| C7 | JWT sub claim migration | Task 8 (sub_type claim + dual-format support) |
+| C8 | DbSessionInjector type contract | Task 1 (Injector[AsyncSession]) |
+| C9 | SecretsStore tests are stubs | Task 6 (full test implementations) |
+| C10 | JWT revocation no integration point | Task 14 (validate_session_token split) |
+
+### High Findings (all addressed)
+
+| # | Finding | Fix Location |
+|---|---------|-------------|
+| H1 | Lifespan missing __aenter__/__aexit__ | Task 2 |
+| H2 | API key brute-force bypasses rate limit | Task 10, Task 16 |
+| H3 | Session encryption key not separated | Task 15 (distinct HKDF info) |
+| H4 | CORS wildcard on sensitive endpoints | Cross-cutting #6 |
+| H5 | Org deletion cascade unspecified | Task 12 (soft-delete) |
+| H6 | Plaintext LLM API keys in DB | Cross-cutting #7 (future task) |
+| H7 | Settings field name mismatch risk | Task 5 (field name validation test) |
+| H8 | Stores create per-op sessions | Task 5 (uses session_maker from lifespan) |
+| H9 | V0 app mount strategy | Documented: acceptable during V0/V1 transition |
+| H10 | SettingsStore tests have `pass` bodies | Task 5 (full test implementations) |
+| H11 | ConversationStore tests comment-only | Task 7 (full test implementations) |
+| H12 | User upsert missing OrgMembership test | Task 8 (test added) |
+| H13 | Org/Team CRUD route tests missing | Tasks 12-13 (test stubs added) |
+| H14 | Token cache tests missing | Task 9 (full tests added) |
+| H15 | No API key auth path test | Task 10 (integration tests noted) |
+| H16 | Rate limit tests flaky without clock | Task 16 (freezegun) |
