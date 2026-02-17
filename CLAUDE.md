@@ -19,10 +19,14 @@ make start-frontend           # Frontend only
 make setup-config             # Interactive LLM config (model, API key)
 make setup-env                # Bootstrap .env from .env.example
 make migrate                  # Run ApollosAI Alembic migrations
+make migrate-create MSG='...' # Create new Alembic migration (auto-generate)
+make migrate-status           # Check current migration status
 make test-apollosai           # Run ApollosAI unit tests
 make docker-build-app         # Build ApollosAI app Docker image
+make docker-build-ent         # Build ApollosAI enterprise Docker image
 make help                     # List all available targets
 ```
+- ApollosAI targets (`start-apollosai`, `run`, `migrate*`) require `.env` — run `make setup-env` to bootstrap from `.env.example`
 
 ## Lint & Format
 
@@ -59,7 +63,10 @@ poetry run pytest tests/unit/test_xxx.py
 poetry run pytest --forked -n auto tests/unit/
 
 # ApollosAI enterprise layer
-poetry run pytest tests/unit/apollosai/ -v
+poetry run pytest tests/unit/apollosai/ -v          # or: make test-apollosai
+
+# All backend tests (OpenHands + ApollosAI)
+make test-backend                                    # runs pytest --forked -n auto tests/unit/
 
 # Frontend
 cd frontend && npm run test                    # vitest
