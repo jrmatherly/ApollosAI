@@ -1,5 +1,5 @@
 SHELL=/usr/bin/env bash
-# Makefile for OpenHands project
+# Makefile for ApollosAI project
 
 # Variables
 BACKEND_HOST ?= "127.0.0.1"
@@ -234,20 +234,39 @@ kind:
 	@echo "$(YELLOW)Running make run inside of mirrord.$(RESET)"
 	@mirrord exec --target deployment/ubuntu-dev -- make run
 
+test-apollosai:
+	@echo "$(YELLOW)Running ApollosAI unit tests...$(RESET)"
+	@poetry run pytest tests/unit/apollosai/ -v
+
+test-apollosai-cov:
+	@echo "$(YELLOW)Running ApollosAI tests with coverage...$(RESET)"
+	@poetry run pytest tests/unit/apollosai/ --cov=apollosai --cov-branch --cov-report=term-missing
+
+test-backend:
+	@echo "$(YELLOW)Running all backend unit tests...$(RESET)"
+	@poetry run pytest tests/unit/ --forked -n auto
+
 test-frontend:
 	@echo "$(YELLOW)Running tests for frontend...$(RESET)"
 	@cd frontend && npm run test
 
 test:
+	@$(MAKE) -s test-apollosai
 	@$(MAKE) -s test-frontend
 
 build-frontend:
 	@echo "$(YELLOW)Building frontend...$(RESET)"
 	@cd frontend && npm run prepare && npm run build
 
-# Start backend
+# Start ApollosAI backend (primary development target)
+start-apollosai: check-env
+	@echo "$(YELLOW)Starting ApollosAI backend...$(RESET)"
+	@poetry run uvicorn apollosai.app_server:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) \
+		--reload --reload-dir ./apollosai --reload-dir ./openhands --reload-exclude "./workspace"
+
+# Start OpenHands V0 backend (legacy — deprecated April 2026)
 start-backend:
-	@echo "$(YELLOW)Starting backend...$(RESET)"
+	@echo "$(YELLOW)Starting OpenHands V0 backend (legacy)...$(RESET)"
 	@poetry run uvicorn openhands.server.listen:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload --reload-exclude "./workspace"
 
 # Start frontend
@@ -263,14 +282,14 @@ start-frontend:
 	VITE_BACKEND_HOST=$(BACKEND_HOST_PORT) VITE_FRONTEND_PORT=$(FRONTEND_PORT) npm run $$SCRIPT -- --port $(FRONTEND_PORT) --host $(BACKEND_HOST)
 
 # Common setup for running the app (non-callable)
-_run_setup:
+_run_setup: check-env
 	@if [ "$(OS)" = "Windows_NT" ]; then \
 		echo "$(RED) Windows is not supported, use WSL instead!$(RESET)"; \
 		exit 1; \
 	fi
 	@mkdir -p logs
-	@echo "$(YELLOW)Starting backend server...$(RESET)"
-	@poetry run uvicorn openhands.server.listen:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) &
+	@echo "$(YELLOW)Starting ApollosAI backend server...$(RESET)"
+	@poetry run uvicorn apollosai.app_server:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) &
 	@echo "$(YELLOW)Waiting for the backend to start...$(RESET)"
 	@until nc -z localhost $(BACKEND_PORT); do sleep 0.1; done
 	@echo "$(GREEN)Backend started successfully.$(RESET)"
@@ -331,8 +350,50 @@ setup-config-basic:
 	> config.toml
 	@echo "$(GREEN)config.toml created.$(RESET)"
 
-openhands-cloud-run:
+# Validate .env exists (prerequisite for ApollosAI targets)
+check-env:
+	@if [ ! -f .env ]; then \
+		echo "$(RED).env file not found. Run 'make setup-env' first.$(RESET)"; \
+		exit 1; \
+	fi
+
+# Bootstrap .env from .env.example
+setup-env:
+	@if [ ! -f .env ]; then \
+		echo "$(YELLOW)Creating .env from .env.example...$(RESET)"; \
+		cp .env.example .env; \
+		echo "$(GREEN).env created. Edit it with your configuration.$(RESET)"; \
+	else \
+		echo "$(BLUE).env already exists. Skipping.$(RESET)"; \
+	fi
+
+# Database migrations (requires DATABASE_URL — set in .env or environment)
+migrate: check-env
+	@echo "$(YELLOW)Running ApollosAI database migrations...$(RESET)"
+	@PYTHONPATH=".:$$PYTHONPATH" poetry run alembic -c apollosai/alembic.ini upgrade head
+	@echo "$(GREEN)Migrations complete.$(RESET)"
+
+migrate-create: check-env
+	@echo "$(YELLOW)Creating new migration...$(RESET)"
+	@PYTHONPATH=".:$$PYTHONPATH" poetry run alembic -c apollosai/alembic.ini revision --autogenerate -m "$(MSG)"
+	@echo "$(YELLOW)Migration created. Run pre-commit --all-files to fix ruff formatting, then re-stage.$(RESET)"
+
+migrate-status: check-env
+	@echo "$(YELLOW)Checking migration status...$(RESET)"
+	@PYTHONPATH=".:$$PYTHONPATH" poetry run alembic -c apollosai/alembic.ini current
+
+# Self-hosted development mode (all interfaces exposed)
+dev-exposed:
 	@$(MAKE) run BACKEND_HOST="0.0.0.0" BACKEND_PORT="12000" FRONTEND_HOST="0.0.0.0" FRONTEND_PORT="12001"
+
+# Docker builds
+docker-build-app:
+	@echo "$(YELLOW)Building ApollosAI app image...$(RESET)"
+	@./containers/build.sh -i openhands --load
+
+docker-build-ent:
+	@echo "$(YELLOW)Building ApollosAI enterprise image...$(RESET)"
+	@./containers/build.sh -i apollosai --load
 
 # Develop in container
 docker-dev:
@@ -347,25 +408,57 @@ docker-dev:
 # Clean up all caches
 clean:
 	@echo "$(YELLOW)Cleaning up caches...$(RESET)"
-	@rm -rf openhands/.cache
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf openhands/.cache .mypy_cache .ruff_cache .pytest_cache
 	@echo "$(GREEN)Caches cleaned up successfully.$(RESET)"
 
 # Help
 help:
 	@echo "$(BLUE)Usage: make [target]$(RESET)"
-	@echo "Targets:"
-	@echo "  $(GREEN)build$(RESET)               - Build project, including environment setup and dependencies."
-	@echo "  $(GREEN)lint$(RESET)                - Run linters on the project."
-	@echo "  $(GREEN)setup-config$(RESET)        - Setup the configuration for OpenHands by providing LLM API key,"
-	@echo "                        LLM Model name, and workspace directory."
-	@echo "  $(GREEN)start-backend$(RESET)       - Start the backend server for the OpenHands project."
-	@echo "  $(GREEN)start-frontend$(RESET)      - Start the frontend server for the OpenHands project."
-	@echo "  $(GREEN)run$(RESET)                 - Run the OpenHands application, starting both backend and frontend servers."
-	@echo "                        Backend Log file will be stored in the 'logs' directory."
-	@echo "  $(GREEN)docker-dev$(RESET)          - Build and run the OpenHands application in Docker."
-	@echo "  $(GREEN)docker-run$(RESET)          - Run the OpenHands application, starting both backend and frontend servers in Docker."
-	@echo "  $(GREEN)help$(RESET)                - Display this help message, providing information on available targets."
+	@echo ""
+	@echo "$(YELLOW)Core:$(RESET)"
+	@echo "  $(GREEN)build$(RESET)               - Build project (Python deps, frontend, pre-commit hooks)"
+	@echo "  $(GREEN)run$(RESET)                 - Run ApollosAI (backend + frontend)"
+	@echo "  $(GREEN)start-apollosai$(RESET)     - Start ApollosAI backend server"
+	@echo "  $(GREEN)start-backend$(RESET)       - Start OpenHands V0 backend (legacy)"
+	@echo "  $(GREEN)start-frontend$(RESET)      - Start frontend dev server"
+	@echo ""
+	@echo "$(YELLOW)Database:$(RESET)"
+	@echo "  $(GREEN)migrate$(RESET)             - Run ApollosAI Alembic migrations"
+	@echo "  $(GREEN)migrate-create$(RESET)      - Create new migration (MSG='description')"
+	@echo "  $(GREEN)migrate-status$(RESET)      - Check current migration status"
+	@echo ""
+	@echo "$(YELLOW)Testing:$(RESET)"
+	@echo "  $(GREEN)test$(RESET)                - Run all tests (ApollosAI + frontend)"
+	@echo "  $(GREEN)test-apollosai$(RESET)      - Run ApollosAI unit tests"
+	@echo "  $(GREEN)test-apollosai-cov$(RESET)  - Run ApollosAI tests with coverage"
+	@echo "  $(GREEN)test-backend$(RESET)        - Run all backend unit tests"
+	@echo "  $(GREEN)test-frontend$(RESET)       - Run frontend tests"
+	@echo ""
+	@echo "$(YELLOW)Linting:$(RESET)"
+	@echo "  $(GREEN)lint$(RESET)                - Run all linters (backend + frontend)"
+	@echo "  $(GREEN)lint-backend$(RESET)        - Run Python linters (pre-commit)"
+	@echo "  $(GREEN)lint-frontend$(RESET)       - Run frontend linters"
+	@echo ""
+	@echo "$(YELLOW)Docker:$(RESET)"
+	@echo "  $(GREEN)docker-build-app$(RESET)    - Build ApollosAI app Docker image"
+	@echo "  $(GREEN)docker-build-ent$(RESET)    - Build ApollosAI enterprise Docker image"
+	@echo "  $(GREEN)docker-run$(RESET)          - Run ApollosAI via Docker Compose"
+	@echo "  $(GREEN)docker-dev$(RESET)          - Develop inside Docker container"
+	@echo ""
+	@echo "$(YELLOW)Config:$(RESET)"
+	@echo "  $(GREEN)setup-config$(RESET)        - Interactive LLM config setup (config.toml)"
+	@echo "  $(GREEN)setup-env$(RESET)           - Bootstrap .env from .env.example"
+	@echo "  $(GREEN)clean$(RESET)               - Clean build artifacts and caches"
+	@echo "  $(GREEN)help$(RESET)                - Display this help message"
 
 # Phony targets
-.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry install-python-dependencies install-frontend-dependencies install-pre-commit-hooks lint-backend lint-frontend lint test-frontend test build-frontend start-backend start-frontend _run_setup run run-wsl setup-config setup-config-prompts setup-config-basic openhands-cloud-run docker-dev docker-run clean help
-.PHONY: kind
+.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry
+.PHONY: install-python-dependencies install-frontend-dependencies install-pre-commit-hooks
+.PHONY: lint-backend lint-frontend lint
+.PHONY: start-apollosai start-backend start-frontend _run_setup run dev-exposed
+.PHONY: check-env setup-env setup-config setup-config-prompts setup-config-basic
+.PHONY: migrate migrate-create migrate-status
+.PHONY: test-apollosai test-apollosai-cov test-backend test-frontend test
+.PHONY: docker-build-app docker-build-ent docker-run docker-dev
+.PHONY: build-frontend clean help kind

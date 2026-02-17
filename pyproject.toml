@@ -22,6 +22,7 @@ dynamic = [ "version" ]
 # Main dependencies (mirrors [tool.poetry.dependencies] for UV compatibility)
 dependencies = [
   "aiohttp>=3.9,!=3.11.13",
+  "alembic>=1.14,<2",
   "anthropic[vertex]",
   "anyio>=4.9,<5",
   "asyncpg>=0.30",
@@ -170,6 +171,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.12,<3.14"
+alembic = ">=1.14,<2"                                       # Direct dep — used by apollosai/migrations, currently transitive via openhands-agent-server
 litellm = ">=1.74.3, !=1.64.4, !=1.67.*"                    # avoid 1.64.4 (known bug) & 1.67.* (known bug #10272)
 openai = ">=2.8,<3"                                         # Relaxed: original issue was openai v1 line, not v2. Upper-bounded at <3.
 aiohttp = ">=3.9.0,!=3.11.13"                               # Pin to avoid yanked version 3.11.13
