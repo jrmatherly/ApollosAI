@@ -28,9 +28,10 @@
 ## Frontend (TypeScript/React)
 
 ### Formatting & Linting
-- **Linter**: ESLint (airbnb-typescript config)
+- **Linter**: ESLint 9 flat config (`eslint.config.js`) — pinned to ESLint 9, do NOT upgrade to 10 (plugin incompatibility)
 - **Formatter**: Prettier
 - **Type Checking**: TypeScript strict mode via `tsc`
+- In worktrees: use `npm run lint` or `./node_modules/.bin/eslint`, never bare `npx eslint` (resolves to v10)
 
 ### Architecture Patterns
 - **Data Fetching**: TanStack Query (React Query) — never call API directly from components

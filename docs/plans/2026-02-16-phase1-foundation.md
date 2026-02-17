@@ -1,5 +1,7 @@
 # ApollosAI Enterprise Layer — Phase 1: Foundation
 
+> **Status:** COMPLETED — merged as part of PR #1 (squash-merged to main)
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Get ApollosAI running with Entra ID SSO, PostgreSQL-backed org/team/user models, and settings resolution — the minimum viable enterprise layer.

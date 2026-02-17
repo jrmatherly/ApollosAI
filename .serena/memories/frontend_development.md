@@ -69,3 +69,12 @@ Component → TanStack Query hook → API service → Axios → Backend
 ## Real-time
 - Socket.IO WebSocket connections
 - ConversationSubscriptionsProvider for multi-conversation subs
+- WebSocket tests (MSW): send events synchronously from connection handler, use `{ timeout: 5000 }` on `waitFor`
+
+## ApollosAI Enterprise Frontend (Phase 2)
+- **Login**: `src/utils/generate-entra-auth-url.ts` — Entra ID OAuth2 redirect URL builder
+- **Org/Team selectors**: `src/components/features/workspace/org-selector.tsx`, `team-selector.tsx`
+- **API service**: `src/api/org-service/org-service.api.ts` — organization/team CRUD
+- **Query hooks**: `src/hooks/query/use-organizations.ts`, `use-teams.ts`
+- **Mutation hooks**: `src/hooks/mutation/use-switch-org.ts`, `use-switch-team.ts`
+- **ESLint**: ESLint 9 flat config (`eslint.config.js`) — pinned to v9, do NOT upgrade to 10 (plugin incompatibility). In worktrees: use `npm run lint` or `./node_modules/.bin/eslint`, never bare `npx eslint`

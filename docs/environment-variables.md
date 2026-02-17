@@ -24,10 +24,11 @@ These must be set for the ApollosAI server to start in production mode. Missing 
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `SESSION_SECRET` | Separate secret for Starlette `SessionMiddleware`. If unset, falls back to `JWT_SECRET`. | `JWT_SECRET` value |
+| `SESSION_SECRET` | Separate secret for DB-backed server-side sessions (`apollosai/server/middleware/`). If unset, falls back to `JWT_SECRET`. | `JWT_SECRET` value |
 | `APOLLOSAI_ALLOW_UNAUTHENTICATED` | Allow unauthenticated access (dev/testing only). Parsed strictly: `.lower() in ('1', 'true', 'yes')`. | `false` |
 | `FRONTEND_DIRECTORY` | Path to the built frontend static files for serving | `./frontend/dist` |
 | `APOLLOSAI_CORS_ORIGINS` | Comma-separated list of allowed CORS origins | `http://localhost:3001` |
+| `REDIS_URL` | Redis connection string for rate limiting (`apollosai/server/rate_limit.py`). If unset, rate limiting is disabled. | (disabled) |
 
 ## Auto-Set
 
@@ -97,6 +98,10 @@ For full Entra ID OAuth2 flow, also set: `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `
 - **JWT utilities**: `apollosai/server/auth/jwt_utils.py`
 - **Auth handler**: `apollosai/server/auth/entraid_auth.py` (`EntraIDUserAuth`)
 - **V1 bridge**: `apollosai/server/auth/user_context.py` (`EntraIDUserContextInjector`)
+- **RBAC**: `apollosai/server/auth/rbac.py` (role-based access control middleware)
 - **Database setup**: `apollosai/storage/database.py`
+- **DB session injection**: `apollosai/server/db_session.py` (`ApollosAIDbSessionInjector`)
 - **Encryption**: `apollosai/storage/encrypt_utils.py`
+- **Rate limiting**: `apollosai/server/rate_limit.py`
+- **Server-side sessions**: `apollosai/server/middleware/` (DB-backed, replaces cookie sessions)
 - **Alembic config**: `apollosai/alembic.ini` + `apollosai/migrations/`

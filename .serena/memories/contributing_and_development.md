@@ -35,7 +35,8 @@ Environment variables > config.toml > defaults
 
 ## Dependency Management
 1. Add to `pyproject.toml` or `poetry add xxx`
-2. Lock: `poetry lock --no-update`
+2. Lock: `poetry lock` (Poetry 2.x: `--no-update` does NOT exist)
+3. `pyproject.toml` has TWO dep sections that must stay in sync: `[project].dependencies` (PEP 621) and `[tool.poetry.dependencies]` (Poetry)
 
 ## Pre-built Docker Image
 - `export SANDBOX_RUNTIME_CONTAINER_IMAGE=ghcr.io/openhands/runtime:1.2-nikolaik`

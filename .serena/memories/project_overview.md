@@ -49,10 +49,21 @@ frontend/           # React/TypeScript frontend
       ├── routes/   # Page routes
       └── types/    # TypeScript types
 enterprise/         # Enterprise features (separate license)
-apollosai/          # ApollosAI enterprise auth layer
-  ├── server/       # Config, auth (Entra ID), routes, lifespan
-  ├── storage/      # PostgreSQL models, stores, encryption
-  └── migrations/   # Alembic versions (separate from enterprise)
+apollosai/          # ApollosAI enterprise layer (Phase 1/1.5 + Phase 2)
+  ├── server/
+  │   ├── auth/     # EntraIDUserAuth, JWT, MSAL, RBAC, UserContextInjector
+  │   ├── routes/   # auth, orgs, teams, api_keys
+  │   ├── middleware/ # DB-backed server-side sessions
+  │   ├── config.py, lifespan.py, db_session.py, deps.py, rate_limit.py
+  │   └── app_config.py  # V1 AppServerConfig factory
+  ├── storage/
+  │   ├── models/   # 12 SQLAlchemy models (user, org, team, role, memberships, etc.)
+  │   ├── stores/   # SettingsStore, SecretsStore, ConversationStore
+  │   ├── services/ # user_service, token_cache, api_key, token_revocation
+  │   ├── database.py, encrypt_utils.py
+  │   └── __init__.py
+  ├── migrations/   # 2 Alembic versions (separate from enterprise)
+  └── bootstrap.py  # Sets OPENHANDS_CONFIG_CLS
 tests/              # Python tests
   └── unit/         # Unit tests
 ```

@@ -53,19 +53,40 @@ Test with websocat: `websocat ws://127.0.0.1:3000/ws`
 
 ## ApollosAI Enterprise Server (apollosai/)
 
-### Components
-1. **server/config.py** — `ApollosAIServerConfig` extends `ServerConfig` with `app_mode=AppMode.SAAS`, `user_auth_class` pointing to `EntraIDUserAuth`
-2. **server/auth/entraid_auth.py** — `EntraIDUserAuth`: Entra ID OAuth2 + JWT Bearer token validation, dev bypass mode
-3. **server/auth/user_context.py** — `EntraIDUserContextInjector`: V0->V1 bridge wrapping `EntraIDUserAuth` into `UserContext`
-4. **server/auth/jwt_utils.py** — JWT token creation/validation with `aud: 'apollosai'` claim
-5. **server/auth/msal_client.py** — Microsoft Authentication Library (MSAL) client wrapper
-6. **server/auth/constants.py** — Env var getter functions (lazy, not import-cached)
-7. **server/routes/auth.py** — Auth routes: `/auth/login`, `/auth/callback`, `/auth/logout`
-8. **server/lifespan.py** — `ApollosAILifespanService` custom startup/shutdown
-9. **storage/** — PostgreSQL models (user, org, team, role, api_key, auth_token), stores, encryption
-10. **migrations/** — Alembic versions (separate config at `apollosai/alembic.ini`)
-11. **bootstrap.py** — Sets `OPENHANDS_CONFIG_CLS` if not overridden
-12. **app_server.py** — Entry point
+### Components (Phase 1/1.5 + Phase 2)
+
+**Server core:**
+1. **server/config.py** — `ApollosAIServerConfig` extends `ServerConfig` with `app_mode=AppMode.SAAS`, `enable_v1=True`
+2. **server/lifespan.py** — `ApollosAILifespanService`: async engine init, session maker singleton, skips OpenHands migrations
+3. **server/db_session.py** — `ApollosAIDbSessionInjector`: V1 `Injector[AsyncSession]` for DI
+4. **server/deps.py** — FastAPI `Depends(get_db_session)` for route-level DB access
+5. **server/rate_limit.py** — `slowapi` limiter (Redis backend if `REDIS_URL` set)
+6. **server/middleware/db_session_middleware.py** — DB-backed server-side sessions
+7. **app_server.py** — Entry point (mounts auth, org, team, API key routes + exception handlers)
+8. **bootstrap.py** — Sets `OPENHANDS_CONFIG_CLS` if not overridden
+
+**Auth:**
+9. **server/auth/entraid_auth.py** — `EntraIDUserAuth`: JWT cookie + Bearer token + API key validation
+10. **server/auth/user_context.py** — `EntraIDUserContextInjector`: V0->V1 bridge
+11. **server/auth/jwt_utils.py** — JWT with `aud: 'apollosai'` + `jti` claims, `validate_session_token()` for revocation
+12. **server/auth/msal_client.py** — MSAL `ConfidentialClientApplication` wrapper
+13. **server/auth/rbac.py** — `require_auth()`, `require_role()` FastAPI dependencies, `PermissionDeniedError`
+14. **server/auth/constants.py** — Env var getter functions (lazy, not import-cached)
+
+**Routes:**
+15. **server/routes/auth.py** — `/auth/login`, `/auth/callback`, `/auth/logout` (with MSAL signout)
+16. **server/routes/orgs.py** — Organization CRUD with RBAC (GET/POST/PATCH/DELETE)
+17. **server/routes/teams.py** — Team CRUD with RBAC
+18. **server/routes/api_keys.py** — API key create/list/revoke (`sk-aai-` prefix)
+19. **server/routes/models.py** — Pydantic request/response models
+
+**Storage:**
+20. **storage/models/** — 12 SQLAlchemy models (user, org, team, role, memberships, api_key, auth_token, conversation, encrypted_secret, revoked_token, server_session)
+21. **storage/stores/** — SettingsStore (Org->Team->User resolution), SecretsStore (AES-256-GCM), ConversationStore (soft delete)
+22. **storage/services/** — user_service, token_cache_service, api_key_service (HMAC-SHA256), token_revocation_service
+23. **storage/database.py** — Async SQLAlchemy engine
+24. **storage/encrypt_utils.py** — AES-256-GCM field encryption
+25. **migrations/** — 2 Alembic versions (initial + Phase 2 schema)
 
 ### Auth Flow
 1. User visits `/auth/login` -> redirected to Microsoft Entra ID
