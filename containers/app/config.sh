@@ -1,4 +1,4 @@
 DOCKER_REGISTRY=ghcr.io
-DOCKER_ORG=openhands
-DOCKER_IMAGE=openhands
+DOCKER_ORG=jrmatherly
+DOCKER_IMAGE=apollosai
 DOCKER_BASE_DIR="."
