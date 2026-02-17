@@ -29,6 +29,8 @@ pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.
 ```
 - CI runs `pre-commit --all-files` — catches entire repo, not just your changed files. Always run `--all-files` locally before pushing.
 - `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry lock` after if needed.
+- Poetry 2.x: `poetry lock --no-update` does NOT exist. Always use `poetry lock` (full resolve).
+- Alembic auto-generated migrations always fail ruff — run `pre-commit --all-files` immediately after `alembic revision --autogenerate`, then re-stage the fixed files
 
 **Frontend**:
 ```bash
@@ -53,11 +55,17 @@ poetry run pytest --forked -n auto tests/unit/
 cd frontend && npm run test                    # vitest
 cd frontend && npm run test -- -t "TestName"   # specific test
 # Frontend tests: use renderWithProviders() for components needing Redux/providers; query by role/label, not CSS selectors; mock API with MSW handlers
+# WebSocket tests (MSW): send events synchronously from connection handler (not setTimeout or captured client refs); use `{ timeout: 5000 }` on waitFor — default 1000ms times out in CI
 
 # Enterprise
 PYTHONPATH=".:$PYTHONPATH" poetry run --project=enterprise pytest --forked -n auto -s ./enterprise/tests/unit --cov=enterprise
 cd enterprise && PYTHONPATH=".:$PYTHONPATH" poetry run pytest tests/unit/module/ --confcutdir=tests/unit/module  # specific module
 ```
+
+**Worktree setup for backend testing:**
+- `mise` auto-creates a fresh `.venv` in new worktrees — run `poetry install` before any tests
+- `from openhands.server.listen import app` requires `frontend/build/` — create `mkdir -p frontend/build && touch frontend/build/index.html` in worktrees
+- Always use `poetry run pytest` (not bare `pytest`) to ensure correct venv
 
 ## Debugging
 
@@ -120,7 +128,8 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 **Frontend**:
 - `npm run dev:mock` / `npm run dev:mock:saas` — develop with MSW-mocked backend
 - Requires Node.js >=22.12.0
-- ESLint (airbnb-typescript) + Prettier
+- ESLint 9 flat config (`eslint.config.js`) + Prettier. ESLint 9 is pinned — do NOT upgrade to 10 (plugin incompatibility)
+- In worktrees: use `npm run lint` or `./node_modules/.bin/eslint`, never bare `npx eslint` (resolves to v10)
 - All user-facing strings must be internationalized (`npm run make-i18n` after adding keys)
 - Settings patterns: entity-based (immediate save for MCP/keys) vs form-based (manual save for LLM/app config)
 
@@ -129,6 +138,13 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Pre-commit hooks must pass before pushing
 - Always install hooks first: `make install-pre-commit-hooks`
 - PR titles use conventional commits: `feat(scope):`, `fix:`, `refactor:`, `docs:`, `test:`, `perf:`, `chore:`
+- Worktrees go in `.worktrees/` (gitignored). Use `git worktree add .worktrees/<name> -b <branch>`
+- `gh pr merge` must run from the main repo directory, NOT from a worktree (fails with `'main' is already used by worktree`)
+
+**Dependency upgrades:**
+- `pyproject.toml` has TWO dep sections that must stay in sync: `[project].dependencies` (PEP 621) and `[tool.poetry.dependencies]` (Poetry)
+- Scoped `poetry update <pkg1> <pkg2>` is faster and more bisectable than unscoped `poetry update` (571 packages / 14k line lockfile)
+- `pip-audit` may not work in mise/uv-managed venvs — set `PIPAPI_PYTHON_LOCATION` to venv python path
 
 ## V0/V1 Transition
 
@@ -160,4 +176,10 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 - Custom pytest marks must be registered in `pytest.ini` under `[pytest] markers =` to avoid `PytestUnknownMarkWarning` in CI
 - Test helper classes starting with `Test` need `__test__ = False` to prevent `PytestCollectionWarning`
 
-**Plans:** `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — 14 tasks, reviewed and hardened
+**Plans:**
+- `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — Phase 1.5 auth wiring (14 tasks, merged PR #1)
+- `docs/plans/2026-02-17-phase2-implementation.md` — Phase 2 enterprise stores/services/CRUD/RBAC (22 tasks, merged PR #5)
+
+## Known Issues
+
+- `pr-review` CI check (`.github/workflows/pr-review-by-apollos.yml`) fails on all PRs — references `apollos-sdk`/`apollos-tools` but SDK repo has `openhands-sdk`/`openhands-tools`. Fix plan: `.scratchpad/fix-pr-review-workflow.md`
