@@ -4594,31 +4594,30 @@ files = [
 
 [[package]]
 name = "kubernetes"
-version = "33.1.0"
+version = "35.0.0"
 description = "Kubernetes python client"
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "kubernetes-33.1.0-py2.py3-none-any.whl", hash = "sha256:544de42b24b64287f7e0aa9513c93cb503f7f40eea39b20f66810011a86eabc5"},
-    {file = "kubernetes-33.1.0.tar.gz", hash = "sha256:f64d829843a54c251061a8e7a14523b521f2dc5c896cf6d65ccf348648a88993"},
+    {file = "kubernetes-35.0.0-py2.py3-none-any.whl", hash = "sha256:39e2b33b46e5834ef6c3985ebfe2047ab39135d41de51ce7641a7ca5b372a13d"},
+    {file = "kubernetes-35.0.0.tar.gz", hash = "sha256:3d00d344944239821458b9efd484d6df9f011da367ecb155dadf9513f05f09ee"},
 ]
 
 [package.dependencies]
 certifi = ">=14.05.14"
 durationpy = ">=0.7"
-google-auth = ">=1.0.1"
-oauthlib = ">=3.2.2"
 python-dateutil = ">=2.5.3"
 pyyaml = ">=5.4.1"
 requests = "*"
 requests-oauthlib = "*"
 six = ">=1.9.0"
-urllib3 = ">=1.24.2"
+urllib3 = ">=1.24.2,<2.6.0 || >2.6.0"
 websocket-client = ">=0.32.0,<0.40.0 || >0.40.0,<0.41.dev0 || >=0.43.dev0"
 
 [package.extras]
 adal = ["adal (>=1.0.2)"]
+google-auth = ["google-auth (>=1.0.1)"]
 
 [[package]]
 name = "lark"
@@ -14737,4 +14736,4 @@ third-party-runtimes = ["daytona", "e2b-code-interpreter", "modal", "runloop-api
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12,<3.14"
-content-hash = "46bff66b4a26df09616e9c92860627cdc2f572556daced2dfe70e489de526b8e"
+content-hash = "af4171d8cd17ce97b06001c24d5677f623cd3560cc371b79d795db9b56d30807"
