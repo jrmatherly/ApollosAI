@@ -219,7 +219,7 @@ jobs:
         run: |
           # Stop ApollosAI processes
           echo "Stopping ApollosAI processes..."
-          pkill -f "python -m apollos.server" || true
+          pkill -f "python -m openhands.server" || true
           pkill -f "npm run dev" || true
           pkill -f "make run" || true
 
