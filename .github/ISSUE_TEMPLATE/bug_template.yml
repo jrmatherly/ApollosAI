@@ -1,5 +1,5 @@
 name: Bug
-description: Report a problem with OpenHands
+description: Report a problem with ApollosAI
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -25,7 +25,7 @@ body:
     attributes:
       label: Bug Description
       description: Clearly describe what went wrong. Be specific and concise.
-      placeholder: Example - "When I run a Python task, OpenHands crashes after 30 seconds with a connection timeout error."
+      placeholder: Example - "When I run a Python task, ApollosAI crashes after 30 seconds with a connection timeout error."
     validations:
       required: true
 
@@ -34,7 +34,7 @@ body:
     attributes:
       label: Expected Behavior
       description: What did you expect to happen?
-      placeholder: Example - "OpenHands should execute the Python script and return results."
+      placeholder: Example - "ApollosAI should execute the Python script and return results."
     validations:
       required: false
 
@@ -53,9 +53,9 @@ body:
       label: Steps to Reproduce
       description: Provide clear, step-by-step instructions to reproduce the bug.
       placeholder: |
-        1. Install OpenHands using Docker
+        1. Install ApollosAI using Docker
         2. Configure with Claude 3.5 Sonnet
-        3. Run command: `openhands run "write a python script"`
+        3. Run command: `apollos run "write a python script"`
         4. Wait 30 seconds
         5. Error appears
     validations:
@@ -64,14 +64,14 @@ body:
   - type: dropdown
     id: installation
     attributes:
-      label: OpenHands Installation Method
-      description: How are you running OpenHands?
+      label: ApollosAI Installation Method
+      description: How are you running ApollosAI?
       options:
         - CLI (uv tool install)
         - CLI (executable binary)
         - CLI (Docker)
         - Local GUI (Docker web interface)
-        - OpenHands Cloud (app.all-hands.dev)
+        - ApollosAI Cloud
         - SDK (Python library)
         - Development workflow
         - Other
@@ -87,10 +87,10 @@ body:
       placeholder: ex. Custom Kubernetes deployment, pip install from source, etc.
 
   - type: input
-    id: openhands-version
+    id: apollos-version
     attributes:
-      label: OpenHands Version
-      description: What version are you using? Find this in settings or by running `openhands --version`
+      label: ApollosAI Version
+      description: What version are you using? Find this in settings or by running `apollos --version`
       placeholder: ex. 0.9.8, main, commit hash, etc.
     validations:
       required: false
@@ -101,7 +101,7 @@ body:
       label: Version Confirmation
       description: Bugs on older versions may already be fixed. Please upgrade before submitting.
       options:
-        - label: "I have confirmed this bug exists on the LATEST version of OpenHands"
+        - label: "I have confirmed this bug exists on the LATEST version of ApollosAI"
           required: false
 
   - type: input
@@ -155,7 +155,7 @@ body:
       description: |
         Add screenshots, videos, runtime environment, or other context that helps explain the issue.
 
-        💡 **Share conversation history:** In the OpenHands chat UI, click the 👎 or 👍 button (above the message input) to generate a shareable link to your conversation.
+        💡 **Share conversation history:** In the ApollosAI chat UI, click the 👎 or 👍 button (above the message input) to generate a shareable link to your conversation.
 
       placeholder: Drag and drop screenshots here, paste links, or add additional context.
 

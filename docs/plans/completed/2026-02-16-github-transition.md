@@ -472,7 +472,7 @@ git commit -m "ci: rebrand good-first-issue welcome message for ApollosAI"
 **Context:** This workflow still references `all-hands-bot` and uses OpenHands' internal LLM proxy.
 
 > **CRITICAL — ACTIVE SECRET LEAK:** The `LLM_BASE_URL` currently sends `LLM_API_KEY` to `https://llm-proxy.app.all-hands.dev` (OpenHands' infrastructure) on every PR review. Fix this immediately or disable the workflow until fixed.
-
+>
 > **CRITICAL — UNTRUSTED CODE EXECUTION:** This workflow uses `pull_request_target` and `cd`s into untrusted PR code before running a script with secrets (`LLM_API_KEY`, `APOLLOS_BOT_GITHUB_PAT`, `LMNR_PROJECT_API_KEY`). A malicious PR could exfiltrate all three secrets via import hooks or modified `pyproject.toml`. Consider: (a) passing the diff via stdin instead of `cd`-ing into the PR repo, (b) using `pull_request` trigger instead, or (c) running the agent in a separate job without PR checkout.
 
 **Step 1: Remove all-hands-bot reviewer trigger**

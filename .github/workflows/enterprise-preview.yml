@@ -1,10 +1,10 @@
 # Feature branch preview for enterprise code
 name: Enterprise Preview
 
-# Run on PRs labeled
+# DISABLED: No deployment pipeline configured yet. The dispatch URL pointed
+# to OpenHands/deploy which is not our repo.
 on:
-  pull_request:
-    types: [labeled]
+  workflow_dispatch:
 
 # Match ghcr-build.yml, but don't interrupt it.
 concurrency:
@@ -17,7 +17,7 @@ jobs:
   enterprise-preview:
     name: Enterprise preview
     if: github.event.label.name == 'deploy'
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ubuntu-22.04
     steps:
       # This should match the version in ghcr-build.yml
       - name: Trigger remote job
@@ -26,4 +26,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.APOLLOS_BOT_GITHUB_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             -d "{\"ref\": \"main\", \"inputs\": {\"apollosPrNumber\": \"${{ github.event.pull_request.number }}\", \"deployEnvironment\": \"feature\", \"enterpriseImageTag\": \"pr-${{ github.event.pull_request.number }}\" }}" \
-            https://api.github.com/repos/OpenHands/deploy/actions/workflows/deploy.yaml/dispatches
+            https://api.github.com/repos/jrmatherly/ApollosAI/actions/workflows/deploy.yaml/dispatches

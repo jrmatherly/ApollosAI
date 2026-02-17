@@ -1,5 +1,5 @@
 name: Feature Request or Enhancement
-description: Suggest a new feature or improvement for OpenHands
+description: Suggest a new feature or improvement for ApollosAI
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
@@ -75,7 +75,7 @@ body:
     id: feature-area
     attributes:
       label: Feature Area
-      description: Which part of OpenHands does this feature relate to? If you select "Other", please specify the area in the Additional Context section below.
+      description: Which part of ApollosAI does this feature relate to? If you select "Other", please specify the area in the Additional Context section below.
       options:
         - "Agent / AI behavior"
         - "User Interface / UX"

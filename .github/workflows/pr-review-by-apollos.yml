@@ -7,7 +7,7 @@ on:
     #   1. A new PR is opened (non-draft), OR
     #   2. A draft PR is marked as ready for review, OR
     #   3. A maintainer adds the 'review-this' label, OR
-    #   4. A maintainer requests apollos-agent or all-hands-bot as a reviewer
+    #   4. A maintainer requests apollos-agent as a reviewer
     # Only users with write access can add labels or request reviews, ensuring security.
     # The PR code is explicitly checked out for review, but secrets are only accessible
     # because the workflow runs in the base repository context
@@ -25,21 +25,20 @@ jobs:
         #   1. A new non-draft PR is opened by a trusted contributor, OR
         #   2. A draft PR is converted to ready for review by a trusted contributor, OR
         #   3. 'review-this' label is added, OR
-        #   4. apollos-agent or all-hands-bot is requested as a reviewer
+        #   4. apollos-agent is requested as a reviewer
         # Note: FIRST_TIME_CONTRIBUTOR PRs require manual trigger via label/reviewer request
         if: |
             (github.event.action == 'opened' && github.event.pull_request.draft == false && github.event.pull_request.author_association != 'FIRST_TIME_CONTRIBUTOR') ||
             (github.event.action == 'ready_for_review' && github.event.pull_request.author_association != 'FIRST_TIME_CONTRIBUTOR') ||
             github.event.label.name == 'review-this' ||
-            github.event.requested_reviewer.login == 'apollos-agent' ||
-            github.event.requested_reviewer.login == 'all-hands-bot'
+            github.event.requested_reviewer.login == 'apollos-agent'
         concurrency:
             group: pr-review-${{ github.event.pull_request.number }}
             cancel-in-progress: true
-        runs-on: blacksmith-4vcpu-ubuntu-2404
+        runs-on: ubuntu-24.04
         env:
-            LLM_MODEL: litellm_proxy/claude-sonnet-4-5-20250929
-            LLM_BASE_URL: https://llm-proxy.app.all-hands.dev
+            LLM_MODEL: anthropic/claude-sonnet-4-5-20250929
+            # LLM_BASE_URL: Set via secrets if using a custom LLM proxy
             # PR context will be automatically provided by the agent script
             PR_NUMBER: ${{ github.event.pull_request.number }}
             PR_TITLE: ${{ github.event.pull_request.title }}
@@ -49,13 +48,13 @@ jobs:
             REPO_NAME: ${{ github.repository }}
         steps:
             - name: Checkout software-agent-sdk repository
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
               with:
                   repository: jrmatherly/software-agent-sdk
                   path: software-agent-sdk
 
             - name: Checkout PR repository
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
               with:
                   # When using pull_request_target, explicitly checkout the PR branch
                   # This ensures we review the actual PR code (including fork PRs)
@@ -117,7 +116,7 @@ jobs:
                   uv run python ../software-agent-sdk/examples/03_github_workflows/02_pr_review/agent_script.py
 
             - name: Upload logs as artifact
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               if: always()
               with:
                   name: apollos-pr-review-logs

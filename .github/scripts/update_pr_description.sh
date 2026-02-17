@@ -5,6 +5,9 @@ set -euxo pipefail
 # This script updates the PR description with commands to run the PR locally
 # It adds both Docker and uvx commands
 
+# Lowercase REPO_OWNER for GHCR compatibility (registry requires lowercase)
+REPO_OWNER=$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
+
 # Get the branch name for the PR
 BRANCH_NAME=$(gh pr view "$PR_NUMBER" --json headRefName --jq .headRefName)
 
@@ -13,9 +16,9 @@ DOCKER_RUN_COMMAND="docker run -it --rm \
   -p 3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --add-host host.docker.internal:host-gateway \
-  -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.openhands.dev/openhands/runtime:${SHORT_SHA}-nikolaik \
-  --name openhands-app-${SHORT_SHA} \
-  docker.openhands.dev/openhands/openhands:${SHORT_SHA}"
+  -e SANDBOX_RUNTIME_CONTAINER_IMAGE=ghcr.io/${REPO_OWNER}/runtime:${SHORT_SHA}-nikolaik \
+  --name apollos-app-${SHORT_SHA} \
+  ghcr.io/${REPO_OWNER}/apollos:${SHORT_SHA}"
 
 # Get the current PR body
 PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq .body)
