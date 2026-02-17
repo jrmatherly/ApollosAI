@@ -1,5 +1,6 @@
 """ApollosAI SQLAlchemy models — re-exported for Alembic discoverability."""
 
+from apollosai.storage.models.auth_token import AuthToken
 from apollosai.storage.models.base import Base, TimestampMixin
 from apollosai.storage.models.org_membership import OrgMembership
 from apollosai.storage.models.organization import Organization
@@ -9,6 +10,7 @@ from apollosai.storage.models.team_membership import TeamMembership
 from apollosai.storage.models.user import User
 
 __all__ = [
+    'AuthToken',
     'Base',
     'OrgMembership',
     'Organization',
