@@ -27,6 +27,7 @@ from apollosai.server.auth.auth_error import (  # noqa: E402
 from apollosai.server.routes.admin import router as admin_router  # noqa: E402
 from apollosai.server.routes.auth import router as auth_router  # noqa: E402
 from apollosai.server.routes.health import router as health_router  # noqa: E402
+from apollosai.server.routes.integrations import router as integrations_router  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402
 from openhands.server.middleware import CacheControlMiddleware  # noqa: E402
@@ -60,6 +61,9 @@ base_app.include_router(health_router)
 
 # Admin routes — audit log, etc.
 base_app.include_router(admin_router)
+
+# Integration routes — webhooks + config listing
+base_app.include_router(integrations_router)
 
 # Session middleware — DB-backed server-side sessions
 # Starlette's cookie SessionMiddleware is kept as fallback for request.session
