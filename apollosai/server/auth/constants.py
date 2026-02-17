@@ -1,15 +1,26 @@
-"""Auth constants — secrets accessed via getter functions to avoid module-level exposure.
+"""Auth constants — all config accessed via getter functions.
 
-Secrets are NOT stored as module-level constants to prevent accidental leakage
-in error reports, logging middleware, or repr() calls on the module namespace.
+Values are NOT stored as module-level constants to prevent accidental leakage
+in error reports, logging middleware, or repr() calls on the module namespace,
+and to ensure monkeypatch compatibility in tests.
 """
 
 import os
 
-# Non-secret configuration (safe as module constants)
-ENTRA_TENANT_ID = os.environ.get('ENTRA_TENANT_ID', '')
-ENTRA_CLIENT_ID = os.environ.get('ENTRA_CLIENT_ID', '')
-ENTRA_REDIRECT_URI = os.environ.get('ENTRA_REDIRECT_URI', '')
+
+def get_entra_tenant_id() -> str:
+    """Get Entra ID tenant ID from environment at call time."""
+    return os.environ.get('ENTRA_TENANT_ID', '')
+
+
+def get_entra_client_id() -> str:
+    """Get Entra ID client ID from environment at call time."""
+    return os.environ.get('ENTRA_CLIENT_ID', '')
+
+
+def get_entra_redirect_uri() -> str:
+    """Get Entra ID redirect URI from environment at call time."""
+    return os.environ.get('ENTRA_REDIRECT_URI', '')
 
 
 def get_entra_client_secret() -> str:
