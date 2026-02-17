@@ -103,6 +103,7 @@ dependencies = [
   "zope-interface==7.2",
   "msal (>=1.34.0,<2.0.0)",
   "cryptography (>=46.0.5,<47.0.0)",
+  "itsdangerous (>=2.2.0,<3.0.0)",
 ]
 
 optional-dependencies.third_party_runtimes = [
