@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
+
 import { constructRepositoryUrl, cn } from "#/utils/utils";
 import { Provider } from "#/types/settings";
 import { I18nKey } from "#/i18n/declaration";
 import { GitProviderIcon } from "#/components/shared/git-provider-icon";
-import { GitExternalLinkIcon } from "./git-external-link-icon";
 import RepoForkedIcon from "#/icons/repo-forked.svg?react";
+
+import { GitExternalLinkIcon } from "./git-external-link-icon";
 
 interface GitControlBarRepoButtonProps {
   selectedRepository: string | null | undefined;

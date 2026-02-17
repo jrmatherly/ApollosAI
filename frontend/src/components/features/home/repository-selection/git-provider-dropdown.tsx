@@ -1,10 +1,12 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { SettingsDropdownInput } from "../../settings/settings-dropdown-input";
+
 import { I18nKey } from "#/i18n/declaration";
 import { GitProviderIcon } from "#/components/shared/git-provider-icon";
 import { Provider } from "#/types/settings";
 import { cn } from "#/utils/utils";
+
+import { SettingsDropdownInput } from "../../settings/settings-dropdown-input";
 
 export interface GitProviderDropdownProps {
   items: { key: React.Key; label: string }[];

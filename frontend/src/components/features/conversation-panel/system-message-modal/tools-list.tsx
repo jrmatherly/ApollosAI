@@ -1,4 +1,5 @@
 import { ChatCompletionToolParam } from "#/types/v1/core";
+
 import { ToolItem } from "./tool-item";
 
 interface ToolsListProps {

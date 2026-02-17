@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import PlusIcon from "#/icons/u-plus.svg?react";
 import { CardTitle } from "#/ui/card-title";
 import { Typography } from "#/ui/typography";
-import { CreateConversationButton } from "./create-conversation-button";
 import { Card } from "#/ui/card";
+
+import { CreateConversationButton } from "./create-conversation-button";
 
 export function NewConversation() {
   const { t } = useTranslation();

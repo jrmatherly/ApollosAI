@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import ThumbsUpIcon from "#/icons/thumbs-up.svg?react";
 import ThumbDownIcon from "#/icons/thumbs-down.svg?react";

@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
-import { ToolsContextMenuIconText } from "./tools-context-menu-icon-text";
 
+import { ContextMenu } from "#/ui/context-menu";
 import TachometerFastIcon from "#/icons/tachometer-fast.svg?react";
 import PrStatusIcon from "#/icons/pr-status.svg?react";
 import DocumentIcon from "#/icons/document.svg?react";
@@ -11,6 +9,10 @@ import { I18nKey } from "#/i18n/declaration";
 import { useConversationStore } from "#/stores/conversation-store";
 import { REPO_SUGGESTIONS } from "#/utils/suggestions/repo-suggestions";
 import { CONTEXT_MENU_ICON_TEXT_CLASSNAME } from "#/utils/constants";
+
+import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
+
+import { ToolsContextMenuIconText } from "./tools-context-menu-icon-text";
 
 const contextMenuListItemClassName =
   "cursor-pointer p-0 h-auto hover:bg-transparent !w-auto whitespace-nowrap";

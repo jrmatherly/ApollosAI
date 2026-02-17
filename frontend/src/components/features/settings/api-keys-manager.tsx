@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useNavigate } from "react-router";
 import { FaTrash, FaEye, FaEyeSlash, FaCopy } from "react-icons/fa6";
+
 import { I18nKey } from "#/i18n/declaration";
 import { BrandButton } from "#/components/features/settings/brand-button";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
@@ -10,12 +11,13 @@ import {
   displayErrorToast,
   displaySuccessToast,
 } from "#/utils/custom-toast-handlers";
-import { CreateApiKeyModal } from "./create-api-key-modal";
-import { DeleteApiKeyModal } from "./delete-api-key-modal";
-import { NewApiKeyModal } from "./new-api-key-modal";
 import { useApiKeys } from "#/hooks/query/use-api-keys";
 import { useLlmApiKey } from "#/hooks/query/use-llm-api-key";
 import { useRefreshLlmApiKey } from "#/hooks/mutation/use-refresh-llm-api-key";
+
+import { CreateApiKeyModal } from "./create-api-key-modal";
+import { DeleteApiKeyModal } from "./delete-api-key-modal";
+import { NewApiKeyModal } from "./new-api-key-modal";
 
 interface LlmApiKeyManagerProps {
   llmApiKey: { key: string | null } | undefined;

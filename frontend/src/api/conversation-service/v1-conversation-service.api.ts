@@ -1,9 +1,12 @@
 import axios from "axios";
-import { openHands } from "../open-hands-axios";
-import { ConversationTrigger, GetVSCodeUrlResponse } from "../open-hands.types";
+
 import { Provider } from "#/types/settings";
 import { buildHttpBaseUrl } from "#/utils/websocket-url";
 import { buildSessionHeaders } from "#/utils/utils";
+
+import { ConversationTrigger, GetVSCodeUrlResponse } from "../open-hands.types";
+import { openHands } from "../open-hands-axios";
+
 import type {
   V1SendMessageRequest,
   V1SendMessageResponse,

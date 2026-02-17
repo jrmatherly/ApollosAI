@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { BrandButton } from "#/components/features/settings/brand-button";
+
 import { ModalBackdrop } from "./modal-backdrop";
 
 interface ConfirmationModalProps {

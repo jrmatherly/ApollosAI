@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { BrandButton } from "#/components/features/settings/brand-button";
 import { useSettings } from "#/hooks/query/use-settings";
 import RepoForkedIcon from "#/icons/repo-forked.svg?react";

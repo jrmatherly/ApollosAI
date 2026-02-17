@@ -1,7 +1,9 @@
 import { usePostHog } from "posthog-js/react";
+
+import { Provider } from "#/types/settings";
+
 import { useConfig } from "./query/use-config";
 import { useSettings } from "./query/use-settings";
-import { Provider } from "#/types/settings";
 
 /**
  * Hook that provides tracking functions with automatic data collection

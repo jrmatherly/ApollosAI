@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
+
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
-import { ToolsContextMenuIconText } from "./tools-context-menu-icon-text";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { Provider } from "#/types/settings";
 import {
@@ -11,13 +10,16 @@ import {
   getCreateNewBranchPrompt,
 } from "#/utils/utils";
 import { useConversationStore } from "#/stores/conversation-store";
-
 import ArrowUpIcon from "#/icons/u-arrow-up.svg?react";
 import ArrowDownIcon from "#/icons/u-arrow-down.svg?react";
 import PrIcon from "#/icons/u-pr.svg?react";
 import CodeBranchIcon from "#/icons/u-code-branch.svg?react";
 import { I18nKey } from "#/i18n/declaration";
 import { CONTEXT_MENU_ICON_TEXT_CLASSNAME } from "#/utils/constants";
+
+import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
+
+import { ToolsContextMenuIconText } from "./tools-context-menu-icon-text";
 
 const contextMenuListItemClassName =
   "cursor-pointer p-0 h-auto hover:bg-transparent !w-auto whitespace-nowrap";

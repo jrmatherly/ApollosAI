@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import CheckmarkIcon from "#/icons/checkmark.svg?react";
 import CopyIcon from "#/icons/copy.svg?react";
 import { I18nKey } from "#/i18n/declaration";

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Query, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
 import ConversationService from "#/api/conversation-service/conversation-service.api";
 import { Conversation } from "#/api/open-hands.types";
 

@@ -1,9 +1,12 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { SettingsInput } from "../settings-input";
-import { BitbucketTokenHelpAnchor } from "./bitbucket-token-help-anchor";
-import { KeyStatusIcon } from "../key-status-icon";
 import { cn } from "#/utils/utils";
+
+import { SettingsInput } from "../settings-input";
+import { KeyStatusIcon } from "../key-status-icon";
+
+import { BitbucketTokenHelpAnchor } from "./bitbucket-token-help-anchor";
 
 interface BitbucketTokenInputProps {
   onChange: (value: string) => void;

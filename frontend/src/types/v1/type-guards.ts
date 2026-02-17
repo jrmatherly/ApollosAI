@@ -1,3 +1,5 @@
+import type { OpenHandsParsedEvent } from "../core/index";
+
 import {
   OpenHandsEvent,
   ObservationEvent,
@@ -21,7 +23,6 @@ import {
   ConversationErrorEvent,
 } from "./core/events/conversation-state-event";
 import { SystemPromptEvent } from "./core/events/system-event";
-import type { OpenHandsParsedEvent } from "../core/index";
 
 /**
  * Type guard to check if an unknown value is a valid BaseEvent

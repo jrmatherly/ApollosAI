@@ -1,9 +1,12 @@
 import React from "react";
+
 import { OpenHandsAction } from "#/types/core/actions";
 import { isOpenHandsAction } from "#/types/core/guards";
-import { ChatMessage } from "../chat-message";
-import { MicroagentStatusWrapper } from "./microagent-status-wrapper";
 import { MicroagentStatus } from "#/types/microagent-status";
+
+import { ChatMessage } from "../chat-message";
+
+import { MicroagentStatusWrapper } from "./microagent-status-wrapper";
 
 const hasThoughtProperty = (
   obj: Record<string, unknown>,

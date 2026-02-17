@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
 import { openHands } from "#/api/open-hands-axios";
+
 import { useConfig } from "./use-config";
 
 export const LLM_API_KEY_QUERY_KEY = "llm-api-key";

@@ -1,4 +1,5 @@
 import { http, HttpResponse } from "msw";
+
 import { CustomSecret, GetSecretsResponse } from "#/api/secrets-service.types";
 
 const DEFAULT_SECRETS: CustomSecret[] = [

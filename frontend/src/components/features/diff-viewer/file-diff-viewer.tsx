@@ -3,6 +3,7 @@ import React from "react";
 import { editor as editor_t } from "monaco-editor";
 import { LuFileDiff, LuFileMinus, LuFilePlus } from "react-icons/lu";
 import { IconType } from "react-icons/lib";
+
 import { GitChangeStatus } from "#/api/open-hands.types";
 import { getLanguageFromPath } from "#/utils/get-language-from-path";
 import { cn } from "#/utils/utils";

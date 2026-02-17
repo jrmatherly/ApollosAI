@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+
 import { SuggestedTask } from "#/utils/types";
 import { useIsCreatingConversation } from "#/hooks/use-is-creating-conversation";
 import { useCreateConversation } from "#/hooks/mutation/use-create-conversation";
-import { TaskIssueNumber } from "./task-issue-number";
 import { useOptimisticUserMessageStore } from "#/stores/optimistic-user-message-store";
 import { cn } from "#/utils/utils";
+
+import { TaskIssueNumber } from "./task-issue-number";
 
 const getTaskTypeMap = (
   t: (key: string) => string,

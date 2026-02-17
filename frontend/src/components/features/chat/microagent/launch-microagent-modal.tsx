@@ -1,20 +1,23 @@
 import React from "react";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
-import { BrandButton } from "../../settings/brand-button";
-import { SettingsDropdownInput } from "../../settings/settings-dropdown-input";
 import { BadgeInput } from "#/components/shared/inputs/badge-input";
 import { cn } from "#/utils/utils";
 import CloseIcon from "#/icons/close.svg?react";
 import { useMicroagentPrompt } from "#/hooks/query/use-microagent-prompt";
 import { useHandleRuntimeActive } from "#/hooks/use-handle-runtime-active";
-import { LoadingMicroagentBody } from "./loading-microagent-body";
-import { LoadingMicroagentTextarea } from "./loading-microagent-textarea";
 import { useGetMicroagents } from "#/hooks/query/use-get-microagents";
 import { Typography } from "#/ui/typography";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
+
+import { SettingsDropdownInput } from "../../settings/settings-dropdown-input";
+import { BrandButton } from "../../settings/brand-button";
+
+import { LoadingMicroagentTextarea } from "./loading-microagent-textarea";
+import { LoadingMicroagentBody } from "./loading-microagent-body";
 
 interface LaunchMicroagentModalProps {
   onClose: () => void;

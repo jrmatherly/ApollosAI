@@ -1,13 +1,15 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import CodeTagIcon from "#/icons/code-tag.svg?react";
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
-import { ContextMenuIconTextWithDescription } from "../context-menu/context-menu-icon-text-with-description";
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { cn } from "#/utils/utils";
+
+import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
+import { ContextMenuIconTextWithDescription } from "../context-menu/context-menu-icon-text-with-description";
 
 const contextMenuListItemClassName = cn(
   "cursor-pointer p-0 h-auto hover:bg-transparent",

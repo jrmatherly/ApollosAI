@@ -1,7 +1,9 @@
 import { useEffect } from "react";
+
 import { useConversationId } from "#/hooks/use-conversation-id";
-import { useUserConversation } from "./use-user-conversation";
 import ConversationService from "#/api/conversation-service/conversation-service.api";
+
+import { useUserConversation } from "./use-user-conversation";
 
 export const useActiveConversation = () => {
   const { conversationId } = useConversationId();

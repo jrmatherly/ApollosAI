@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { usePostHog } from "posthog-js/react";
-import { useConfig } from "./use-config";
+
 import UserService from "#/api/user-service/user-service.api";
 import { useShouldShowUserFeatures } from "#/hooks/use-should-show-user-features";
+
+import { useConfig } from "./use-config";
 
 export const useGitUser = () => {
   const posthog = usePostHog();

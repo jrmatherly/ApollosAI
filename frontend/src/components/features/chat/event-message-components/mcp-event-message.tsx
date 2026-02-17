@@ -1,9 +1,9 @@
-import React from "react";
 import { OpenHandsObservation } from "#/types/core/observations";
 import { isMcpObservation } from "#/types/core/guards";
+import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
+
 import { GenericEventMessage } from "../generic-event-message";
 import { MCPObservationContent } from "../mcp-observation-content";
-import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
 import { getEventContent } from "../event-content-helpers/get-event-content";
 import { getObservationResult } from "../event-content-helpers/get-observation-result";
 

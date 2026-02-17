@@ -1,4 +1,5 @@
 import { cn } from "#/utils/utils";
+
 import { ChatInterface } from "../../chat/chat-interface";
 
 interface ChatInterfaceWrapperProps {

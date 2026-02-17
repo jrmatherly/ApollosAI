@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import QuestionCircleIcon from "#/icons/question-circle.svg?react";
 import { DOCUMENTATION_URL } from "#/utils/constants";

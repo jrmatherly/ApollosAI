@@ -1,9 +1,11 @@
 import React from "react";
-import { useConfig } from "./query/use-config";
-import { useGitUser } from "./query/use-git-user";
+
 import { getLoginMethod, LoginMethod } from "#/utils/local-storage";
 import reoService, { ReoIdentity } from "#/utils/reo";
 import { isProductionDomain } from "#/utils/utils";
+
+import { useGitUser } from "./query/use-git-user";
+import { useConfig } from "./query/use-config";
 
 /**
  * Maps login method to Reo identity type

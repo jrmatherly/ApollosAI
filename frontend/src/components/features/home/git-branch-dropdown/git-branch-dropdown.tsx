@@ -6,17 +6,19 @@ import React, {
   useEffect,
 } from "react";
 import { useCombobox } from "downshift";
+
 import { Branch } from "#/types/git";
 import { Provider } from "#/types/settings";
 import { useDebounce } from "#/hooks/use-debounce";
 import { cn } from "#/utils/utils";
 import { useBranchData } from "#/hooks/query/use-branch-data";
+import BranchIcon from "#/icons/u-code-branch.svg?react";
 
 import { ClearButton } from "../shared/clear-button";
 import { ToggleButton } from "../shared/toggle-button";
 import { ErrorMessage } from "../shared/error-message";
+
 import { BranchDropdownMenu } from "./branch-dropdown-menu";
-import BranchIcon from "#/icons/u-code-branch.svg?react";
 
 export interface GitBranchDropdownProps {
   repository: string | null;
@@ -192,7 +194,6 @@ export function GitBranchDropdown({
           )}
         </div>
         <input
-          // eslint-disable-next-line react/jsx-props-no-spreading
           {...getInputProps({
             disabled: disabled || !repository,
             placeholder,

@@ -1,8 +1,9 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { IntegrationRow } from "./integration-row";
 import { useConfig } from "#/hooks/query/use-config";
+
+import { IntegrationRow } from "./integration-row";
 
 export function ProjectManagementIntegration() {
   const { t } = useTranslation();

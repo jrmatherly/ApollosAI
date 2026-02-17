@@ -1,7 +1,9 @@
+import { ChatCompletionToolParam } from "#/types/v1/core";
+
+import { MarkdownRenderer } from "../../markdown/markdown-renderer";
+
 import { ToolParameters } from "./tool-parameters";
 import { ToggleButton } from "./toggle-button";
-import { ChatCompletionToolParam } from "#/types/v1/core";
-import { MarkdownRenderer } from "../../markdown/markdown-renderer";
 
 interface FunctionData {
   name?: string;

@@ -1,4 +1,3 @@
-import React from "react";
 import { ApiKeysManager } from "#/components/features/settings/api-keys-manager";
 
 function ApiKeysScreen() {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { FaTriangleExclamation } from "react-icons/fa6";
+
 import CloseIcon from "#/icons/close.svg?react";
 import { cn } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";

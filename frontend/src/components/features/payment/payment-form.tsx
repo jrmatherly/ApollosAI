@@ -1,14 +1,17 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { useCreateStripeCheckoutSession } from "#/hooks/mutation/stripe/use-create-stripe-checkout-session";
 import { useBalance } from "#/hooks/query/use-balance";
 import { cn } from "#/utils/utils";
 import MoneyIcon from "#/icons/money.svg?react";
-import { SettingsInput } from "../settings/settings-input";
-import { BrandButton } from "../settings/brand-button";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
 import { amountIsValid } from "#/utils/amount-is-valid";
 import { I18nKey } from "#/i18n/declaration";
+
+import { BrandButton } from "../settings/brand-button";
+import { SettingsInput } from "../settings/settings-input";
+
 import { PoweredByStripeTag } from "./powered-by-stripe-tag";
 
 export function PaymentForm() {

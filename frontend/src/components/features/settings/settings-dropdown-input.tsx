@@ -1,8 +1,10 @@
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { OptionalTag } from "./optional-tag";
+
 import { cn } from "#/utils/utils";
+
+import { OptionalTag } from "./optional-tag";
 
 interface SettingsDropdownInputProps {
   testId: string;

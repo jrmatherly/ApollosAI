@@ -1,8 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { MicroagentManagementSidebar } from "./microagent-management-sidebar";
-import { MicroagentManagementMain } from "./microagent-management-main";
-import { MicroagentManagementUpsertMicroagentModal } from "./microagent-management-upsert-microagent-modal";
+
 import { useMicroagentManagementStore } from "#/stores/microagent-management-store";
 import { useCreateConversationAndSubscribeMultiple } from "#/hooks/use-create-conversation-and-subscribe-multiple";
 import {
@@ -19,7 +17,6 @@ import {
 import { GitRepository } from "#/types/git";
 import { queryClient } from "#/query-client-config";
 import { Provider } from "#/types/settings";
-import { MicroagentManagementLearnThisRepoModal } from "./microagent-management-learn-this-repo-modal";
 import {
   displaySuccessToast,
   displayErrorToast,
@@ -28,6 +25,11 @@ import { getFirstPRUrl } from "#/utils/parse-pr-url";
 import { I18nKey } from "#/i18n/declaration";
 import { useUserProviders } from "#/hooks/use-user-providers";
 import { useBreakpoint } from "#/hooks/use-breakpoint";
+
+import { MicroagentManagementLearnThisRepoModal } from "./microagent-management-learn-this-repo-modal";
+import { MicroagentManagementUpsertMicroagentModal } from "./microagent-management-upsert-microagent-modal";
+import { MicroagentManagementMain } from "./microagent-management-main";
+import { MicroagentManagementSidebar } from "./microagent-management-sidebar";
 
 // Handle error events
 const isErrorEvent = (evt: unknown): evt is { error: true; message: string } =>

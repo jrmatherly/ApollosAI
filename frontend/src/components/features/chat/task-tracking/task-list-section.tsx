@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { TaskItem } from "./task-item";
+
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
 import { I18nKey } from "#/i18n/declaration";
 import { Typography } from "#/ui/typography";
+
+import { TaskItem } from "./task-item";
 
 interface TaskListSectionProps {
   taskList: Array<{

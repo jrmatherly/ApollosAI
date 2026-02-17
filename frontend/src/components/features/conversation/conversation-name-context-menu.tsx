@@ -1,14 +1,13 @@
 import { useTranslation } from "react-i18next";
+
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { useBreakpoint } from "#/hooks/use-breakpoint";
 import { cn } from "#/utils/utils";
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
 import { Divider } from "#/ui/divider";
 import { I18nKey } from "#/i18n/declaration";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useConfig } from "#/hooks/query/use-config";
-
 import EditIcon from "#/icons/u-edit.svg?react";
 import RobotIcon from "#/icons/u-robot.svg?react";
 import ToolsIcon from "#/icons/u-tools.svg?react";
@@ -19,8 +18,11 @@ import CloseIcon from "#/icons/u-close.svg?react";
 import DeleteIcon from "#/icons/u-delete.svg?react";
 import LinkIcon from "#/icons/link-external.svg?react";
 import CopyIcon from "#/icons/copy.svg?react";
-import { ConversationNameContextMenuIconText } from "./conversation-name-context-menu-icon-text";
 import { CONTEXT_MENU_ICON_TEXT_CLASSNAME } from "#/utils/constants";
+
+import { ContextMenuListItem } from "../context-menu/context-menu-list-item";
+
+import { ConversationNameContextMenuIconText } from "./conversation-name-context-menu-icon-text";
 
 const contextMenuListItemClassName = cn(
   "cursor-pointer p-0 h-auto hover:bg-transparent",

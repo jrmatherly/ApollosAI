@@ -1,8 +1,10 @@
 import React from "react";
+
 import { cn } from "#/utils/utils";
 import { ConversationStatus } from "#/types/conversation-status";
-import { ConversationCardContextMenu } from "./conversation-card-context-menu";
 import EllipsisIcon from "#/icons/ellipsis.svg?react";
+
+import { ConversationCardContextMenu } from "./conversation-card-context-menu";
 
 interface ConversationCardActionsProps {
   contextMenuOpen: boolean;

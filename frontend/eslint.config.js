@@ -63,6 +63,15 @@ export default tseslint.config(
       "prettier/prettier": "error",
 
       // ── TypeScript ──────────────────────────────────────────
+      "@typescript-eslint/no-unused-vars": ["error", {
+        args: "after-used",
+        argsIgnorePattern: "^_",
+        caughtErrors: "none",
+        ignoreRestSiblings: true,
+      }],
+      "@typescript-eslint/no-empty-object-type": ["error", {
+        allowInterfaces: "with-single-extends",
+      }],
       "@typescript-eslint/prefer-optional-chain": "error",
       "@typescript-eslint/no-shadow": "error",
       "@typescript-eslint/no-useless-constructor": "error",
@@ -113,6 +122,8 @@ export default tseslint.config(
       "import/no-mutable-exports": "error",
       "import/no-self-import": "error",
       "import/no-useless-path-segments": "error",
+      "import/no-named-as-default": "off",
+      "import/no-named-as-default-member": "off",
       "import/extensions": [
         "error",
         "ignorePackages",

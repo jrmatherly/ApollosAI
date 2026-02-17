@@ -1,6 +1,7 @@
+import { cn } from "#/utils/utils";
+
 import { UpgradeButton } from "./upgrade-button";
 import { BannerMessage } from "./banner-message";
-import { cn } from "#/utils/utils";
 
 interface UpgradeBannerProps {
   message: string;

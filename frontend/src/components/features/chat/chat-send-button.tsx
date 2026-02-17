@@ -1,4 +1,5 @@
 import { ArrowUp } from "lucide-react";
+
 import { cn } from "#/utils/utils";
 
 export interface ChatSendButtonProps {

@@ -1,5 +1,4 @@
 import { AgentStatus } from "#/components/features/controls/agent-status";
-import { Tools } from "../../controls/tools";
 import { useUnifiedPauseConversationSandbox } from "#/hooks/mutation/use-unified-stop-conversation";
 import { useConversationId } from "#/hooks/use-conversation-id";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
@@ -8,6 +7,8 @@ import { generateAgentStateChangeEvent } from "#/services/agent-state-service";
 import { AgentState } from "#/types/agent-state";
 import { useV1PauseConversation } from "#/hooks/mutation/use-v1-pause-conversation";
 import { useV1ResumeConversation } from "#/hooks/mutation/use-v1-resume-conversation";
+
+import { Tools } from "../../controls/tools";
 import { ChangeAgentButton } from "../change-agent-button";
 
 interface ChatInputActionsProps {

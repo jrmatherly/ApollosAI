@@ -1,4 +1,3 @@
-import { OpenHandsParsedEvent } from ".";
 import {
   UserMessageAction,
   AssistantMessageAction,
@@ -17,6 +16,8 @@ import {
   TaskTrackingObservation,
 } from "./observations";
 import { StatusUpdate } from "./variances";
+
+import { OpenHandsParsedEvent } from ".";
 
 export const isOpenHandsEvent = (
   event: unknown,

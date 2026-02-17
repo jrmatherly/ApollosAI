@@ -2,6 +2,7 @@ import React from "react";
 import { io, Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostHog } from "posthog-js/react";
+
 import EventLogger from "#/utils/event-logger";
 import { handleAssistantMessage } from "#/services/actions";
 import { showChatError, trackError } from "#/utils/error-handler";
@@ -33,7 +34,7 @@ import { useEventStore } from "#/stores/use-event-store";
  * @deprecated Use `V1_WebSocketConnectionState` from `conversation-websocket-context.tsx` instead.
  * This type is for legacy V0 conversations only.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export type V0_WebSocketStatus = "CONNECTING" | "CONNECTED" | "DISCONNECTED";
 
 const hasValidMessageProperty = (obj: unknown): obj is { message: string } =>
@@ -322,7 +323,7 @@ export function WsClientProvider({
     }
 
     // Clear error messages when conversation is intentionally stopped
-    if (conversation && conversation.status === "STOPPED") {
+    if (conversation?.status === "STOPPED") {
       const existingSocket = sioRef.current;
       if (existingSocket) {
         existingSocket.disconnect();
@@ -335,7 +336,7 @@ export function WsClientProvider({
     }
 
     // Set connecting status when conversation is starting
-    if (conversation && conversation.status === "STARTING") {
+    if (conversation?.status === "STARTING") {
       removeErrorMessage();
       setWebSocketStatus("CONNECTING");
       return () => undefined; // conversation is starting, will connect when ready
@@ -343,8 +344,7 @@ export function WsClientProvider({
 
     // Only connect when conversation is fully loaded and running
     if (
-      !conversation ||
-      conversation.status !== "RUNNING" ||
+      conversation?.status !== "RUNNING" ||
       !conversation.runtime_status ||
       conversation.runtime_status === "STATUS$STOPPED"
     ) {

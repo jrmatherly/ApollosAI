@@ -1,5 +1,6 @@
-import { openHands } from "../open-hands-axios";
 import { GitUser } from "#/types/git";
+
+import { openHands } from "../open-hands-axios";
 
 /**
  * User Service API - Handles all user-related API endpoints

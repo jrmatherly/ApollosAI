@@ -1,14 +1,16 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useCombobox } from "downshift";
+
 import { Provider } from "#/types/settings";
 import { cn } from "#/utils/utils";
+import { GitProviderIcon } from "#/components/shared/git-provider-icon";
+
 import { DropdownItem } from "../shared/dropdown-item";
 import { GenericDropdownMenu } from "../shared/generic-dropdown-menu";
 import { ToggleButton } from "../shared/toggle-button";
 import { LoadingSpinner } from "../shared/loading-spinner";
 import { ErrorMessage } from "../shared/error-message";
 import { EmptyState } from "../shared/empty-state";
-import { GitProviderIcon } from "#/components/shared/git-provider-icon";
 
 export interface GitProviderDropdownProps {
   providers: Provider[];
@@ -168,7 +170,6 @@ export function GitProviderDropdown({
         )}
 
         <input
-          // eslint-disable-next-line react/jsx-props-no-spreading
           {...getInputProps({
             disabled,
             placeholder,

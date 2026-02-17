@@ -1,14 +1,16 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { useCreateSecret } from "#/hooks/mutation/use-create-secret";
 import { useUpdateSecret } from "#/hooks/mutation/use-update-secret";
-import { SettingsInput } from "../settings-input";
 import { cn } from "#/utils/utils";
-import { BrandButton } from "../brand-button";
 import { useGetSecrets } from "#/hooks/query/use-get-secrets";
 import { GetSecretsResponse } from "#/api/secrets-service.types";
+
+import { BrandButton } from "../brand-button";
+import { SettingsInput } from "../settings-input";
 import { OptionalTag } from "../optional-tag";
 
 interface SecretFormProps {

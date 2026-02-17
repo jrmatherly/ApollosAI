@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { MCPServerListItem } from "./mcp-server-list-item";
+
 import { I18nKey } from "#/i18n/declaration";
+
+import { MCPServerListItem } from "./mcp-server-list-item";
 
 interface MCPServerConfig {
   id: string;

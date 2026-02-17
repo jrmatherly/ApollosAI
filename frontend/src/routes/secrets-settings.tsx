@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { useGetSecrets } from "#/hooks/query/use-get-secrets";
 import { useDeleteSecret } from "#/hooks/mutation/use-delete-secret";
 import { SecretForm } from "#/components/features/settings/secrets-settings/secret-form";

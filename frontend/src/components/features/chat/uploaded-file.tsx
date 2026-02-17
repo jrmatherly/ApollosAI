@@ -1,7 +1,9 @@
 import { LoaderCircle } from "lucide-react";
+
 import FileIcon from "#/icons/file.svg?react";
-import { RemoveFileButton } from "./remove-file-button";
 import { cn, getFileExtension } from "#/utils/utils";
+
+import { RemoveFileButton } from "./remove-file-button";
 
 interface UploadedFileProps {
   file: File;

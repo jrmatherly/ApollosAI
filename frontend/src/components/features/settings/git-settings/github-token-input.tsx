@@ -1,9 +1,12 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { SettingsInput } from "../settings-input";
-import { GitHubTokenHelpAnchor } from "./github-token-help-anchor";
-import { KeyStatusIcon } from "../key-status-icon";
 import { cn } from "#/utils/utils";
+
+import { SettingsInput } from "../settings-input";
+import { KeyStatusIcon } from "../key-status-icon";
+
+import { GitHubTokenHelpAnchor } from "./github-token-help-anchor";
 
 interface GitHubTokenInputProps {
   onChange: (value: string) => void;

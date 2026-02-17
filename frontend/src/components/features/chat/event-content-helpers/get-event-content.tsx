@@ -1,12 +1,15 @@
 import { Trans } from "react-i18next";
+
 import { OpenHandsAction } from "#/types/core/actions";
 import { isOpenHandsAction, isOpenHandsObservation } from "#/types/core/guards";
 import { OpenHandsObservation } from "#/types/core/observations";
+import i18n from "#/i18n";
+
 import { MonoComponent } from "../mono-component";
 import { PathComponent } from "../path-component";
+
 import { getActionContent } from "./get-action-content";
 import { getObservationContent } from "./get-observation-content";
-import i18n from "#/i18n";
 
 const hasPathProperty = (
   obj: Record<string, unknown>,

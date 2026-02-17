@@ -1,10 +1,12 @@
 import { Trans, useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import OpenHandsLogo from "#/assets/branding/openhands-logo.svg?react";
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
-import { BrandButton } from "../settings/brand-button";
 import { useCreateBillingSession } from "#/hooks/mutation/use-create-billing-session";
+
+import { BrandButton } from "../settings/brand-button";
 
 export function SetupPaymentModal() {
   const { t } = useTranslation();

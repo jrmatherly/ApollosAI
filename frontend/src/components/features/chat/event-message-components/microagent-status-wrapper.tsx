@@ -1,5 +1,7 @@
 import React from "react";
+
 import { MicroagentStatus } from "#/types/microagent-status";
+
 import { MicroagentStatusIndicator } from "../microagent/microagent-status-indicator";
 
 interface MicroagentStatusWrapperProps {

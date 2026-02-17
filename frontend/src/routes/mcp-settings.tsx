@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { useSettings } from "#/hooks/query/use-settings";
 import { useDeleteMcpServer } from "#/hooks/mutation/use-delete-mcp-server";
 import { useAddMcpServer } from "#/hooks/mutation/use-add-mcp-server";
 import { useUpdateMcpServer } from "#/hooks/mutation/use-update-mcp-server";
 import { I18nKey } from "#/i18n/declaration";
-
 import { MCPServerList } from "#/components/features/settings/mcp-settings/mcp-server-list";
 import { MCPServerForm } from "#/components/features/settings/mcp-settings/mcp-server-form";
 import { ConfirmationModal } from "#/components/shared/modals/confirmation-modal";

@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+
 import EventService from "#/api/event-service/event-service.api";
 import type { ConfirmationResponseRequest } from "#/api/event-service/event-service.types";
 

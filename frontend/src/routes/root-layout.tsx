@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import i18n from "#/i18n";
 import { useIsAuthed } from "#/hooks/query/use-is-authed";

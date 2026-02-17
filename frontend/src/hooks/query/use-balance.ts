@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useConfig } from "./use-config";
+
 import BillingService from "#/api/billing-service/billing-service.api";
 import { useIsOnTosPage } from "#/hooks/use-is-on-tos-page";
+
+import { useConfig } from "./use-config";
 
 export const useBalance = () => {
   const { data: config } = useConfig();

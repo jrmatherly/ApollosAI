@@ -1,6 +1,8 @@
 import React from "react";
 import { usePostHog } from "posthog-js/react";
+
 import { handleCaptureConsent } from "#/utils/handle-capture-consent";
+
 import { useSettings } from "./query/use-settings";
 
 /**

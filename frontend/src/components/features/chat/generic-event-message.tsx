@@ -1,9 +1,12 @@
 import React from "react";
+
 import ArrowDown from "#/icons/angle-down-solid.svg?react";
 import ArrowUp from "#/icons/angle-up-solid.svg?react";
+
+import { MarkdownRenderer } from "../markdown/markdown-renderer";
+
 import { SuccessIndicator } from "./success-indicator";
 import { ObservationResultStatus } from "./event-content-helpers/get-observation-result";
-import { MarkdownRenderer } from "../markdown/markdown-renderer";
 
 interface GenericEventMessageProps {
   title: React.ReactNode;

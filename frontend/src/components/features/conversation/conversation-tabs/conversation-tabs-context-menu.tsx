@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
+
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../../context-menu/context-menu-list-item";
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { useConversationId } from "#/hooks/use-conversation-id";
 import { useConversationLocalStorageState } from "#/utils/conversation-local-storage";
@@ -14,6 +14,8 @@ import PillIcon from "#/icons/pill.svg?react";
 import PillFillIcon from "#/icons/pill-fill.svg?react";
 import { USE_PLANNING_AGENT } from "#/utils/feature-flags";
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
+
+import { ContextMenuListItem } from "../../context-menu/context-menu-list-item";
 
 interface ConversationTabsContextMenuProps {
   isOpen: boolean;

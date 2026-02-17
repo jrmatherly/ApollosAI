@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+
 import GitService from "#/api/git-service/git-service.api";
 import { Branch } from "#/types/git";
 import { Provider } from "#/types/settings";

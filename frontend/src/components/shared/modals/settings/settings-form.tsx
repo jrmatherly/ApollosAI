@@ -2,18 +2,21 @@ import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { usePostHog } from "posthog-js/react";
+
 import { I18nKey } from "#/i18n/declaration";
 import { organizeModelsAndProviders } from "#/utils/organize-models-and-providers";
-import { DangerModal } from "../confirmation-modals/danger-modal";
 import { extractSettings } from "#/utils/settings-utils";
-import { ModalBackdrop } from "../modal-backdrop";
-import { ModelSelector } from "./model-selector";
 import { Settings } from "#/types/settings";
 import { BrandButton } from "#/components/features/settings/brand-button";
 import { SettingsInput } from "#/components/features/settings/settings-input";
 import { HelpLink } from "#/ui/help-link";
 import { useSaveSettings } from "#/hooks/mutation/use-save-settings";
 import { SETTINGS_FORM } from "#/utils/constants";
+
+import { ModalBackdrop } from "../modal-backdrop";
+import { DangerModal } from "../confirmation-modals/danger-modal";
+
+import { ModelSelector } from "./model-selector";
 
 interface SettingsFormProps {
   settings: Settings;

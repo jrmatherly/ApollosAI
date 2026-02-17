@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { AgentState } from "#/types/agent-state";
 import { generateAgentStateChangeEvent } from "#/services/agent-state-service";
-import { ActionTooltip } from "../action-tooltip";
 import { isOpenHandsAction, isActionOrObservation } from "#/types/core/guards";
 import { ActionSecurityRisk } from "#/stores/security-analyzer-store";
 import { RiskAlert } from "#/components/shared/risk-alert";
@@ -12,6 +12,8 @@ import { useEventMessageStore } from "#/stores/event-message-store";
 import { useEventStore } from "#/stores/use-event-store";
 import { isV0Event } from "#/types/v1/type-guards";
 import { useSendMessage } from "#/hooks/use-send-message";
+
+import { ActionTooltip } from "../action-tooltip";
 
 export function ConfirmationButtons() {
   const submittedEventIds = useEventMessageStore(

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskGroup } from "./task-group";
+
 import { useSuggestedTasks } from "#/hooks/query/use-suggested-tasks";
-import { TaskSuggestionsSkeleton } from "./task-suggestions-skeleton";
 import { cn, getDisplayedTaskGroups, getTotalTaskCount } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";
 import { GitRepository } from "#/types/git";
+
+import { TaskSuggestionsSkeleton } from "./task-suggestions-skeleton";
+import { TaskGroup } from "./task-group";
 
 interface TaskSuggestionsProps {
   filterFor?: GitRepository | null;

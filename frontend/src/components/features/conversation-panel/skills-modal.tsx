@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
 import { I18nKey } from "#/i18n/declaration";
 import { useConversationSkills } from "#/hooks/query/use-conversation-skills";
 import { AgentState } from "#/types/agent-state";
 import { Typography } from "#/ui/typography";
+import { useAgentState } from "#/hooks/use-agent-state";
+
 import { SkillsModalHeader } from "./skills-modal-header";
 import { SkillsLoadingState } from "./skills-loading-state";
 import { SkillsEmptyState } from "./skills-empty-state";
 import { SkillItem } from "./skill-item";
-import { useAgentState } from "#/hooks/use-agent-state";
 
 interface SkillsModalProps {
   onClose: () => void;

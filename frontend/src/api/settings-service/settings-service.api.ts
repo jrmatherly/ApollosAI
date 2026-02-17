@@ -1,5 +1,6 @@
-import { openHands } from "../open-hands-axios";
 import { Settings } from "#/types/settings";
+
+import { openHands } from "../open-hands-axios";
 
 /**
  * Settings service for managing application settings

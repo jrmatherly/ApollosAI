@@ -1,8 +1,10 @@
 import { useMemo } from "react";
-import { useRepositoryBranchesPaginated } from "./use-repository-branches";
-import { useSearchBranches } from "./use-search-branches";
+
 import { Branch } from "#/types/git";
 import { Provider } from "#/types/settings";
+
+import { useRepositoryBranchesPaginated } from "./use-repository-branches";
+import { useSearchBranches } from "./use-search-branches";
 
 export function useBranchData(
   repository: string | null,
@@ -67,7 +69,7 @@ export function useBranchData(
     const shouldUseSearch =
       processedSearchInput &&
       searchData &&
-      !(selectedBranch && inputValue === selectedBranch.name);
+      !(inputValue === selectedBranch?.name);
 
     let branchesToUse = shouldUseSearch ? searchData : allBranches;
 

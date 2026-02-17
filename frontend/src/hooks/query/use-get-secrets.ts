@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { SecretsService } from "#/api/secrets-service";
-import { useConfig } from "./use-config";
 import { useIsAuthed } from "#/hooks/query/use-is-authed";
+
+import { useConfig } from "./use-config";
 
 export const useGetSecrets = () => {
   const { data: config } = useConfig();

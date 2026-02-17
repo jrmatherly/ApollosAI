@@ -1,7 +1,9 @@
 import React from "react";
+
 import { cn } from "#/utils/utils";
-import { BrandBadge } from "../badge";
 import XIcon from "#/icons/x.svg?react";
+
+import { BrandBadge } from "../badge";
 
 interface BadgeInputProps {
   name?: string;

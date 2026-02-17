@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePostHog } from "posthog-js/react";
+
 import { DEFAULT_SETTINGS } from "#/services/settings";
 import SettingsService from "#/api/settings-service/settings-service.api";
 import { Settings } from "#/types/settings";
+
 import { useSettings } from "../query/use-settings";
 
 const saveSettingsMutationFn = async (settings: Partial<Settings>) => {

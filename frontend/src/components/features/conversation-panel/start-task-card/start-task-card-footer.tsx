@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
+
 import { formatTimeDelta } from "#/utils/format-time-delta";
 import { cn } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";
+import type { RepositorySelection } from "#/api/open-hands.types";
+
 import { ConversationRepoLink } from "../conversation-card/conversation-repo-link";
 import { NoRepository } from "../conversation-card/no-repository";
-import type { RepositorySelection } from "#/api/open-hands.types";
 
 interface StartTaskCardFooterProps {
   selectedRepository: RepositorySelection | null;

@@ -1,4 +1,10 @@
 import { AxiosHeaders } from "axios";
+
+import { Provider } from "#/types/settings";
+import { SuggestedTask } from "#/utils/types";
+import { BatchFeedbackData } from "#/hooks/query/use-batch-feedback";
+
+import { openHands } from "../open-hands-axios";
 import {
   Feedback,
   FeedbackResponse,
@@ -12,10 +18,6 @@ import {
   FileUploadSuccessResponse,
   GetFilesResponse,
 } from "../open-hands.types";
-import { openHands } from "../open-hands-axios";
-import { Provider } from "#/types/settings";
-import { SuggestedTask } from "#/utils/types";
-import { BatchFeedbackData } from "#/hooks/query/use-batch-feedback";
 
 class ConversationService {
   private static currentConversation: Conversation | null = null;

@@ -1,4 +1,5 @@
 import { AgentState } from "../agent-state";
+
 import { OpenHandsObservationEvent } from "./base";
 
 export interface AgentStateChangeObservation extends OpenHandsObservationEvent<"agent_state_changed"> {

@@ -1,12 +1,14 @@
 import { Trans, useTranslation } from "react-i18next";
+
 import {
   BaseModalDescription,
   BaseModalTitle,
 } from "#/components/shared/modals/confirmation-modals/base-modal";
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
-import { BrandButton } from "../settings/brand-button";
 import { I18nKey } from "#/i18n/declaration";
+
+import { BrandButton } from "../settings/brand-button";
 
 interface ConfirmDeleteModalProps {
   onConfirm: () => void;

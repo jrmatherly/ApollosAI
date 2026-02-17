@@ -1,6 +1,8 @@
 import React from "react";
 import { usePostHog } from "posthog-js/react";
+
 import { handleCaptureConsent } from "#/utils/handle-capture-consent";
+
 import { useSaveSettings } from "./mutation/use-save-settings";
 
 export const useMigrateUserConsent = () => {

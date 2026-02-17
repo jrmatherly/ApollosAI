@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight } from "lucide-react";
+
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
 import { USE_PLANNING_AGENT } from "#/utils/feature-flags";
 import { Typography } from "#/ui/typography";

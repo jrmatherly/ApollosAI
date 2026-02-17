@@ -1,4 +1,5 @@
 import { FaBitbucket, FaGithub, FaGitlab } from "react-icons/fa6";
+
 import { Provider } from "#/types/settings";
 import AzureDevOpsLogo from "#/assets/branding/azure-devops-logo.svg?react";
 

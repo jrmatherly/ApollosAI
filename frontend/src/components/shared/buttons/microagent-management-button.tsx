@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { StyledTooltip } from "#/components/shared/buttons/styled-tooltip";
 import RobotIcon from "#/icons/robot.svg?react";

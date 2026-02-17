@@ -1,11 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
+import { cn } from "#/utils/utils";
+
 import { SettingsInput } from "../settings-input";
 import { SettingsDropdownInput } from "../settings-dropdown-input";
 import { BrandButton } from "../brand-button";
 import { OptionalTag } from "../optional-tag";
-import { cn } from "#/utils/utils";
 
 type MCPServerType = "sse" | "stdio" | "shttp";
 

@@ -3,7 +3,9 @@ import {
   UseComboboxGetMenuPropsOptions,
   UseComboboxGetItemPropsOptions,
 } from "downshift";
+
 import { Branch } from "#/types/git";
+
 import { DropdownItem } from "../shared/dropdown-item";
 import { GenericDropdownMenu, EmptyState } from "../shared";
 

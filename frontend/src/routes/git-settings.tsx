@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { useConfig } from "#/hooks/query/use-config";
 import { useSettings } from "#/hooks/query/use-settings";
 import { BrandButton } from "#/components/features/settings/brand-button";

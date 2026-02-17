@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { usePostHog } from "posthog-js/react";
 import { useNavigate } from "react-router";
+
 import { openHands } from "#/api/open-hands-axios";
 import { handleCaptureConsent } from "#/utils/handle-capture-consent";
 import { useTracking } from "#/hooks/use-tracking";

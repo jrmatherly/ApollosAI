@@ -1,6 +1,6 @@
-import React from "react";
 import { OpenHandsObservation } from "#/types/core/observations";
 import { isRejectObservation } from "#/types/core/guards";
+
 import { ChatMessage } from "../chat-message";
 
 interface RejectEventMessageProps {

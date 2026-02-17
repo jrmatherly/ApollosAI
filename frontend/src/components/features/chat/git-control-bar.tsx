@@ -1,14 +1,16 @@
 import { useTranslation } from "react-i18next";
-import { GitControlBarRepoButton } from "./git-control-bar-repo-button";
-import { GitControlBarBranchButton } from "./git-control-bar-branch-button";
-import { GitControlBarPullButton } from "./git-control-bar-pull-button";
-import { GitControlBarPushButton } from "./git-control-bar-push-button";
-import { GitControlBarPrButton } from "./git-control-bar-pr-button";
+
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useTaskPolling } from "#/hooks/query/use-task-polling";
 import { useUnifiedWebSocketStatus } from "#/hooks/use-unified-websocket-status";
 import { Provider } from "#/types/settings";
 import { I18nKey } from "#/i18n/declaration";
+
+import { GitControlBarRepoButton } from "./git-control-bar-repo-button";
+import { GitControlBarBranchButton } from "./git-control-bar-branch-button";
+import { GitControlBarPullButton } from "./git-control-bar-pull-button";
+import { GitControlBarPushButton } from "./git-control-bar-push-button";
+import { GitControlBarPrButton } from "./git-control-bar-pr-button";
 import { GitControlBarTooltipWrapper } from "./git-control-bar-tooltip-wrapper";
 
 interface GitControlBarProps {

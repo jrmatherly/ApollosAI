@@ -1,5 +1,5 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
 import { I18nKey } from "#/i18n/declaration";

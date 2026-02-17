@@ -7,13 +7,14 @@ import {
   ObservationMessage,
   StatusMessage,
 } from "#/types/message";
-import { handleObservationMessage } from "./observations";
 import { useCommandStore } from "#/stores/command-store";
 import { queryClient } from "#/query-client-config";
 import {
   ActionSecurityRisk,
   useSecurityAnalyzerStore,
 } from "#/stores/security-analyzer-store";
+
+import { handleObservationMessage } from "./observations";
 
 export function handleActionMessage(message: ActionMessage) {
   if (message.args?.hidden) {

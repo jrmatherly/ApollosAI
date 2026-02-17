@@ -1,19 +1,22 @@
 import React from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useUpdateConversation } from "#/hooks/mutation/use-update-conversation";
 import { useConversationNameContextMenu } from "#/hooks/use-conversation-name-context-menu";
 import { displaySuccessToast } from "#/utils/custom-toast-handlers";
 import { I18nKey } from "#/i18n/declaration";
+
 import { EllipsisButton } from "../conversation-panel/ellipsis-button";
-import { ConversationNameContextMenu } from "./conversation-name-context-menu";
 import { SystemMessageModal } from "../conversation-panel/system-message-modal";
 import { SkillsModal } from "../conversation-panel/skills-modal";
 import { ConfirmDeleteModal } from "../conversation-panel/confirm-delete-modal";
 import { ConfirmStopModal } from "../conversation-panel/confirm-stop-modal";
-import { MetricsModal } from "./metrics-modal/metrics-modal";
 import { ConversationVersionBadge } from "../conversation-panel/conversation-card/conversation-version-badge";
+
+import { MetricsModal } from "./metrics-modal/metrics-modal";
+import { ConversationNameContextMenu } from "./conversation-name-context-menu";
 
 export function ConversationName() {
   const { t } = useTranslation();

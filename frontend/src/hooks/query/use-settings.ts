@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+
 import SettingsService from "#/api/settings-service/settings-service.api";
 import { DEFAULT_SETTINGS } from "#/services/settings";
 import { useIsOnTosPage } from "#/hooks/use-is-on-tos-page";
 import { Settings } from "#/types/settings";
+
 import { useIsAuthed } from "./use-is-authed";
 
 const getSettingsQueryFn = async (): Promise<Settings> => {

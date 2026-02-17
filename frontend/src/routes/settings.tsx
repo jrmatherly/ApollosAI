@@ -1,13 +1,15 @@
 import { useMemo } from "react";
 import { Outlet, redirect, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Route } from "./+types/settings";
+
 import OptionService from "#/api/option-service/option-service.api";
 import { queryClient } from "#/query-client-config";
 import { WebClientConfig } from "#/api/option-service/option.types";
 import { SettingsLayout } from "#/components/features/settings/settings-layout";
 import { Typography } from "#/ui/typography";
 import { useSettingsNavItems } from "#/hooks/use-settings-nav-items";
+
+import { Route } from "./+types/settings";
 
 const SAAS_ONLY_PATHS = [
   "/settings/user",

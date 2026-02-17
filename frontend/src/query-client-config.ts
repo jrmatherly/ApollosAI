@@ -1,6 +1,7 @@
 import { QueryCache, MutationCache, QueryClient } from "@tanstack/react-query";
 import i18next from "i18next";
 import { AxiosError } from "axios";
+
 import { I18nKey } from "./i18n/declaration";
 import { retrieveAxiosErrorMessage } from "./utils/retrieve-axios-error-message";
 import { displayErrorToast } from "./utils/custom-toast-handlers";

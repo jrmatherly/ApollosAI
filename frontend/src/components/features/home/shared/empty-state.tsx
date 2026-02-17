@@ -1,5 +1,3 @@
-import React from "react";
-
 interface EmptyStateProps {
   inputValue: string;
   searchMessage?: string;

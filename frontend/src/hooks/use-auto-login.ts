@@ -1,7 +1,9 @@
 import { useEffect } from "react";
+
+import { getLoginMethod, LoginMethod } from "#/utils/local-storage";
+
 import { useConfig } from "./query/use-config";
 import { useIsAuthed } from "./query/use-is-authed";
-import { getLoginMethod, LoginMethod } from "#/utils/local-storage";
 import { useAuthUrl } from "./use-auth-url";
 
 /**

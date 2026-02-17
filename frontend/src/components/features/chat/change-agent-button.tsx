@@ -1,13 +1,13 @@
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { Typography } from "#/ui/typography";
 import { I18nKey } from "#/i18n/declaration";
 import CodeTagIcon from "#/icons/code-tag.svg?react";
 import ChevronDownSmallIcon from "#/icons/chevron-down-small.svg?react";
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
 import { useConversationStore } from "#/stores/conversation-store";
-import { ChangeAgentContextMenu } from "./change-agent-context-menu";
 import { cn } from "#/utils/utils";
 import { USE_PLANNING_AGENT } from "#/utils/feature-flags";
 import { useAgentState } from "#/hooks/use-agent-state";
@@ -16,6 +16,8 @@ import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useUnifiedWebSocketStatus } from "#/hooks/use-unified-websocket-status";
 import { useSubConversationTaskPolling } from "#/hooks/query/use-sub-conversation-task-polling";
 import { useHandlePlanClick } from "#/hooks/use-handle-plan-click";
+
+import { ChangeAgentContextMenu } from "./change-agent-context-menu";
 
 export function ChangeAgentButton() {
   const [contextMenuOpen, setContextMenuOpen] = useState<boolean>(false);

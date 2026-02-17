@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCircleInfo } from "react-icons/fa6";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
-import { BrandButton } from "../settings/brand-button";
 import { I18nKey } from "#/i18n/declaration";
 import { useMicroagentManagementStore } from "#/stores/microagent-management-store";
 import XIcon from "#/icons/x.svg?react";
 import { cn, getRepoMdCreatePrompt } from "#/utils/utils";
 import { LearnThisRepoFormData } from "#/types/microagent-management";
+
+import { BrandButton } from "../settings/brand-button";
 
 interface MicroagentManagementLearnThisRepoModalProps {
   onConfirm: (formData: LearnThisRepoFormData) => void;

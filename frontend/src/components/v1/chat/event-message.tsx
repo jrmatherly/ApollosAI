@@ -1,4 +1,5 @@
 import React from "react";
+
 import { OpenHandsEvent, MessageEvent, ActionEvent } from "#/types/v1/core";
 import { FinishAction } from "#/types/v1/core/base/action";
 import {
@@ -13,8 +14,11 @@ import { useConfig } from "#/hooks/query/use-config";
 import { useConversationStore } from "#/stores/conversation-store";
 import { useAgentState } from "#/hooks/use-agent-state";
 import { AgentState } from "#/types/agent-state";
+
 // TODO: Implement V1 feedback functionality when API supports V1 event IDs
 // import { useFeedbackExists } from "#/hooks/query/use-feedback-exists";
+import { PlanPreview } from "../../features/chat/plan-preview";
+
 import {
   ErrorEventMessage,
   UserAssistantEventMessage,
@@ -23,7 +27,6 @@ import {
   ThoughtEventMessage,
 } from "./event-message-components";
 import { createSkillReadyEvent } from "./event-content-helpers/create-skill-ready-event";
-import { PlanPreview } from "../../features/chat/plan-preview";
 import { shouldShowPlanPreview } from "./hooks/use-plan-preview-events";
 
 interface EventMessageProps {
@@ -141,7 +144,6 @@ const renderUserMessageWithSkillReady = (
   }
 };
 
-/* eslint-disable react/jsx-props-no-spreading */
 export function EventMessage({
   event,
   messages,

@@ -1,9 +1,11 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { BrandButton } from "../settings/brand-button";
 import { getProviderName, constructPullRequestUrl } from "#/utils/utils";
 import { Provider } from "#/types/settings";
 import { useMicroagentManagementStore } from "#/stores/microagent-management-store";
+
+import { BrandButton } from "../settings/brand-button";
 
 export function MicroagentManagementReviewPr() {
   const { t } = useTranslation();

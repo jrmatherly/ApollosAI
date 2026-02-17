@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { useGitLabResources } from "#/hooks/query/use-gitlab-resources-list";
 import { useReinstallGitLabWebhook } from "#/hooks/mutation/use-reinstall-gitlab-webhook";
@@ -7,6 +8,7 @@ import { BrandButton } from "#/components/features/settings/brand-button";
 import type { GitLabResource } from "#/api/integration-service/integration-service.types";
 import { cn } from "#/utils/utils";
 import { Typography } from "#/ui/typography";
+
 import { WebhookStatusBadge } from "./webhook-status-badge";
 import { GitLabWebhookManagerState } from "./gitlab-webhook-manager-state";
 

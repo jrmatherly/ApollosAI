@@ -1,14 +1,16 @@
 import React from "react";
 import { usePostHog } from "posthog-js/react";
+
 import { cn } from "#/utils/utils";
 import { transformVSCodeUrl } from "#/utils/vscode-url-helper";
 import ConversationService from "#/api/conversation-service/conversation-service.api";
 import { ConversationStatus } from "#/types/conversation-status";
 import { RepositorySelection } from "#/api/open-hands.types";
+import { useDownloadConversation } from "#/hooks/use-download-conversation";
+
 import { ConversationCardHeader } from "./conversation-card-header";
 import { ConversationCardActions } from "./conversation-card-actions";
 import { ConversationCardFooter } from "./conversation-card-footer";
-import { useDownloadConversation } from "#/hooks/use-download-conversation";
 
 interface ConversationCardProps {
   onClick?: () => void;
@@ -36,7 +38,7 @@ export function ConversationCard({
   title,
   selectedRepository,
   // lastUpdatedAt is kept in props for backward compatibility
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   lastUpdatedAt,
   createdAt,
   conversationId,

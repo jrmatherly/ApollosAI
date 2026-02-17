@@ -1,7 +1,8 @@
-import { ConnectToProviderMessage } from "./connect-to-provider-message";
-import { RepositorySelectionForm } from "./repo-selection-form";
 import { useUserProviders } from "#/hooks/use-user-providers";
 import { GitRepository } from "#/types/git";
+
+import { ConnectToProviderMessage } from "./connect-to-provider-message";
+import { RepositorySelectionForm } from "./repo-selection-form";
 
 interface RepoConnectorProps {
   onRepoSelection: (repo: GitRepository | null) => void;
