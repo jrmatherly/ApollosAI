@@ -28,6 +28,7 @@ pre-commit run --config ./dev_config/python/.pre-commit-config.yaml           # 
 pre-commit run --all-files --show-diff-on-failure --config ./dev_config/python/.pre-commit-config.yaml  # All files (matches CI)
 ```
 - CI runs `pre-commit --all-files` — catches entire repo, not just your changed files. Always run `--all-files` locally before pushing.
+- CI workflows (`py-tests`, `lint`, `ghcr-build`, `check-package-versions`) skip on docs-only changes (`**/*.md`, `docs/**`, `.scratchpad/**`, `.claude/**`, etc.)
 - **ALWAYS run `poetry lock` after ANY `pyproject.toml` change** — including metadata-only edits (name, description, authors, URLs). CI runs `poetry install` which fails if the lock hash is stale.
 - `pyproject-fmt` hook can reformat `pyproject.toml` enough to invalidate `poetry.lock` — run `poetry check --lock` after pre-commit and `poetry lock` if it fails.
 - Verify lock sync on the BRANCH BEING PUSHED, not just main — feature branches can have stale locks even when main is fine
@@ -52,6 +53,9 @@ poetry run pytest tests/unit/test_xxx.py
 
 # Backend - full suite with parallelism
 poetry run pytest --forked -n auto tests/unit/
+
+# ApollosAI enterprise layer
+poetry run pytest tests/unit/apollosai/ -v
 
 # Frontend
 cd frontend && npm run test                    # vitest
@@ -125,7 +129,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Ruff and Mypy exclude `third_party/` and `enterprise/` — enterprise has its own lint config at `enterprise/dev_config/`
 - `AppMode.OSS` is deprecated — use `AppMode.OPENHANDS`
 - Python package is `openhands/` (not `apollos/`) — CI workflows and imports must use `openhands.*` module paths
-- Container builds: `containers/build.sh -i openhands` maps to `./containers/app/` — no other image names have mappings
+- Container builds: `containers/build.sh -i openhands` maps to `./containers/app/`; `-i apollosai` maps to `./containers/apollosai/` (enterprise image)
 
 **Frontend**:
 - `npm run dev:mock` / `npm run dev:mock:saas` — develop with MSW-mocked backend
@@ -178,11 +182,6 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 - `asyncio_mode = "auto"` in `pyproject.toml` for pytest-asyncio
 - Custom pytest marks must be registered in `pytest.ini` under `[pytest] markers =` to avoid `PytestUnknownMarkWarning` in CI
 - Test helper classes starting with `Test` need `__test__ = False` to prevent `PytestCollectionWarning`
-
-**Plans:**
-- `docs/plans/2026-02-16-phase1.5-auth-wiring.md` — Phase 1.5 auth wiring (14 tasks, merged PR #1)
-- `docs/plans/2026-02-17-phase2-implementation.md` — Phase 2 enterprise stores/services/CRUD/RBAC (22 tasks, merged PR #5)
-- `.scratchpad/2026-02-17-phase3-review-fixes.md` — Phase 3A security review fixes (9 tasks, merged PR #7)
 
 ## Known Issues
 

@@ -270,5 +270,8 @@ test-results
 .todos/
 .sidecar/
 
+# Claude Code local settings (user-specific hooks, permissions, env vars)
+.claude/settings.local.json
+
 # git worktrees
 .worktrees/

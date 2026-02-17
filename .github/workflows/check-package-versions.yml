@@ -3,7 +3,23 @@ name: Check Package Versions
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".scratchpad/**"
+      - "LICENSE*"
+      - ".claude/**"
+      - "microagents/**"
+      - ".vscode/**"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".scratchpad/**"
+      - "LICENSE*"
+      - ".claude/**"
+      - "microagents/**"
+      - ".vscode/**"
   workflow_dispatch:
 
 concurrency:

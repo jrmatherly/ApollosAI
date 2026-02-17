@@ -1,8 +1,9 @@
 # NodeJS
 frontend/node_modules
 
-# Configuration (except pyproject.toml)
+# Configuration (except pyproject.toml and alembic.ini)
 *.ini
+!**/alembic.ini
 *.toml
 !pyproject.toml
 *.yml
