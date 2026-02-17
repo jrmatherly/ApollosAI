@@ -123,7 +123,9 @@ async def test_get_instance_invalid_token_raises(monkeypatch, _set_jwt_secret):
 
 
 @pytest.mark.asyncio
-async def test_get_instance_invalid_token_does_not_fallthrough(monkeypatch, _set_jwt_secret):
+async def test_get_instance_invalid_token_does_not_fallthrough(
+    monkeypatch, _set_jwt_secret
+):
     """SECURITY: Even with ALLOW_UNAUTHENTICATED set, an invalid token must fail."""
     from apollosai.server.auth.auth_error import InvalidTokenError
 
@@ -147,7 +149,9 @@ async def test_get_instance_no_credentials_raises(monkeypatch, _set_jwt_secret):
 
 
 @pytest.mark.asyncio
-async def test_allow_unauthenticated_false_string_is_not_truthy(monkeypatch, _set_jwt_secret):
+async def test_allow_unauthenticated_false_string_is_not_truthy(
+    monkeypatch, _set_jwt_secret
+):
     """SECURITY: APOLLOSAI_ALLOW_UNAUTHENTICATED=false must NOT enable bypass."""
     from apollosai.server.auth.auth_error import NoCredentialsError
 

@@ -54,9 +54,7 @@ class TestLoginRoute:
             'auth_uri': 'https://login.microsoftonline.com/test-tenant/oauth2/v2.0/authorize?client_id=test',
             'state': 'test-state-123',
         }
-        with patch(
-            'apollosai.server.routes.auth.get_auth_url', return_value=mock_flow
-        ):
+        with patch('apollosai.server.routes.auth.get_auth_url', return_value=mock_flow):
             response = client.get('/auth/login', follow_redirects=False)
         assert response.status_code == 307
         assert 'login.microsoftonline.com' in response.headers['location']
@@ -77,9 +75,7 @@ class TestCallbackRoute:
             'auth_uri': 'https://login.microsoftonline.com/test',
             'state': 'expected-state',
         }
-        with patch(
-            'apollosai.server.routes.auth.get_auth_url', return_value=mock_flow
-        ):
+        with patch('apollosai.server.routes.auth.get_auth_url', return_value=mock_flow):
             # First, hit login to store the flow in session
             client.get('/auth/login', follow_redirects=False)
 
@@ -104,9 +100,7 @@ class TestCallbackRoute:
             },
         }
 
-        with patch(
-            'apollosai.server.routes.auth.get_auth_url', return_value=mock_flow
-        ):
+        with patch('apollosai.server.routes.auth.get_auth_url', return_value=mock_flow):
             client.get('/auth/login', follow_redirects=False)
 
         with patch(
@@ -135,9 +129,7 @@ class TestCallbackRoute:
             'error_description': 'The authorization code has expired.',
         }
 
-        with patch(
-            'apollosai.server.routes.auth.get_auth_url', return_value=mock_flow
-        ):
+        with patch('apollosai.server.routes.auth.get_auth_url', return_value=mock_flow):
             client.get('/auth/login', follow_redirects=False)
 
         with patch(

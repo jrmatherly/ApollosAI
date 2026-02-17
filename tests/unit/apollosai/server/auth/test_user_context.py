@@ -161,7 +161,6 @@ async def test_user_context_get_authenticated_git_url():
 async def test_user_context_get_latest_token():
     """get_latest_token returns None (Phase 2 TODO)."""
     from apollosai.server.auth.entraid_auth import EntraIDUserAuth
-
     from openhands.integrations.provider import ProviderType
 
     auth = EntraIDUserAuth(user_id='user-1', email='test@example.com')

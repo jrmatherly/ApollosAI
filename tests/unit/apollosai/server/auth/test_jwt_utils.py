@@ -1,8 +1,7 @@
+import jwt as pyjwt
 import pytest
 
 from apollosai.server.auth.jwt_utils import create_session_token, decode_session_token
-
-import jwt as pyjwt
 
 
 @pytest.fixture(autouse=True)
@@ -57,7 +56,9 @@ def test_decode_invalid_raises():
 def test_decode_wrong_secret(monkeypatch):
     # Create token with current secret
     token = create_session_token(
-        user_id='abc-123', email='test@example.com', entra_oid='oid-456',
+        user_id='abc-123',
+        email='test@example.com',
+        entra_oid='oid-456',
     )
     # Change secret — decode must reject
     monkeypatch.setenv('JWT_SECRET', 'different-secret-should-fail-validation!')
@@ -68,8 +69,11 @@ def test_decode_wrong_secret(monkeypatch):
 def test_decode_validates_audience():
     """Tokens without correct audience must be rejected."""
     import jwt
+
     secret = 'test-jwt-secret-must-be-long-enough-32!'
-    bad_token = jwt.encode({'sub': 'x', 'aud': 'other-service'}, secret, algorithm='HS256')
+    bad_token = jwt.encode(
+        {'sub': 'x', 'aud': 'other-service'}, secret, algorithm='HS256'
+    )
     with pytest.raises(pyjwt.InvalidAudienceError):
         decode_session_token(bad_token)
 
@@ -84,7 +88,9 @@ def test_jwt_secret_too_short_raises(monkeypatch):
 def test_decode_returns_required_claims():
     """Decoded payload must contain sub, email, entra_oid."""
     token = create_session_token(
-        user_id='abc-123', email='test@example.com', entra_oid='oid-456',
+        user_id='abc-123',
+        email='test@example.com',
+        entra_oid='oid-456',
     )
     payload = decode_session_token(token)
     assert isinstance(payload['sub'], str)

@@ -122,4 +122,6 @@ def test_constants_are_not_module_level():
 
     assert not hasattr(c, 'ENTRA_TENANT_ID'), 'Should be getter function, not constant'
     assert not hasattr(c, 'ENTRA_CLIENT_ID'), 'Should be getter function, not constant'
-    assert not hasattr(c, 'ENTRA_REDIRECT_URI'), 'Should be getter function, not constant'
+    assert not hasattr(c, 'ENTRA_REDIRECT_URI'), (
+        'Should be getter function, not constant'
+    )
