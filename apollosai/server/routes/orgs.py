@@ -34,6 +34,11 @@ from apollosai.storage.models.user import User
 
 router = APIRouter()
 
+# Pre-computed role dependencies (B008: avoid function calls in argument defaults)
+_require_admin = require_role('admin')
+_require_owner = require_role('owner')
+_require_member = require_role('member')
+
 
 @router.post('/api/orgs')
 async def create_org(
@@ -55,7 +60,9 @@ async def create_org(
         await session.flush()
 
     membership = OrgMembership(
-        org_id=org.id, user_id=user.user_id, role_id=owner_role.id,
+        org_id=org.id,
+        user_id=user.user_id,
+        role_id=owner_role.id,
     )
     session.add(membership)
     await session.commit()
@@ -82,13 +89,15 @@ async def list_orgs(
 async def update_org(
     org_id: uuid.UUID,
     body: UpdateOrgRequest,
-    user: AuthedUser = Depends(require_role('admin')),
+    user: AuthedUser = Depends(_require_admin),
     session: AsyncSession = Depends(get_db_session),
 ):
     """Update an organization. Requires admin role."""
     org = await session.get(Organization, org_id)
     if org is None:
-        return JSONResponse(status_code=404, content={'error': 'Organization not found'})
+        return JSONResponse(
+            status_code=404, content={'error': 'Organization not found'}
+        )
     if body.name is not None:
         org.name = body.name
     await session.commit()
@@ -98,13 +107,15 @@ async def update_org(
 @router.delete('/api/orgs/{org_id}')
 async def delete_org(
     org_id: uuid.UUID,
-    user: AuthedUser = Depends(require_role('owner')),
+    user: AuthedUser = Depends(_require_owner),
     session: AsyncSession = Depends(get_db_session),
 ):
     """Delete (soft-delete) an organization. Requires owner role."""
     org = await session.get(Organization, org_id)
     if org is None:
-        return JSONResponse(status_code=404, content={'error': 'Organization not found'})
+        return JSONResponse(
+            status_code=404, content={'error': 'Organization not found'}
+        )
 
     # Deactivate all memberships
     stmt = select(OrgMembership).where(OrgMembership.org_id == org_id)
@@ -128,7 +139,7 @@ async def delete_org(
 async def add_member(
     org_id: uuid.UUID,
     body: AddMemberRequest,
-    user: AuthedUser = Depends(require_role('admin')),
+    user: AuthedUser = Depends(_require_admin),
     session: AsyncSession = Depends(get_db_session),
 ):
     """Add a member to an organization. Requires admin role."""
@@ -152,25 +163,32 @@ async def add_member(
     role_result = await session.execute(role_stmt)
     role = role_result.scalar_one_or_none()
     if role is None:
-        role = Role(name=body.role, rank={'owner': 0, 'admin': 1, 'manager': 2, 'member': 3}[body.role])
+        role = Role(
+            name=body.role,
+            rank={'owner': 0, 'admin': 1, 'manager': 2, 'member': 3}[body.role],
+        )
         session.add(role)
         await session.flush()
 
     membership = OrgMembership(
-        org_id=org_id, user_id=body.user_id, role_id=role.id,
+        org_id=org_id,
+        user_id=body.user_id,
+        role_id=role.id,
     )
     session.add(membership)
     await session.commit()
     return OrgMemberResponse(
-        user_id=body.user_id, email=target_user.email,
-        role_name=role.name, role_rank=role.rank,
+        user_id=body.user_id,
+        email=target_user.email,
+        role_name=role.name,
+        role_rank=role.rank,
     )
 
 
 @router.get('/api/orgs/{org_id}/members')
 async def list_members(
     org_id: uuid.UUID,
-    user: AuthedUser = Depends(require_role('member')),
+    user: AuthedUser = Depends(_require_member),
     session: AsyncSession = Depends(get_db_session),
 ):
     """List members of an organization."""
@@ -184,8 +202,10 @@ async def list_members(
     rows = result.all()
     return [
         OrgMemberResponse(
-            user_id=m.user_id, email=u.email,
-            role_name=r.name, role_rank=r.rank,
+            user_id=m.user_id,
+            email=u.email,
+            role_name=r.name,
+            role_rank=r.rank,
         )
         for m, r, u in rows
     ]
@@ -195,7 +215,7 @@ async def list_members(
 async def remove_member(
     org_id: uuid.UUID,
     member_id: uuid.UUID,
-    user: AuthedUser = Depends(require_role('admin')),
+    user: AuthedUser = Depends(_require_admin),
     session: AsyncSession = Depends(get_db_session),
 ):
     """Remove a member from an organization. Cannot remove last owner."""
@@ -220,7 +240,9 @@ async def remove_member(
         owner_result = await session.execute(owner_count_stmt)
         owners = owner_result.scalars().all()
         if len(owners) <= 1:
-            raise PermissionDeniedError('Cannot remove the last owner from an organization')
+            raise PermissionDeniedError(
+                'Cannot remove the last owner from an organization'
+            )
 
     await session.delete(membership)
     await session.commit()

@@ -111,6 +111,7 @@ def test_create_session_token_includes_jti():
     assert 'jti' in payload
     # Validate it looks like a UUID
     import uuid
+
     uuid.UUID(payload['jti'])  # Raises ValueError if not a valid UUID
 
 
@@ -129,7 +130,9 @@ async def test_validate_session_token_accepts_valid(async_session):
     from apollosai.server.auth.jwt_utils import validate_session_token
 
     token = create_session_token(
-        user_id='abc-123', email='test@example.com', entra_oid='oid-456',
+        user_id='abc-123',
+        email='test@example.com',
+        entra_oid='oid-456',
     )
     payload = await validate_session_token(token, async_session)
     assert payload['sub'] == 'abc-123'
@@ -144,7 +147,9 @@ async def test_revoked_token_rejected_at_validation(async_session):
 
     token = create_session_token(user_id='u1', email='e@e.com', entra_oid='o1')
     payload = decode_session_token(token)
-    expires_at = datetime.datetime.fromtimestamp(payload['exp'], tz=datetime.timezone.utc)
+    expires_at = datetime.datetime.fromtimestamp(
+        payload['exp'], tz=datetime.timezone.utc
+    )
     await revoke_token(async_session, payload['jti'], expires_at)
 
     with pytest.raises(pyjwt.InvalidTokenError, match='revoked'):
@@ -154,12 +159,13 @@ async def test_revoked_token_rejected_at_validation(async_session):
 @pytest.mark.asyncio
 async def test_token_without_jti_still_works(async_session):
     """Backward compat: existing tokens without jti should NOT break."""
+    # Manually create a token without jti (simulates pre-Phase 2 tokens)
+    import time
+
     import jwt
 
     from apollosai.server.auth.jwt_utils import validate_session_token
 
-    # Manually create a token without jti (simulates pre-Phase 2 tokens)
-    import time
     secret = 'test-jwt-secret-must-be-long-enough-32!'
     now = time.time()
     old_token = jwt.encode(

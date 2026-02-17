@@ -37,7 +37,14 @@ async def _seed_admin(session, org_id):
     role = Role(name='admin', rank=1)
     session.add(role)
     await session.flush()
-    session.add(User(id=user_id, entra_oid=f'oid-{uuid.uuid4().hex[:6]}', email='admin@t.com', current_org_id=org_id))
+    session.add(
+        User(
+            id=user_id,
+            entra_oid=f'oid-{uuid.uuid4().hex[:6]}',
+            email='admin@t.com',
+            current_org_id=org_id,
+        )
+    )
     session.add(OrgMembership(org_id=org_id, user_id=user_id, role_id=role.id))
     await session.commit()
     return user_id
@@ -53,6 +60,7 @@ async def _seed_member(session, org_id):
     user_id = uuid.uuid4()
     # Org may already exist
     from sqlalchemy import select
+
     existing = await session.get(Organization, org_id)
     if existing is None:
         session.add(Organization(id=org_id, name=f'org-{uuid.uuid4().hex[:6]}'))
@@ -64,7 +72,14 @@ async def _seed_member(session, org_id):
         session.add(role)
         await session.flush()
 
-    session.add(User(id=user_id, entra_oid=f'oid-{uuid.uuid4().hex[:6]}', email='member@t.com', current_org_id=org_id))
+    session.add(
+        User(
+            id=user_id,
+            entra_oid=f'oid-{uuid.uuid4().hex[:6]}',
+            email='member@t.com',
+            current_org_id=org_id,
+        )
+    )
     session.add(OrgMembership(org_id=org_id, user_id=user_id, role_id=role.id))
     await session.commit()
     return user_id
@@ -99,13 +114,17 @@ async def test_create_team_as_admin_succeeds(async_session, monkeypatch):
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}),
+        type(
+            'F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}
+        ),
     )
 
     app = _make_app(async_session)
     client = TestClient(app)
 
-    resp = client.post('/api/teams', json={'name': 'Engineering', 'org_id': str(org_id)})
+    resp = client.post(
+        '/api/teams', json={'name': 'Engineering', 'org_id': str(org_id)}
+    )
     assert resp.status_code == 200
     data = resp.json()
     assert data['name'] == 'Engineering'
@@ -119,7 +138,9 @@ async def test_create_team_as_member_returns_403(async_session, monkeypatch):
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}),
+        type(
+            'F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}
+        ),
     )
 
     app = _make_app(async_session)
@@ -143,7 +164,9 @@ async def test_list_teams_returns_org_teams(async_session, monkeypatch):
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}),
+        type(
+            'F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}
+        ),
     )
 
     app = _make_app(async_session)
@@ -171,6 +194,7 @@ async def test_delete_team_removes_memberships(async_session, monkeypatch):
 
     # Get the admin role that was just created
     from sqlalchemy import select
+
     role_result = await async_session.execute(select(Role).where(Role.name == 'admin'))
     role = role_result.scalar_one()
 
@@ -184,7 +208,9 @@ async def test_delete_team_removes_memberships(async_session, monkeypatch):
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}),
+        type(
+            'F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}
+        ),
     )
 
     app = _make_app(async_session)
@@ -218,7 +244,9 @@ async def test_add_team_member_as_manager_succeeds(async_session, monkeypatch):
     role = Role(name='manager', rank=2)
     async_session.add(role)
     await async_session.flush()
-    async_session.add(User(id=manager_id, entra_oid='mgr', email='mgr@t.com', current_org_id=org_id))
+    async_session.add(
+        User(id=manager_id, entra_oid='mgr', email='mgr@t.com', current_org_id=org_id)
+    )
     async_session.add(User(id=target_id, entra_oid='tgt', email='tgt@t.com'))
     async_session.add(OrgMembership(org_id=org_id, user_id=manager_id, role_id=role.id))
     async_session.add(Team(id=team_id, org_id=org_id, name='DevTeam'))
@@ -226,7 +254,11 @@ async def test_add_team_member_as_manager_succeeds(async_session, monkeypatch):
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(manager_id)))}),
+        type(
+            'F',
+            (),
+            {'get_instance': AsyncMock(return_value=_FakeAuth(str(manager_id)))},
+        ),
     )
 
     app = _make_app(async_session)
@@ -249,7 +281,9 @@ async def test_team_name_validation_rejects_special_chars(async_session, monkeyp
 
     monkeypatch.setattr(
         'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
-        type('F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}),
+        type(
+            'F', (), {'get_instance': AsyncMock(return_value=_FakeAuth(str(user_id)))}
+        ),
     )
 
     app = _make_app(async_session)

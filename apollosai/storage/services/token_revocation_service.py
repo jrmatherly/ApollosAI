@@ -12,7 +12,9 @@ from apollosai.storage.models.revoked_token import RevokedToken
 
 
 async def revoke_token(
-    session: AsyncSession, jti: str, expires_at: datetime.datetime,
+    session: AsyncSession,
+    jti: str,
+    expires_at: datetime.datetime,
 ) -> None:
     """Insert a revocation record. Idempotent — duplicate jti is ignored."""
     existing = await session.get(RevokedToken, jti)

@@ -54,9 +54,7 @@ async def create_api_key(
     return raw_key, record
 
 
-async def verify_api_key(
-    session: AsyncSession, raw_key: str
-) -> ApiKey | None:
+async def verify_api_key(session: AsyncSession, raw_key: str) -> ApiKey | None:
     """Verify an API key by HMAC. Returns ApiKey record or None.
 
     Review fix [C3]: Uses hmac.compare_digest() for timing-safe comparison.
@@ -66,7 +64,7 @@ async def verify_api_key(
         return None
 
     # Extract prefix: sk-aai- + first 8 chars of the token part
-    token_part = raw_key[len('sk-aai-'):]
+    token_part = raw_key[len('sk-aai-') :]
     prefix = f'sk-aai-{token_part[:_PREFIX_LEN]}'
 
     stmt = select(ApiKey).where(ApiKey.prefix == prefix, ApiKey.is_active.is_(True))
@@ -111,6 +109,6 @@ async def revoke_api_key(
     if record is None:
         raise ValueError(f'API key {key_id} not found')
     if record.user_id != user_id:
-        raise PermissionError('Cannot revoke another user\'s API key')
+        raise PermissionError("Cannot revoke another user's API key")
     record.is_active = False
     await session.commit()

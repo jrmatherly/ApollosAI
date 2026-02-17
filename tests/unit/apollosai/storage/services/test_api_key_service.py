@@ -13,12 +13,18 @@ import pytest
 @pytest.mark.asyncio
 async def test_create_and_verify_roundtrip(async_session):
     """Create key then verify it should succeed."""
-    from apollosai.storage.services.api_key_service import create_api_key, verify_api_key
+    from apollosai.storage.services.api_key_service import (
+        create_api_key,
+        verify_api_key,
+    )
 
     user_id = uuid.uuid4()
     org_id = uuid.uuid4()
     raw_key, record = await create_api_key(
-        async_session, user_id=user_id, org_id=org_id, name='test-key',
+        async_session,
+        user_id=user_id,
+        org_id=org_id,
+        name='test-key',
     )
     assert raw_key.startswith('sk-aai-')
     result = await verify_api_key(async_session, raw_key)
@@ -38,7 +44,10 @@ async def test_revoked_key_verify_returns_none(async_session):
     user_id = uuid.uuid4()
     org_id = uuid.uuid4()
     raw_key, record = await create_api_key(
-        async_session, user_id=user_id, org_id=org_id, name='revokable',
+        async_session,
+        user_id=user_id,
+        org_id=org_id,
+        name='revokable',
     )
     await revoke_api_key(async_session, record.id, user_id=user_id)
     result = await verify_api_key(async_session, raw_key)
@@ -61,8 +70,12 @@ async def test_two_keys_same_user_have_different_salts(async_session):
 
     user_id = uuid.uuid4()
     org_id = uuid.uuid4()
-    _, k1 = await create_api_key(async_session, user_id=user_id, org_id=org_id, name='k1')
-    _, k2 = await create_api_key(async_session, user_id=user_id, org_id=org_id, name='k2')
+    _, k1 = await create_api_key(
+        async_session, user_id=user_id, org_id=org_id, name='k1'
+    )
+    _, k2 = await create_api_key(
+        async_session, user_id=user_id, org_id=org_id, name='k2'
+    )
     assert k1.salt != k2.salt
 
 
@@ -93,13 +106,19 @@ async def test_list_api_keys_returns_prefix_and_name(async_session):
 @pytest.mark.asyncio
 async def test_revoke_wrong_user_raises(async_session):
     """Cannot revoke another user's key."""
-    from apollosai.storage.services.api_key_service import create_api_key, revoke_api_key
+    from apollosai.storage.services.api_key_service import (
+        create_api_key,
+        revoke_api_key,
+    )
 
     user_id = uuid.uuid4()
     other_user = uuid.uuid4()
     org_id = uuid.uuid4()
     _, record = await create_api_key(
-        async_session, user_id=user_id, org_id=org_id, name='protected',
+        async_session,
+        user_id=user_id,
+        org_id=org_id,
+        name='protected',
     )
     with pytest.raises(PermissionError):
         await revoke_api_key(async_session, record.id, user_id=other_user)
@@ -118,7 +137,10 @@ async def test_list_excludes_revoked_keys(async_session):
     org_id = uuid.uuid4()
     await create_api_key(async_session, user_id=user_id, org_id=org_id, name='active')
     _, revokable = await create_api_key(
-        async_session, user_id=user_id, org_id=org_id, name='revokable',
+        async_session,
+        user_id=user_id,
+        org_id=org_id,
+        name='revokable',
     )
     await revoke_api_key(async_session, revokable.id, user_id=user_id)
     keys = await list_api_keys(async_session, user_id=user_id, org_id=org_id)

@@ -1,8 +1,5 @@
 """Tests for DB-backed server-side session middleware."""
 
-import json
-
-import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 

@@ -55,7 +55,9 @@ class ApollosAIConversationStore(ConversationStore):
                 conv = Conversation(
                     id=metadata.conversation_id,
                     user_id=uuid_mod.UUID(self.user_id),
-                    org_id=uuid_mod.UUID(self.user_id),  # Placeholder: uses user_id as org_id
+                    org_id=uuid_mod.UUID(
+                        self.user_id
+                    ),  # Placeholder: uses user_id as org_id
                     title=metadata.title,
                     metadata_json={
                         'selected_repository': metadata.selected_repository,
@@ -181,19 +183,23 @@ class ApollosAIConversationStore(ConversationStore):
             results = []
             for conv in rows:
                 meta_json = conv.metadata_json or {}
-                results.append(ConversationMetadata(
-                    conversation_id=conv.id,
-                    title=conv.title,
-                    user_id=str(conv.user_id),
-                    selected_repository=meta_json.get('selected_repository'),
-                    selected_branch=meta_json.get('selected_branch'),
-                    llm_model=meta_json.get('llm_model'),
-                    created_at=conv.created_at,
-                    last_updated_at=conv.updated_at,
-                ))
+                results.append(
+                    ConversationMetadata(
+                        conversation_id=conv.id,
+                        title=conv.title,
+                        user_id=str(conv.user_id),
+                        selected_repository=meta_json.get('selected_repository'),
+                        selected_branch=meta_json.get('selected_branch'),
+                        llm_model=meta_json.get('llm_model'),
+                        created_at=conv.created_at,
+                        last_updated_at=conv.updated_at,
+                    )
+                )
 
             next_page = rows[-1].id if has_next else None
-            return ConversationMetadataResultSet(results=results, next_page_id=next_page)
+            return ConversationMetadataResultSet(
+                results=results, next_page_id=next_page
+            )
 
     @classmethod
     async def get_instance(

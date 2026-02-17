@@ -1,7 +1,5 @@
 """Tests for Phase 2 models."""
 
-import pytest
-
 
 class TestEncryptedSecret:
     """Test encrypted_secret model."""
@@ -36,7 +34,9 @@ class TestEncryptedSecret:
         from apollosai.storage.models.encrypted_secret import EncryptedSecret
 
         constraints = EncryptedSecret.__table__.constraints
-        unique_constraints = [c for c in constraints if hasattr(c, 'columns') and len(c.columns) > 1]
+        unique_constraints = [
+            c for c in constraints if hasattr(c, 'columns') and len(c.columns) > 1
+        ]
         assert len(unique_constraints) > 0
 
 
@@ -74,8 +74,7 @@ class TestServerSession:
         from apollosai.storage.models.server_session import ServerSession
 
         assert any(
-            'expires_at' in str(idx.columns)
-            for idx in ServerSession.__table__.indexes
+            'expires_at' in str(idx.columns) for idx in ServerSession.__table__.indexes
         )
 
 

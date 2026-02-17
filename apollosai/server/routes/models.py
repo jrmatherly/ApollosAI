@@ -7,8 +7,8 @@ import uuid
 
 from pydantic import BaseModel, Field
 
-
 # --- Organization ---
+
 
 class CreateOrgRequest(BaseModel):
     """Request body for creating an organization."""
@@ -19,7 +19,9 @@ class CreateOrgRequest(BaseModel):
 class UpdateOrgRequest(BaseModel):
     """Request body for updating an organization."""
 
-    name: str | None = Field(default=None, min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9\s\-_]+$')
+    name: str | None = Field(
+        default=None, min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9\s\-_]+$'
+    )
 
 
 class OrgResponse(BaseModel):
@@ -37,6 +39,7 @@ class OrgDetailResponse(OrgResponse):
 
 
 # --- Organization Members ---
+
 
 class AddMemberRequest(BaseModel):
     """Request body for adding a member to an org."""
@@ -56,6 +59,7 @@ class OrgMemberResponse(BaseModel):
 
 # --- Team ---
 
+
 class CreateTeamRequest(BaseModel):
     """Request body for creating a team."""
 
@@ -66,7 +70,9 @@ class CreateTeamRequest(BaseModel):
 class UpdateTeamRequest(BaseModel):
     """Request body for updating a team."""
 
-    name: str | None = Field(default=None, min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9\s\-_]+$')
+    name: str | None = Field(
+        default=None, min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9\s\-_]+$'
+    )
 
 
 class TeamResponse(BaseModel):

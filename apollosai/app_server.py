@@ -62,7 +62,9 @@ import warnings as _warnings  # noqa: E402
 
 from starlette.middleware.sessions import SessionMiddleware  # noqa: E402
 
-from apollosai.server.middleware.db_session_middleware import DBSessionMiddleware  # noqa: E402
+from apollosai.server.middleware.db_session_middleware import (  # noqa: E402
+    DBSessionMiddleware,
+)
 
 _session_secret = os.environ.get('SESSION_SECRET', '')
 if not _session_secret:
@@ -77,15 +79,18 @@ if not _session_secret:
 # Cookie-based session for auth flow state (request.session)
 base_app.add_middleware(SessionMiddleware, secret_key=_session_secret)
 
+
 # DB-backed session middleware for persistent server-side session data
 def _get_db_session():
     """Session factory for DB session middleware — uses the app's session maker."""
     from apollosai.server.deps import get_session_maker
+
     maker = get_session_maker()
     if maker is None:
         # During startup, DB may not be ready yet — return a no-op
         return None
     return maker()
+
 
 base_app.add_middleware(
     DBSessionMiddleware,

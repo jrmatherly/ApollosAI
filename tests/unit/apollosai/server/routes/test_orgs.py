@@ -28,7 +28,7 @@ class _FakeAuth:
 
 def _make_app(async_session, user_id):
     """Create a FastAPI app with test overrides for auth and DB."""
-    from apollosai.server.auth.rbac import AuthedUser, require_auth, require_role
+    from apollosai.server.auth.rbac import AuthedUser, require_auth
     from apollosai.server.deps import get_db_session
 
     app = FastAPI()
@@ -39,7 +39,10 @@ def _make_app(async_session, user_id):
 
     authed_user = AuthedUser(
         user_id=uuid.UUID(user_id) if isinstance(user_id, str) else user_id,
-        email='test@example.com', org_id=None, role_name=None, role_rank=None,
+        email='test@example.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
 
     # Override both require_auth and require_role to bypass real auth
@@ -54,7 +57,7 @@ def _make_app(async_session, user_id):
 
 def _make_app_with_role(async_session, user_id, org_id, role_name, role_rank):
     """Create app with role-based auth override for RBAC-protected endpoints."""
-    from apollosai.server.auth.rbac import AuthedUser, require_auth, require_role
+    from apollosai.server.auth.rbac import AuthedUser, require_auth
     from apollosai.server.deps import get_db_session
 
     app = FastAPI()
@@ -65,7 +68,10 @@ def _make_app_with_role(async_session, user_id, org_id, role_name, role_rank):
 
     authed_user = AuthedUser(
         user_id=uuid.UUID(user_id) if isinstance(user_id, str) else user_id,
-        email='test@example.com', org_id=org_id, role_name=role_name, role_rank=role_rank,
+        email='test@example.com',
+        org_id=org_id,
+        role_name=role_name,
+        role_rank=role_rank,
     )
 
     async def _override_auth():
@@ -75,6 +81,7 @@ def _make_app_with_role(async_session, user_id, org_id, role_name, role_rank):
     def _override_role_factory(min_role):
         async def _check(org_id=None, user=None, session=None):
             from apollosai.server.auth.rbac import PermissionDeniedError
+
             ROLE_RANKS = {'owner': 0, 'admin': 1, 'manager': 2, 'member': 3}
             min_rank = ROLE_RANKS.get(min_role, 3)
             if authed_user.role_rank is not None and authed_user.role_rank > min_rank:
@@ -84,6 +91,7 @@ def _make_app_with_role(async_session, user_id, org_id, role_name, role_rank):
                 )
             authed_user.org_id = org_id
             return authed_user
+
         return _check
 
     app.dependency_overrides[get_db_session] = _override_session
@@ -107,9 +115,14 @@ async def test_create_org_sets_creator_as_owner(async_session, monkeypatch):
 
     # Need to also create the user in DB for membership FK
     from apollosai.storage.models.user import User
-    async_session.add(User(
-        id=user_id, entra_oid='oid-test', email='test@example.com',
-    ))
+
+    async_session.add(
+        User(
+            id=user_id,
+            entra_oid='oid-test',
+            email='test@example.com',
+        )
+    )
     await async_session.commit()
 
     app, _ = _make_app(async_session, user_id)
@@ -122,8 +135,10 @@ async def test_create_org_sets_creator_as_owner(async_session, monkeypatch):
 
     # Verify creator is owner
     from sqlalchemy import select
+
     from apollosai.storage.models.org_membership import OrgMembership
     from apollosai.storage.models.role import Role
+
     stmt = (
         select(OrgMembership, Role)
         .join(Role, OrgMembership.role_id == Role.id)
@@ -156,7 +171,9 @@ async def test_list_orgs_returns_user_orgs(async_session, monkeypatch):
     role = Role(name='member', rank=3)
     async_session.add(role)
     await async_session.flush()
-    async_session.add(User(id=user_id, entra_oid='oid', email='t@t.com', current_org_id=org_id))
+    async_session.add(
+        User(id=user_id, entra_oid='oid', email='t@t.com', current_org_id=org_id)
+    )
     async_session.add(OrgMembership(org_id=org_id, user_id=user_id, role_id=role.id))
     await async_session.commit()
 
@@ -225,7 +242,9 @@ async def test_delete_org_removes_memberships(async_session, monkeypatch):
     role = Role(name='owner', rank=0)
     async_session.add(role)
     await async_session.flush()
-    async_session.add(User(id=user_id, entra_oid='oid', email='t@t.com', current_org_id=org_id))
+    async_session.add(
+        User(id=user_id, entra_oid='oid', email='t@t.com', current_org_id=org_id)
+    )
     async_session.add(OrgMembership(org_id=org_id, user_id=user_id, role_id=role.id))
     await async_session.commit()
 
@@ -235,13 +254,18 @@ async def test_delete_org_removes_memberships(async_session, monkeypatch):
 
     app = FastAPI()
     from apollosai.server.routes.orgs import router as orgs_router
+
     app.include_router(orgs_router)
 
     async def _override_session():
         yield async_session
 
     authed = AuthedUser(
-        user_id=user_id, email='t@t.com', org_id=org_id, role_name='owner', role_rank=0,
+        user_id=user_id,
+        email='t@t.com',
+        org_id=org_id,
+        role_name='owner',
+        role_rank=0,
     )
     _owner_check = require_role('owner')
 
@@ -283,9 +307,18 @@ async def test_add_member_creates_org_membership(async_session, monkeypatch):
     admin_role = Role(name='admin', rank=1)
     async_session.add(admin_role)
     await async_session.flush()
-    async_session.add(User(id=admin_id, entra_oid='admin-oid', email='admin@t.com', current_org_id=org_id))
+    async_session.add(
+        User(
+            id=admin_id,
+            entra_oid='admin-oid',
+            email='admin@t.com',
+            current_org_id=org_id,
+        )
+    )
     async_session.add(User(id=target_id, entra_oid='target-oid', email='target@t.com'))
-    async_session.add(OrgMembership(org_id=org_id, user_id=admin_id, role_id=admin_role.id))
+    async_session.add(
+        OrgMembership(org_id=org_id, user_id=admin_id, role_id=admin_role.id)
+    )
     await async_session.commit()
 
     # Override require_role('admin') for this route
@@ -294,13 +327,18 @@ async def test_add_member_creates_org_membership(async_session, monkeypatch):
 
     app = FastAPI()
     from apollosai.server.routes.orgs import router as orgs_router
+
     app.include_router(orgs_router)
 
     async def _override_session():
         yield async_session
 
     authed = AuthedUser(
-        user_id=admin_id, email='admin@t.com', org_id=org_id, role_name='admin', role_rank=1,
+        user_id=admin_id,
+        email='admin@t.com',
+        org_id=org_id,
+        role_name='admin',
+        role_rank=1,
     )
     _admin_check = require_role('admin')
 

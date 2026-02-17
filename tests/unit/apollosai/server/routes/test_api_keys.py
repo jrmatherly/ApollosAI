@@ -32,6 +32,7 @@ def _make_app(async_session):
         yield async_session
 
     from apollosai.server.deps import get_db_session
+
     app.dependency_overrides[get_db_session] = _override_session
 
     return app
@@ -46,7 +47,8 @@ async def test_create_key_returns_plaintext(async_session, monkeypatch):
     # Monkeypatch at the source module (lazy import target)
     fake_cls = type('FakeAuth', (), {'get_instance': AsyncMock(return_value=fake_auth)})
     monkeypatch.setattr(
-        'apollosai.server.auth.entraid_auth.EntraIDUserAuth', fake_cls,
+        'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
+        fake_cls,
     )
 
     app = _make_app(async_session)
@@ -68,7 +70,8 @@ async def test_list_keys_returns_metadata_only(async_session, monkeypatch):
     fake_auth = _FakeAuth(user_id=str(user_id))
     fake_cls = type('FakeAuth', (), {'get_instance': AsyncMock(return_value=fake_auth)})
     monkeypatch.setattr(
-        'apollosai.server.auth.entraid_auth.EntraIDUserAuth', fake_cls,
+        'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
+        fake_cls,
     )
 
     app = _make_app(async_session)
@@ -76,6 +79,7 @@ async def test_list_keys_returns_metadata_only(async_session, monkeypatch):
 
     # Create a key first via the service directly
     from apollosai.storage.services.api_key_service import create_api_key
+
     await create_api_key(async_session, user_id=user_id, org_id=org_id, name='my-key')
 
     resp = client.get(f'/api/keys?org_id={org_id}')
@@ -95,15 +99,23 @@ async def test_delete_key_revokes(async_session, monkeypatch):
     fake_auth = _FakeAuth(user_id=str(user_id))
     fake_cls = type('FakeAuth', (), {'get_instance': AsyncMock(return_value=fake_auth)})
     monkeypatch.setattr(
-        'apollosai.server.auth.entraid_auth.EntraIDUserAuth', fake_cls,
+        'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
+        fake_cls,
     )
 
     app = _make_app(async_session)
     client = TestClient(app)
 
-    from apollosai.storage.services.api_key_service import create_api_key, verify_api_key
+    from apollosai.storage.services.api_key_service import (
+        create_api_key,
+        verify_api_key,
+    )
+
     raw_key, record = await create_api_key(
-        async_session, user_id=user_id, org_id=org_id, name='del-key',
+        async_session,
+        user_id=user_id,
+        org_id=org_id,
+        name='del-key',
     )
 
     resp = client.delete(f'/api/keys/{record.id}')
@@ -121,7 +133,8 @@ async def test_unauthenticated_returns_401(async_session, monkeypatch):
     fake_auth = _FakeAuth(user_id=None)
     fake_cls = type('FakeAuth', (), {'get_instance': AsyncMock(return_value=fake_auth)})
     monkeypatch.setattr(
-        'apollosai.server.auth.entraid_auth.EntraIDUserAuth', fake_cls,
+        'apollosai.server.auth.entraid_auth.EntraIDUserAuth',
+        fake_cls,
     )
 
     app = _make_app(async_session)

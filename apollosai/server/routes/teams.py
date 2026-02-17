@@ -36,11 +36,17 @@ from apollosai.storage.models.user import User
 
 router = APIRouter()
 
+# Pre-computed role dependency (B008: avoid function calls in argument defaults)
+_require_member = require_role('member')
+
 ROLE_RANKS = {'owner': 0, 'admin': 1, 'manager': 2, 'member': 3}
 
 
 async def _check_org_role(
-    session: AsyncSession, user_id: uuid.UUID, org_id: uuid.UUID, min_role: str,
+    session: AsyncSession,
+    user_id: uuid.UUID,
+    org_id: uuid.UUID,
+    min_role: str,
 ) -> None:
     """Check user has minimum role in org. Raises PermissionDeniedError."""
     min_rank = ROLE_RANKS.get(min_role, 3)
@@ -78,7 +84,7 @@ async def create_team(
 @router.get('/api/orgs/{org_id}/teams')
 async def list_teams(
     org_id: uuid.UUID,
-    user: AuthedUser = Depends(require_role('member')),
+    user: AuthedUser = Depends(_require_member),
     session: AsyncSession = Depends(get_db_session),
 ):
     """List teams in an organization."""
@@ -160,7 +166,9 @@ async def add_team_member(
         )
     )
     if existing.scalar_one_or_none() is not None:
-        return JSONResponse(status_code=409, content={'error': 'User already a team member'})
+        return JSONResponse(
+            status_code=409, content={'error': 'User already a team member'}
+        )
 
     # Get role
     role_stmt = select(Role).where(Role.name == body.role)
@@ -172,7 +180,9 @@ async def add_team_member(
         await session.flush()
 
     membership = TeamMembership(
-        team_id=team_id, user_id=body.user_id, role_id=role.id,
+        team_id=team_id,
+        user_id=body.user_id,
+        role_id=role.id,
     )
     session.add(membership)
     await session.commit()

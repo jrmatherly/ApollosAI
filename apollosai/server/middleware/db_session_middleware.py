@@ -106,7 +106,9 @@ class DBSessionMiddleware:
                 current_data = dict(session_data)
                 if is_new_session or current_data != initial_data:
                     await self._save_session(
-                        db_session, session_id, current_data,
+                        db_session,
+                        session_id,
+                        current_data,
                     )
 
                     headers = MutableHeaders(scope=message)
@@ -126,7 +128,10 @@ class DBSessionMiddleware:
         await self.app(scope, receive, send_wrapper)
 
     async def _save_session(
-        self, db_session: object, session_id: str, data: dict,
+        self,
+        db_session: object,
+        session_id: str,
+        data: dict,
     ) -> None:
         """Persist session data to the server_session table."""
         expires_at = datetime.now(tz=timezone.utc) + timedelta(seconds=self.max_age)

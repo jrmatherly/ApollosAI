@@ -21,7 +21,9 @@ async def test_revoke_token_inserts_record(async_session):
     token = create_session_token(user_id='u1', email='e@e.com', entra_oid='o1')
     payload = decode_session_token(token)
     jti = payload['jti']
-    expires_at = datetime.datetime.fromtimestamp(payload['exp'], tz=datetime.timezone.utc)
+    expires_at = datetime.datetime.fromtimestamp(
+        payload['exp'], tz=datetime.timezone.utc
+    )
 
     await revoke_token(async_session, jti, expires_at)
 
@@ -43,7 +45,9 @@ async def test_is_token_revoked_returns_true_for_revoked(async_session):
     token = create_session_token(user_id='u1', email='e@e.com', entra_oid='o1')
     payload = decode_session_token(token)
     jti = payload['jti']
-    expires_at = datetime.datetime.fromtimestamp(payload['exp'], tz=datetime.timezone.utc)
+    expires_at = datetime.datetime.fromtimestamp(
+        payload['exp'], tz=datetime.timezone.utc
+    )
 
     await revoke_token(async_session, jti, expires_at)
     assert await is_token_revoked(async_session, jti) is True
@@ -65,7 +69,9 @@ async def test_revoke_duplicate_jti_is_idempotent(async_session):
     token = create_session_token(user_id='u1', email='e@e.com', entra_oid='o1')
     payload = decode_session_token(token)
     jti = payload['jti']
-    expires_at = datetime.datetime.fromtimestamp(payload['exp'], tz=datetime.timezone.utc)
+    expires_at = datetime.datetime.fromtimestamp(
+        payload['exp'], tz=datetime.timezone.utc
+    )
 
     await revoke_token(async_session, jti, expires_at)
     # Second call should not raise

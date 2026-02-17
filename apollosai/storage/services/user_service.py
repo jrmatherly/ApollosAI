@@ -32,7 +32,9 @@ async def upsert_user_on_login(
 
     # New user — create with default org
     # Review fix [C6]: Use UUID suffix to prevent org name collision DoS
-    org = Organization(id=uuid.uuid4(), name=f'{email}-workspace-{uuid.uuid4().hex[:8]}')
+    org = Organization(
+        id=uuid.uuid4(), name=f'{email}-workspace-{uuid.uuid4().hex[:8]}'
+    )
     session.add(org)
 
     user = User(
@@ -56,9 +58,7 @@ async def upsert_user_on_login(
         await session.flush()
 
     # Add org membership
-    membership = OrgMembership(
-        org_id=org.id, user_id=user.id, role_id=owner_role.id
-    )
+    membership = OrgMembership(org_id=org.id, user_id=user.id, role_id=owner_role.id)
     session.add(membership)
     await session.commit()
     return user

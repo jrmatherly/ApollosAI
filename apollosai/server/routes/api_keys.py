@@ -62,10 +62,16 @@ async def create_key(
 
     user_id = uuid.UUID(auth.user_id)
     raw_key, record = await create_api_key(
-        session, user_id=user_id, org_id=body.org_id, name=body.name,
+        session,
+        user_id=user_id,
+        org_id=body.org_id,
+        name=body.name,
     )
     return CreateApiKeyResponse(
-        key=raw_key, id=record.id, name=record.name, prefix=record.prefix,
+        key=raw_key,
+        id=record.id,
+        name=record.name,
+        prefix=record.prefix,
     )
 
 
@@ -89,7 +95,9 @@ async def list_keys(
             id=k.id,
             name=k.name,
             prefix=k.prefix,
-            created_at=str(k.created_at) if hasattr(k, 'created_at') and k.created_at else None,
+            created_at=str(k.created_at)
+            if hasattr(k, 'created_at') and k.created_at
+            else None,
         )
         for k in keys
     ]
@@ -114,5 +122,7 @@ async def delete_key(
     except ValueError:
         return JSONResponse(status_code=404, content={'error': 'Key not found'})
     except PermissionError:
-        return JSONResponse(status_code=403, content={'error': 'Cannot revoke another user\'s key'})
+        return JSONResponse(
+            status_code=403, content={'error': "Cannot revoke another user's key"}
+        )
     return {'status': 'revoked'}

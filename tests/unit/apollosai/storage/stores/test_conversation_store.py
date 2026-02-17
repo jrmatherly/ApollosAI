@@ -35,7 +35,9 @@ async def test_save_and_get_metadata_roundtrip(async_session, async_session_make
     store = ApollosAIConversationStore(
         config=None, user_id=str(uuid.uuid4()), session_maker=async_session_maker
     )
-    meta = ConversationMetadata(conversation_id='conv-1', title='Test', selected_repository=None)
+    meta = ConversationMetadata(
+        conversation_id='conv-1', title='Test', selected_repository=None
+    )
     await store.save_metadata(meta)
     loaded = await store.get_metadata('conv-1')
     assert loaded.conversation_id == 'conv-1'
@@ -51,7 +53,9 @@ async def test_get_metadata_validates_user_access(async_session, async_session_m
         config=None, user_id=user_a, session_maker=async_session_maker
     )
     await store_a.save_metadata(
-        ConversationMetadata(conversation_id='conv-a', title='A', selected_repository=None)
+        ConversationMetadata(
+            conversation_id='conv-a', title='A', selected_repository=None
+        )
     )
 
     store_b = ApollosAIConversationStore(
@@ -68,20 +72,26 @@ async def test_delete_metadata_sets_deleted_at(async_session, async_session_make
         config=None, user_id=str(uuid.uuid4()), session_maker=async_session_maker
     )
     await store.save_metadata(
-        ConversationMetadata(conversation_id='conv-del', title='Del', selected_repository=None)
+        ConversationMetadata(
+            conversation_id='conv-del', title='Del', selected_repository=None
+        )
     )
     await store.delete_metadata('conv-del')
     assert not await store.exists('conv-del')
 
 
 @pytest.mark.asyncio
-async def test_exists_returns_false_for_soft_deleted(async_session, async_session_maker):
+async def test_exists_returns_false_for_soft_deleted(
+    async_session, async_session_maker
+):
     """Review fix [M5]: exists() must exclude soft-deleted records."""
     store = ApollosAIConversationStore(
         config=None, user_id=str(uuid.uuid4()), session_maker=async_session_maker
     )
     await store.save_metadata(
-        ConversationMetadata(conversation_id='conv-sd', title='SD', selected_repository=None)
+        ConversationMetadata(
+            conversation_id='conv-sd', title='SD', selected_repository=None
+        )
     )
     assert await store.exists('conv-sd')
     await store.delete_metadata('conv-sd')
@@ -100,10 +110,14 @@ async def test_search_filters_by_user(async_session, async_session_maker):
         config=None, user_id=other_id, session_maker=async_session_maker
     )
     await store.save_metadata(
-        ConversationMetadata(conversation_id='mine', title='Mine', selected_repository=None)
+        ConversationMetadata(
+            conversation_id='mine', title='Mine', selected_repository=None
+        )
     )
     await other_store.save_metadata(
-        ConversationMetadata(conversation_id='theirs', title='Theirs', selected_repository=None)
+        ConversationMetadata(
+            conversation_id='theirs', title='Theirs', selected_repository=None
+        )
     )
     results = await store.search()
     assert len(results.results) == 1

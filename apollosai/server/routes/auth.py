@@ -128,7 +128,8 @@ async def logout(
             jti = payload.get('jti')
             if jti:
                 expires_at = datetime.datetime.fromtimestamp(
-                    payload['exp'], tz=datetime.timezone.utc,
+                    payload['exp'],
+                    tz=datetime.timezone.utc,
                 )
                 await revoke_token(session, jti, expires_at)
         except Exception:

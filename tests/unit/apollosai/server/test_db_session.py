@@ -3,7 +3,9 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from apollosai.server.db_session import APOLLOSAI_DB_SESSION_ATTR, ApollosAIDbSessionInjector
+from apollosai.server.db_session import (
+    ApollosAIDbSessionInjector,
+)
 
 
 class TestApollosAIDbSessionInjector:
@@ -23,9 +25,13 @@ class TestApollosAIDbSessionInjector:
 
     def test_creates_with_valid_url(self, monkeypatch):
         """Should create successfully with DATABASE_URL set."""
-        monkeypatch.setenv('DATABASE_URL', 'postgresql+asyncpg://user:pass@localhost/testdb')
+        monkeypatch.setenv(
+            'DATABASE_URL', 'postgresql+asyncpg://user:pass@localhost/testdb'
+        )
         injector = ApollosAIDbSessionInjector()
-        assert injector.database_url == 'postgresql+asyncpg://user:pass@localhost/testdb'
+        assert (
+            injector.database_url == 'postgresql+asyncpg://user:pass@localhost/testdb'
+        )
 
     def test_fixes_postgres_scheme(self, monkeypatch):
         """Should fix postgres:// to postgresql+asyncpg:// scheme."""

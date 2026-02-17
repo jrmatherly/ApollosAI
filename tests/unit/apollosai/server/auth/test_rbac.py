@@ -5,8 +5,8 @@ import uuid
 import pytest
 
 from apollosai.server.auth.rbac import (
-    AuthedUser,
     DEV_MODE_USER_ID,
+    AuthedUser,
     PermissionDeniedError,
     require_role,
 )
@@ -27,9 +27,14 @@ async def _seed_user_with_role(session, role_name, role_rank, entra_oid, email):
     session.add(role)
     await session.flush()  # Populate role.id (autoincrement)
 
-    session.add(User(
-        id=user_id, entra_oid=entra_oid, email=email, current_org_id=org_id,
-    ))
+    session.add(
+        User(
+            id=user_id,
+            entra_oid=entra_oid,
+            email=email,
+            current_org_id=org_id,
+        )
+    )
     session.add(OrgMembership(org_id=org_id, user_id=user_id, role_id=role.id))
     await session.commit()
     return org_id, user_id
@@ -38,6 +43,7 @@ async def _seed_user_with_role(session, role_name, role_rank, entra_oid, email):
 def test_permission_denied_error_is_auth_error():
     """PermissionDeniedError should be a subclass of AuthError."""
     from apollosai.server.auth.auth_error import AuthError
+
     assert issubclass(PermissionDeniedError, AuthError)
 
 
@@ -49,8 +55,11 @@ def test_dev_mode_user_id_is_zero_uuid():
 def test_authed_user_dataclass_fields():
     """AuthedUser should have the required fields."""
     user = AuthedUser(
-        user_id=uuid.uuid4(), email='test@example.com',
-        org_id=uuid.uuid4(), role_name='owner', role_rank=0,
+        user_id=uuid.uuid4(),
+        email='test@example.com',
+        org_id=uuid.uuid4(),
+        role_name='owner',
+        role_rank=0,
     )
     assert user.email == 'test@example.com'
     assert user.role_name == 'owner'
@@ -61,11 +70,19 @@ def test_authed_user_dataclass_fields():
 async def test_owner_passes_admin_check(async_session):
     """rank 0 <= 1 should pass."""
     org_id, user_id = await _seed_user_with_role(
-        async_session, 'owner', 0, 'oid-1', 'owner@test.com',
+        async_session,
+        'owner',
+        0,
+        'oid-1',
+        'owner@test.com',
     )
     checker = require_role('admin')
     authed = AuthedUser(
-        user_id=user_id, email='owner@test.com', org_id=None, role_name=None, role_rank=None,
+        user_id=user_id,
+        email='owner@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     result = await checker(org_id=org_id, user=authed, session=async_session)
     assert result.role_name == 'owner'
@@ -76,11 +93,19 @@ async def test_owner_passes_admin_check(async_session):
 async def test_admin_passes_admin_check(async_session):
     """rank 1 <= 1 should pass."""
     org_id, user_id = await _seed_user_with_role(
-        async_session, 'admin', 1, 'oid-2', 'admin@test.com',
+        async_session,
+        'admin',
+        1,
+        'oid-2',
+        'admin@test.com',
     )
     checker = require_role('admin')
     authed = AuthedUser(
-        user_id=user_id, email='admin@test.com', org_id=None, role_name=None, role_rank=None,
+        user_id=user_id,
+        email='admin@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     result = await checker(org_id=org_id, user=authed, session=async_session)
     assert result.role_name == 'admin'
@@ -91,11 +116,19 @@ async def test_admin_passes_admin_check(async_session):
 async def test_manager_fails_admin_check(async_session):
     """rank 2 > 1 should raise PermissionDeniedError."""
     org_id, user_id = await _seed_user_with_role(
-        async_session, 'manager', 2, 'oid-3', 'mgr@test.com',
+        async_session,
+        'manager',
+        2,
+        'oid-3',
+        'mgr@test.com',
     )
     checker = require_role('admin')
     authed = AuthedUser(
-        user_id=user_id, email='mgr@test.com', org_id=None, role_name=None, role_rank=None,
+        user_id=user_id,
+        email='mgr@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     with pytest.raises(PermissionDeniedError, match='Requires admin'):
         await checker(org_id=org_id, user=authed, session=async_session)
@@ -105,11 +138,19 @@ async def test_manager_fails_admin_check(async_session):
 async def test_member_fails_admin_check(async_session):
     """rank 3 > 1 should raise PermissionDeniedError."""
     org_id, user_id = await _seed_user_with_role(
-        async_session, 'member', 3, 'oid-4', 'member@test.com',
+        async_session,
+        'member',
+        3,
+        'oid-4',
+        'member@test.com',
     )
     checker = require_role('admin')
     authed = AuthedUser(
-        user_id=user_id, email='member@test.com', org_id=None, role_name=None, role_rank=None,
+        user_id=user_id,
+        email='member@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     with pytest.raises(PermissionDeniedError):
         await checker(org_id=org_id, user=authed, session=async_session)
@@ -126,8 +167,11 @@ async def test_non_member_raises_permission_denied(async_session):
 
     checker = require_role('member')
     authed = AuthedUser(
-        user_id=uuid.uuid4(), email='nobody@test.com',
-        org_id=None, role_name=None, role_rank=None,
+        user_id=uuid.uuid4(),
+        email='nobody@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     with pytest.raises(PermissionDeniedError, match='Not a member'):
         await checker(org_id=org_id, user=authed, session=async_session)
@@ -151,15 +195,24 @@ async def test_user_in_org_a_cannot_access_org_b(async_session):
     async_session.add(role)
     await async_session.flush()
 
-    async_session.add(User(
-        id=user_id, entra_oid='oid-x', email='x@test.com', current_org_id=org_a,
-    ))
+    async_session.add(
+        User(
+            id=user_id,
+            entra_oid='oid-x',
+            email='x@test.com',
+            current_org_id=org_a,
+        )
+    )
     async_session.add(OrgMembership(org_id=org_a, user_id=user_id, role_id=role.id))
     await async_session.commit()
 
     checker = require_role('member')
     authed = AuthedUser(
-        user_id=user_id, email='x@test.com', org_id=None, role_name=None, role_rank=None,
+        user_id=user_id,
+        email='x@test.com',
+        org_id=None,
+        role_name=None,
+        role_rank=None,
     )
     with pytest.raises(PermissionDeniedError, match='Not a member'):
         await checker(org_id=org_b, user=authed, session=async_session)

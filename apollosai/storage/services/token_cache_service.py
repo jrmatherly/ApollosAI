@@ -31,9 +31,7 @@ async def save_token_cache(
     await session.commit()
 
 
-async def load_token_cache(
-    session: AsyncSession, user_id: uuid_mod.UUID
-) -> str | None:
+async def load_token_cache(session: AsyncSession, user_id: uuid_mod.UUID) -> str | None:
     """Load and decrypt MSAL token cache for a user. Returns None if not found."""
     token = await session.get(AuthToken, user_id)
     if token is None:

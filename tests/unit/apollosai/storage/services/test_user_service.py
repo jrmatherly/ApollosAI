@@ -46,9 +46,12 @@ async def test_upsert_user_updates_existing(async_session):
 async def test_upsert_creates_org_membership_with_owner_role(async_session):
     """Review fix [H3]: User must get OrgMembership with owner role on first login."""
     user = await upsert_user_on_login(
-        session=async_session, entra_oid='oid-1', email='test@example.com',
+        session=async_session,
+        entra_oid='oid-1',
+        email='test@example.com',
     )
     from sqlalchemy import select
+
     from apollosai.storage.models.org_membership import OrgMembership
     from apollosai.storage.models.role import Role
 
