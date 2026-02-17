@@ -23,12 +23,8 @@ class ApollosAIServerConfig(ServerConfig):
     conversation_store_class: str = (
         'apollosai.storage.stores.conversation_store.ApollosAIConversationStore'
     )
-    user_auth_class: str = (
-        'apollosai.server.auth.entraid_auth.EntraIDUserAuth'
-    )
-    monitoring_listener_class: str = (
-        'openhands.server.monitoring.MonitoringListener'
-    )
+    user_auth_class: str = 'apollosai.server.auth.entraid_auth.EntraIDUserAuth'
+    monitoring_listener_class: str = 'openhands.server.monitoring.MonitoringListener'
 
     def verify_config(self):
         pass

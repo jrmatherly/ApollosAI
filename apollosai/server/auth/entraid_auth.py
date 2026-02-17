@@ -4,15 +4,13 @@ from dataclasses import dataclass, field
 from fastapi import Request
 from pydantic import SecretStr
 
+from apollosai.server.auth.auth_error import NoCredentialsError
 from openhands.integrations.provider import PROVIDER_TOKEN_TYPE
 from openhands.server.settings import Settings
+from openhands.server.user_auth.user_auth import UserAuth
 from openhands.storage.data_models.secrets import Secrets
 from openhands.storage.secrets.secrets_store import SecretsStore
 from openhands.storage.settings.settings_store import SettingsStore
-
-from openhands.server.user_auth.user_auth import UserAuth
-
-from apollosai.server.auth.auth_error import NoCredentialsError
 
 
 @dataclass
@@ -43,17 +41,15 @@ class EntraIDUserAuth(UserAuth):
         return None
 
     async def get_user_settings_store(self) -> SettingsStore:
-        from openhands.core.config.utils import load_openhands_config
-
         from apollosai.storage.stores.settings_store import ApollosAISettingsStore
+        from openhands.core.config.utils import load_openhands_config
 
         config = load_openhands_config()
         return await ApollosAISettingsStore.get_instance(config, self.user_id)
 
     async def get_secrets_store(self) -> SecretsStore:
-        from openhands.core.config.utils import load_openhands_config
-
         from apollosai.storage.stores.secrets_store import ApollosAISecretsStore
+        from openhands.core.config.utils import load_openhands_config
 
         config = load_openhands_config()
         return await ApollosAISecretsStore.get_instance(config, self.user_id)

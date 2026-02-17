@@ -1,4 +1,5 @@
 """Config bootstrap — separated from app_server.py for testability."""
+
 import os
 
 APOLLOSAI_CONFIG_CLS = 'apollosai.server.config.ApollosAIServerConfig'

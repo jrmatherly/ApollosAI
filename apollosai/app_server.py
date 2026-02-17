@@ -3,6 +3,7 @@
 Run with:
     PYTHONPATH=".:$PYTHONPATH" uvicorn apollosai.app_server:app --host 0.0.0.0 --port 3000
 """
+
 import os
 
 from dotenv import load_dotenv
@@ -19,12 +20,11 @@ from fastapi import Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse  # noqa: E402
 
+from apollosai.server.auth.auth_error import NoCredentialsError  # noqa: E402
 from openhands.server.app import app as base_app  # noqa: E402
 from openhands.server.listen_socket import sio  # noqa: E402
 from openhands.server.middleware import CacheControlMiddleware  # noqa: E402
 from openhands.server.static import SPAStaticFiles  # noqa: E402
-
-from apollosai.server.auth.auth_error import NoCredentialsError  # noqa: E402
 
 directory = os.getenv('FRONTEND_DIRECTORY', './frontend/build')
 

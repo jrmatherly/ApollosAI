@@ -9,12 +9,8 @@ from apollosai.storage.models.base import Base, TimestampMixin
 class TeamMembership(TimestampMixin, Base):
     __tablename__ = 'team_membership'
 
-    team_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey('team.id'), primary_key=True
-    )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey('user.id'), primary_key=True
-    )
+    team_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('team.id'), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('user.id'), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey('role.id'))
 
     # Per-user LLM overrides

@@ -1,8 +1,8 @@
+from apollosai.storage.models.org_membership import OrgMembership
 from apollosai.storage.models.organization import Organization
 from apollosai.storage.models.team import Team
-from apollosai.storage.models.user import User
-from apollosai.storage.models.org_membership import OrgMembership
 from apollosai.storage.models.team_membership import TeamMembership
+from apollosai.storage.models.user import User
 
 
 def test_organization_tablename():
@@ -11,9 +11,17 @@ def test_organization_tablename():
 
 def test_organization_has_required_columns():
     col_names = {c.name for c in Organization.__table__.columns}
-    assert {'id', 'name', 'default_llm_model', 'default_llm_base_url',
-            'default_max_iterations', 'agent', 'mcp_config',
-            'created_at', 'updated_at'}.issubset(col_names)
+    assert {
+        'id',
+        'name',
+        'default_llm_model',
+        'default_llm_base_url',
+        'default_max_iterations',
+        'agent',
+        'mcp_config',
+        'created_at',
+        'updated_at',
+    }.issubset(col_names)
 
 
 def test_team_tablename():

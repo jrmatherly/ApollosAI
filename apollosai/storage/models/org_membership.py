@@ -12,8 +12,6 @@ class OrgMembership(TimestampMixin, Base):
     org_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey('organization.id'), primary_key=True
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey('user.id'), primary_key=True
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('user.id'), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey('role.id'))
     status: Mapped[str] = mapped_column(String, default='active')

@@ -3,6 +3,7 @@
 Uses HKDF key derivation from a master secret with deployment-specific salt.
 Consistent with Apollos platform encryption patterns.
 """
+
 import base64
 import hashlib
 import os
@@ -32,7 +33,9 @@ def _get_key() -> bytes:
         if _derived_key is None:
             master_secret = os.environ.get('APOLLOSAI_ENCRYPTION_KEY', '')
             if not master_secret:
-                raise ValueError('APOLLOSAI_ENCRYPTION_KEY environment variable is required')
+                raise ValueError(
+                    'APOLLOSAI_ENCRYPTION_KEY environment variable is required'
+                )
             hkdf = HKDF(
                 algorithm=hashes.SHA256(),
                 length=32,

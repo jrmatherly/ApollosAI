@@ -3,8 +3,8 @@
 Secrets are NOT stored as module-level constants to prevent accidental leakage
 in error reports, logging middleware, or repr() calls on the module namespace.
 """
-import os
 
+import os
 
 # Non-secret configuration (safe as module constants)
 ENTRA_TENANT_ID = os.environ.get('ENTRA_TENANT_ID', '')

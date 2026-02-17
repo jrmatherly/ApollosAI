@@ -1,4 +1,5 @@
 """Shared DeclarativeBase and timestamp mixin for all ApollosAI models."""
+
 import datetime
 
 from sqlalchemy import func
