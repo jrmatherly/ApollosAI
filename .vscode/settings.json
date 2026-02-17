@@ -39,7 +39,9 @@
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
-        "editor.rulers": [88],
+        "editor.rulers": [
+            88
+        ],
         "editor.codeActionsOnSave": {
             "source.fixAll.ruff": "always",
             "source.organizeImports.ruff": "always"
@@ -47,7 +49,9 @@
     },
     "ruff.configuration": "dev_config/python/ruff.toml",
     // ── ESLint (flat config in frontend/) ──────────────────────────
-    "eslint.workingDirectories": ["./frontend"],
+    "eslint.workingDirectories": [
+        "./frontend"
+    ],
     // ── TypeScript ─────────────────────────────────────────────────
     "typescript.tsdk": "frontend/node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,

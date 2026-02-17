@@ -33,12 +33,16 @@
 
 ### Task 9: Integration Base Models
 
+> **NOTE:** `apollosai/integrations/__init__.py` and `apollosai/integrations/models.py` already
+> exist from Phase 3A Task 2 (pre-step) with `IntegrationType` enum and `SourceType` alias.
+> This task EXTENDS that file with `IntegrationEvent`, `ConversationContext`, `OAuthConfig`
+> Pydantic models and `__all__` export list.
+
 **Files:**
-- Create: `apollosai/integrations/__init__.py`
-- Create: `apollosai/integrations/models.py`
+- Modify: `apollosai/integrations/models.py` (extend with Pydantic models — file already has IntegrationType enum)
 - Test: `tests/unit/apollosai/integrations/test_models.py`
 
-**Step 1: Write base integration models**
+**Step 1: Extend integration models with Pydantic classes**
 
 ```python
 # apollosai/integrations/models.py
@@ -101,8 +105,8 @@ class OAuthConfig(BaseModel):
 **Step 2: Write tests, run, commit**
 
 ```bash
-git add apollosai/integrations/__init__.py apollosai/integrations/models.py tests/unit/apollosai/integrations/test_models.py
-git commit -m "feat(apollosai): add integration base models (SourceType, IntegrationEvent, ConversationContext)"
+git add apollosai/integrations/models.py tests/unit/apollosai/integrations/test_models.py
+git commit -m "feat(apollosai): extend integration models with IntegrationEvent, ConversationContext, OAuthConfig"
 ```
 
 ---

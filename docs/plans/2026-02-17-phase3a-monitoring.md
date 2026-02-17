@@ -130,14 +130,25 @@ async def test_audit_log_create(async_session):
 Run: `poetry run pytest tests/unit/apollosai/storage/models/test_audit_log.py -v`
 Expected: PASS
 
-**Step 4: Add audit_log import to conftest**
+**Step 4: Add audit_log import to conftest AND models `__init__.py`**
 
 Add `import apollosai.storage.models.audit_log  # noqa: F401` to `tests/unit/apollosai/conftest.py`.
+
+> **VALIDATED FIX (Review V3):** New models MUST also be added to `apollosai/storage/models/__init__.py`
+> for Alembic discoverability. Alembic's `env.py` imports `Base` from `__init__.py`, which triggers
+> model registration with `Base.metadata`. Without this, `alembic revision --autogenerate` won't
+> detect new tables. The conftest import only helps tests.
+
+Add to `apollosai/storage/models/__init__.py`:
+```python
+from apollosai.storage.models.audit_log import AuditLog
+```
+And add `'AuditLog'` to `__all__`.
 
 **Step 5: Commit**
 
 ```bash
-git add apollosai/storage/models/audit_log.py tests/unit/apollosai/storage/models/test_audit_log.py tests/unit/apollosai/conftest.py
+git add apollosai/storage/models/audit_log.py apollosai/storage/models/__init__.py tests/unit/apollosai/storage/models/test_audit_log.py tests/unit/apollosai/conftest.py
 git commit -m "feat(apollosai): add AuditLog model with action enum"
 ```
 
@@ -146,10 +157,47 @@ git commit -m "feat(apollosai): add AuditLog model with action enum"
 ### Task 2: New Storage Models — Integration Infrastructure
 
 **Files:**
+- Create: `apollosai/integrations/__init__.py` (pre-step: minimal enum for Task 9 forward-compatibility)
+- Create: `apollosai/integrations/models.py` (pre-step: IntegrationType enum only — Task 9 extends with Pydantic models)
 - Create: `apollosai/storage/models/integration_config.py`
 - Create: `apollosai/storage/models/integration_conversation.py`
 - Create: `apollosai/storage/models/user_mcp_server.py`
 - Test: `tests/unit/apollosai/storage/models/test_integration_models.py`
+
+> **VALIDATED FIX (Finding 1):** `IntegrationConfig` imports `IntegrationType` from `apollosai.integrations.models`,
+> but that module is a Task 9 (Phase 3B) deliverable that doesn't exist yet. Fix: create a minimal
+> `apollosai/integrations/models.py` with ONLY the `IntegrationType` enum here. Task 9 will extend
+> this file with `IntegrationEvent`, `ConversationContext`, `OAuthConfig` Pydantic models.
+
+**Step 0 (pre-step): Create minimal integrations module with IntegrationType enum**
+
+```python
+# apollosai/integrations/__init__.py
+# (empty)
+
+# apollosai/integrations/models.py
+"""Shared models for the integration framework.
+
+REVIEW: This module is the SINGLE SOURCE OF TRUTH for integration type enums.
+Storage models import IntegrationType from here — do not redefine in storage models.
+NOTE: Created in Phase 3A Task 2 with enum only. Phase 3B Task 9 extends with
+IntegrationEvent, ConversationContext, OAuthConfig Pydantic models.
+"""
+import enum
+
+
+class IntegrationType(str, enum.Enum):
+    GITHUB = 'github'
+    JIRA = 'jira'
+    SLACK = 'slack'
+    BITBUCKET = 'bitbucket'
+    MICROSOFT = 'microsoft'
+    OPENHANDS = 'openhands'  # internal events only
+
+
+# Alias for backward compatibility in integration code
+SourceType = IntegrationType
+```
 
 **Step 1: Write integration_config model**
 
@@ -254,11 +302,17 @@ class UserMCPServer(TimestampMixin, Base):
 
 **Step 4: Write tests**
 
+> **VALIDATED FIX (Finding 2):** Original test code referenced `config_json` (dict) but models
+> define `config_encrypted` (Text/str) and `webhook_secret_encrypted` (Text/str). Fixed below
+> to use correct field names with string values representing encrypted blobs. In production,
+> SecretsStore handles encrypt/decrypt — tests use plaintext strings as stand-ins.
+
 ```python
 # tests/unit/apollosai/storage/models/test_integration_models.py
 import uuid
 import pytest
-from apollosai.storage.models.integration_config import IntegrationConfig, IntegrationType
+from apollosai.storage.models.integration_config import IntegrationConfig
+from apollosai.integrations.models import IntegrationType
 from apollosai.storage.models.integration_conversation import IntegrationConversation
 from apollosai.storage.models.user_mcp_server import MCPServerType, UserMCPServer
 
@@ -274,7 +328,8 @@ async def test_integration_config_create(async_session):
         org_id=org_id,
         integration_type=IntegrationType.GITHUB,
         enabled=True,
-        config_json={'app_id': '12345', 'webhook_url': 'https://example.com/webhook'},
+        config_encrypted='encrypted:app_id=12345',
+        webhook_secret_encrypted='encrypted:whsec_test',
     )
     async_session.add(config)
     await async_session.commit()
@@ -282,7 +337,8 @@ async def test_integration_config_create(async_session):
     fetched = await async_session.get(IntegrationConfig, config.id)
     assert fetched is not None
     assert fetched.integration_type == IntegrationType.GITHUB
-    assert fetched.config_json['app_id'] == '12345'
+    assert fetched.config_encrypted == 'encrypted:app_id=12345'
+    assert fetched.webhook_secret_encrypted == 'encrypted:whsec_test'
 
 
 @pytest.mark.asyncio
@@ -300,7 +356,7 @@ async def test_user_mcp_server_create(async_session):
         org_id=org_id,
         name='my-jira-tool',
         server_type=MCPServerType.STDIO,
-        config_json={'command': 'python', 'args': ['-m', 'jira_mcp']},
+        config_encrypted='encrypted:command=python,args=-m jira_mcp',
         enabled=True,
     )
     async_session.add(server)
@@ -309,16 +365,28 @@ async def test_user_mcp_server_create(async_session):
     fetched = await async_session.get(UserMCPServer, server.id)
     assert fetched is not None
     assert fetched.server_type == MCPServerType.STDIO
+    assert fetched.config_encrypted == 'encrypted:command=python,args=-m jira_mcp'
 ```
 
-**Step 5: Update conftest with new model imports, run tests, commit**
+**Step 5: Update conftest AND models `__init__.py`, run tests, commit**
 
 Add imports for all three new models to `tests/unit/apollosai/conftest.py`.
+
+> **VALIDATED FIX (Review V3):** Also add all 3 new models to `apollosai/storage/models/__init__.py`
+> for Alembic discoverability (same pattern as Task 1 Step 4).
+
+Add to `apollosai/storage/models/__init__.py`:
+```python
+from apollosai.storage.models.integration_config import IntegrationConfig
+from apollosai.storage.models.integration_conversation import IntegrationConversation
+from apollosai.storage.models.user_mcp_server import UserMCPServer
+```
+And add `'IntegrationConfig'`, `'IntegrationConversation'`, `'UserMCPServer'` to `__all__`.
 
 Run: `poetry run pytest tests/unit/apollosai/storage/models/test_integration_models.py -v`
 
 ```bash
-git add apollosai/storage/models/integration_config.py apollosai/storage/models/integration_conversation.py apollosai/storage/models/user_mcp_server.py tests/unit/apollosai/storage/models/test_integration_models.py tests/unit/apollosai/conftest.py
+git add apollosai/integrations/__init__.py apollosai/integrations/models.py apollosai/storage/models/__init__.py apollosai/storage/models/integration_config.py apollosai/storage/models/integration_conversation.py apollosai/storage/models/user_mcp_server.py tests/unit/apollosai/storage/models/test_integration_models.py tests/unit/apollosai/conftest.py
 git commit -m "feat(apollosai): add integration config, conversation, and MCP server models"
 ```
 
@@ -451,10 +519,19 @@ Run: `poetry run pytest tests/unit/apollosai/server/routes/test_health.py -v`
 
 **Step 5: Wire routes into app and commit**
 
-Add `from apollosai.server.routes.health import router as health_router` and mount in `apollosai/app_server.py` or the route registration point.
+> **VALIDATED FIX (Review V3):** Mount health routes at root path (no `/api` prefix) for
+> Kubernetes liveness/readiness probe compatibility. Add to `apollosai/app_server.py`
+> after the auth router registration (line 54):
+
+```python
+from apollosai.server.routes.health import router as health_router
+base_app.include_router(health_router)  # /health and /ready — no prefix for K8s probes
+```
+
+Also add `apollosai/app_server.py` to the commit (modified file):
 
 ```bash
-git add apollosai/monitoring/__init__.py apollosai/monitoring/health.py apollosai/server/routes/health.py tests/unit/apollosai/server/routes/test_health.py
+git add apollosai/monitoring/__init__.py apollosai/monitoring/health.py apollosai/server/routes/health.py apollosai/app_server.py tests/unit/apollosai/server/routes/test_health.py
 git commit -m "feat(apollosai): add health and readiness endpoints"
 ```
 
@@ -557,7 +634,8 @@ def shutdown_otel() -> None:
             mp.shutdown()
     except Exception:
         logger.exception('Error shutting down OTEL')
-    _initialized = False
+    # VALIDATED FIX (Review V3): Removed duplicate `_initialized = False` that was
+    # dead code — already set to False inside the lock on line 626 above.
 ```
 
 **Step 2: Hook into lifespan**
@@ -835,10 +913,22 @@ async def list_audit_logs(
     ]
 ```
 
-**Step 3: Write tests following the orgs route test pattern, run, commit**
+**Step 3: Wire admin routes into app server**
+
+> **VALIDATED FIX (Review V3):** The admin routes must be registered in `apollosai/app_server.py`
+> or they'll return 404 in production. Tests pass because they create their own FastAPI app,
+> but the real app only mounts `auth_router` (line 54).
+
+Add to `apollosai/app_server.py` after the health router:
+```python
+from apollosai.server.routes.admin import router as admin_router
+base_app.include_router(admin_router)  # /api/admin/orgs/{org_id}/audit
+```
+
+**Step 4: Write tests following the orgs route test pattern, run, commit**
 
 ```bash
-git add apollosai/server/routes/admin.py apollosai/server/routes/models.py tests/unit/apollosai/server/routes/test_admin.py
+git add apollosai/server/routes/admin.py apollosai/server/routes/models.py apollosai/app_server.py tests/unit/apollosai/server/routes/test_admin.py
 git commit -m "feat(apollosai): add admin audit log query endpoint"
 ```
 
