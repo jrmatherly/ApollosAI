@@ -3,6 +3,7 @@
 Review fix [M1]: Input validation on org/team names to prevent XSS.
 """
 
+import datetime
 import uuid
 
 from pydantic import BaseModel, Field
@@ -88,3 +89,19 @@ class AddTeamMemberRequest(BaseModel):
 
     user_id: uuid.UUID
     role: str = Field(default='member', pattern=r'^(admin|manager|member)$')
+
+
+# --- Audit Log ---
+
+
+class AuditLogResponse(BaseModel):
+    """Response for an audit log entry."""
+
+    id: uuid.UUID
+    actor_id: uuid.UUID | None
+    action: str
+    resource_type: str
+    resource_id: str
+    details: dict | None = None
+    ip_address: str | None = None
+    created_at: datetime.datetime
