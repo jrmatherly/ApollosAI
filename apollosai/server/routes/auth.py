@@ -19,6 +19,7 @@ from apollosai.server.auth.msal_client import (
     get_auth_url,
 )
 from apollosai.server.deps import get_db_session
+from apollosai.server.rate_limit import limiter
 from apollosai.storage.services.token_revocation_service import revoke_token
 
 router = APIRouter()
@@ -29,6 +30,7 @@ COOKIE_MAX_AGE = 86400  # 24 hours
 
 
 @router.get('/auth/login')
+@limiter.limit('10/minute')
 async def login(request: Request):
     """Initiate Entra ID login flow."""
     state = secrets.token_urlsafe(32)
@@ -44,6 +46,7 @@ async def login(request: Request):
 
 
 @router.get('/auth/callback')
+@limiter.limit('10/minute')
 async def callback(request: Request):
     """Handle Entra ID OAuth2 callback."""
     flow = request.session.get('auth_flow', {})
@@ -104,6 +107,7 @@ async def callback(request: Request):
 
 
 @router.post('/auth/logout')
+@limiter.limit('10/minute')
 async def logout(
     request: Request,
     response: Response,

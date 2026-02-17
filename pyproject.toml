@@ -103,6 +103,7 @@ dependencies = [
   "urllib3>=2.6.3",
   "uvicorn",
   "whatthepatch>=1.0.6",
+  "slowapi (>=0.1.9,<0.2.0)",
   "zope-interface>=7.2,<8",
 ]
 
