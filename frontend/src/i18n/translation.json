@@ -9791,6 +9791,22 @@
     "tr": "Enterprise SSO ile giriş yap",
     "uk": "Увійти за допомогою Enterprise SSO"
   },
+  "MICROSOFT$SIGN_IN_WITH_MICROSOFT": {
+    "en": "Sign in with Microsoft",
+    "ja": "Microsoftでサインイン",
+    "zh-CN": "使用 Microsoft 登录",
+    "zh-TW": "使用 Microsoft 登入",
+    "ko-KR": "Microsoft로 로그인",
+    "no": "Logg inn med Microsoft",
+    "ar": "تسجيل الدخول باستخدام Microsoft",
+    "de": "Mit Microsoft anmelden",
+    "fr": "Se connecter avec Microsoft",
+    "it": "Accedi con Microsoft",
+    "pt": "Entrar com Microsoft",
+    "es": "Iniciar sesión con Microsoft",
+    "tr": "Microsoft ile giriş yap",
+    "uk": "Увійти за допомогою Microsoft"
+  },
   "AUTH$SIGN_IN_WITH_IDENTITY_PROVIDER": {
     "en": "Log in to OpenHands",
     "ja": "IDプロバイダーでサインイン",

@@ -10,6 +10,7 @@ export enum LoginMethod {
   BITBUCKET = "bitbucket",
   AZURE_DEVOPS = "azure_devops",
   ENTERPRISE_SSO = "enterprise_sso",
+  ENTRA_ID = "entra_id",
 }
 
 /**

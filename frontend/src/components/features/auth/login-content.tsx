@@ -5,10 +5,13 @@ import OpenHandsLogoWhite from "#/assets/branding/openhands-logo-white.svg?react
 import GitHubLogo from "#/assets/branding/github-logo.svg?react";
 import GitLabLogo from "#/assets/branding/gitlab-logo.svg?react";
 import BitbucketLogo from "#/assets/branding/bitbucket-logo.svg?react";
+import MicrosoftLogo from "#/assets/branding/microsoft-logo.svg?react";
 import { useAuthUrl } from "#/hooks/use-auth-url";
 import { WebClientConfig } from "#/api/option-service/option.types";
 import { Provider } from "#/types/settings";
 import { useTracking } from "#/hooks/use-tracking";
+import { generateEntraAuthUrl } from "#/utils/generate-entra-auth-url";
+import { setLoginMethod, LoginMethod } from "#/utils/local-storage";
 import { TermsAndPrivacyNotice } from "#/components/shared/terms-and-privacy-notice";
 import { useRecaptcha } from "#/hooks/use-recaptcha";
 import { useConfig } from "#/hooks/query/use-config";
@@ -105,6 +108,12 @@ export function LoginContent({
     }
   };
 
+  const handleEntraIdAuth = () => {
+    trackLoginButtonClick({ provider: "enterprise_sso" });
+    setLoginMethod(LoginMethod.ENTRA_ID);
+    window.location.href = generateEntraAuthUrl(window.location.pathname);
+  };
+
   const showGithub =
     providersConfigured &&
     providersConfigured.length > 0 &&
@@ -117,6 +126,10 @@ export function LoginContent({
     providersConfigured &&
     providersConfigured.length > 0 &&
     providersConfigured.includes("bitbucket");
+  const showEntraId =
+    providersConfigured &&
+    providersConfigured.length > 0 &&
+    providersConfigured.includes("enterprise_sso");
 
   const noProvidersConfigured =
     !providersConfigured || providersConfigured.length === 0;
@@ -195,6 +208,19 @@ export function LoginContent({
                 <BitbucketLogo width={14} height={14} className="shrink-0" />
                 <span className={buttonLabelClasses}>
                   {t(I18nKey.BITBUCKET$CONNECT_TO_BITBUCKET)}
+                </span>
+              </button>
+            )}
+
+            {showEntraId && (
+              <button
+                type="button"
+                onClick={handleEntraIdAuth}
+                className={`${buttonBaseClasses} bg-[#2F2F2F] text-white`}
+              >
+                <MicrosoftLogo width={14} height={14} className="shrink-0" />
+                <span className={buttonLabelClasses}>
+                  {t(I18nKey.MICROSOFT$SIGN_IN_WITH_MICROSOFT)}
                 </span>
               </button>
             )}
