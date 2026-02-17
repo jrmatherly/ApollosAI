@@ -1,9 +1,11 @@
 import React from "react";
+
 import { ActionEvent } from "#/types/v1/core";
 import { isActionEvent } from "#/types/v1/type-guards";
+import { MicroagentStatus } from "#/types/microagent-status";
+
 import { ChatMessage } from "../../../features/chat/chat-message";
 import { MicroagentStatusWrapper } from "../../../features/chat/event-message-components/microagent-status-wrapper";
-import { MicroagentStatus } from "#/types/microagent-status";
 
 interface ObservationPairEventMessageProps {
   event: ActionEvent;

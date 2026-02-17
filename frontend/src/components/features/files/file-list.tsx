@@ -1,5 +1,5 @@
-import React from "react";
 import { cn } from "#/utils/utils";
+
 import { FileItem } from "./file-item";
 
 interface FileListProps {

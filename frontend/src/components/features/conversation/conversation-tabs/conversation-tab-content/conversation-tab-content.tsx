@@ -1,14 +1,17 @@
 import { lazy, useMemo, Suspense } from "react";
 import { useTranslation } from "react-i18next";
-import { ConversationLoading } from "../../conversation-loading";
+
 import { I18nKey } from "#/i18n/declaration";
-import { TabWrapper } from "./tab-wrapper";
-import { TabContainer } from "./tab-container";
-import { TabContentArea } from "./tab-content-area";
-import { ConversationTabTitle } from "../conversation-tab-title";
 import Terminal from "#/components/features/terminal/terminal";
 import { useConversationStore } from "#/stores/conversation-store";
 import { useConversationId } from "#/hooks/use-conversation-id";
+
+import { ConversationLoading } from "../../conversation-loading";
+import { ConversationTabTitle } from "../conversation-tab-title";
+
+import { TabWrapper } from "./tab-wrapper";
+import { TabContainer } from "./tab-container";
+import { TabContentArea } from "./tab-content-area";
 
 // Lazy load all tab components
 const EditorTab = lazy(() => import("#/routes/changes-tab"));

@@ -1,11 +1,9 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "../../context-menu/context-menu-list-item";
 import { I18nKey } from "#/i18n/declaration";
-import { ConversationNameContextMenuIconText } from "../../conversation/conversation-name-context-menu-icon-text";
-
 import EditIcon from "#/icons/u-edit.svg?react";
 import RobotIcon from "#/icons/u-robot.svg?react";
 import ToolsIcon from "#/icons/u-tools.svg?react";
@@ -14,6 +12,9 @@ import CreditCardIcon from "#/icons/u-credit-card.svg?react";
 import CloseIcon from "#/icons/u-close.svg?react";
 import DeleteIcon from "#/icons/u-delete.svg?react";
 import { Divider } from "#/ui/divider";
+
+import { ConversationNameContextMenuIconText } from "../../conversation/conversation-name-context-menu-icon-text";
+import { ContextMenuListItem } from "../../context-menu/context-menu-list-item";
 
 interface ConversationCardContextMenuProps {
   onClose: () => void;

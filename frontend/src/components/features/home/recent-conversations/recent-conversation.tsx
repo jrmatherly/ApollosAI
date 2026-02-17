@@ -1,13 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+
 import CodeBranchIcon from "#/icons/u-code-branch.svg?react";
 import { Conversation } from "#/api/open-hands.types";
 import { GitProviderIcon } from "#/components/shared/git-provider-icon";
 import { Provider } from "#/types/settings";
 import { formatTimeDelta } from "#/utils/format-time-delta";
 import { I18nKey } from "#/i18n/declaration";
-import { ConversationStatusIndicator } from "./conversation-status-indicator";
 import RepoForkedIcon from "#/icons/repo-forked.svg?react";
+
+import { ConversationStatusIndicator } from "./conversation-status-indicator";
 
 interface RecentConversationProps {
   conversation: Conversation;

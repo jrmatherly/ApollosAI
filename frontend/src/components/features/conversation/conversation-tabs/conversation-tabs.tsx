@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import TerminalIcon from "#/icons/terminal.svg?react";
 import GlobeIcon from "#/icons/globe.svg?react";
 import ServerIcon from "#/icons/server.svg?react";
@@ -9,15 +10,17 @@ import ThreeDotsVerticalIcon from "#/icons/three-dots-vertical.svg?react";
 import LessonPlanIcon from "#/icons/lesson-plan.svg?react";
 import { cn } from "#/utils/utils";
 import { useConversationLocalStorageState } from "#/utils/conversation-local-storage";
-import { ConversationTabNav } from "./conversation-tab-nav";
-import { ChatActionTooltip } from "../../chat/chat-action-tooltip";
 import { I18nKey } from "#/i18n/declaration";
-import { VSCodeTooltipContent } from "./vscode-tooltip-content";
 import { useConversationStore } from "#/stores/conversation-store";
-import { ConversationTabsContextMenu } from "./conversation-tabs-context-menu";
 import { USE_PLANNING_AGENT } from "#/utils/feature-flags";
 import { useConversationId } from "#/hooks/use-conversation-id";
 import { useSelectConversationTab } from "#/hooks/use-select-conversation-tab";
+
+import { ChatActionTooltip } from "../../chat/chat-action-tooltip";
+
+import { ConversationTabsContextMenu } from "./conversation-tabs-context-menu";
+import { VSCodeTooltipContent } from "./vscode-tooltip-content";
+import { ConversationTabNav } from "./conversation-tab-nav";
 
 export function ConversationTabs() {
   const { conversationId } = useConversationId();

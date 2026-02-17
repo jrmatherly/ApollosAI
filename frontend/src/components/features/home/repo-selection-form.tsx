@@ -1,19 +1,22 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+
 import { useCreateConversation } from "#/hooks/mutation/use-create-conversation";
 // Removed useRepositoryBranches import - GitBranchDropdown manages its own data
 import { useIsCreatingConversation } from "#/hooks/use-is-creating-conversation";
 import { Branch, GitRepository } from "#/types/git";
-import { BrandButton } from "../settings/brand-button";
 import { useUserProviders } from "#/hooks/use-user-providers";
 import { Provider } from "#/types/settings";
 import { I18nKey } from "#/i18n/declaration";
 import RepoForkedIcon from "#/icons/repo-forked.svg?react";
+import { useHomeStore } from "#/stores/home-store";
+
+import { BrandButton } from "../settings/brand-button";
+
 import { GitProviderDropdown } from "./git-provider-dropdown";
 import { GitBranchDropdown } from "./git-branch-dropdown";
 import { GitRepoDropdown } from "./git-repo-dropdown";
-import { useHomeStore } from "#/stores/home-store";
 
 interface RepositorySelectionFormProps {
   onRepoSelection: (repo: GitRepository | null) => void;

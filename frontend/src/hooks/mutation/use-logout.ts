@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePostHog } from "posthog-js/react";
+
 import AuthService from "#/api/auth-service/auth-service.api";
-import { useConfig } from "../query/use-config";
 import { clearLoginData } from "#/utils/local-storage";
+
+import { useConfig } from "../query/use-config";
 
 export const useLogout = () => {
   const posthog = usePostHog();

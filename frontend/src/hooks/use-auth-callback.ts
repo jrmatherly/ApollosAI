@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useIsAuthed } from "./query/use-is-authed";
+
 import { LoginMethod, setLoginMethod } from "#/utils/local-storage";
+
+import { useIsAuthed } from "./query/use-is-authed";
 import { useConfig } from "./query/use-config";
 
 /**

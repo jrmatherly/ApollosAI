@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostHog } from "posthog-js/react";
+
 import { useWebSocket, WebSocketHookOptions } from "#/hooks/use-websocket";
 import { useEventStore } from "#/stores/use-event-store";
 import { useErrorMessageStore } from "#/stores/error-message-store";
@@ -48,7 +49,6 @@ import useMetricsStore from "#/stores/metrics-store";
 import { I18nKey } from "#/i18n/declaration";
 import { useConversationHistory } from "#/hooks/query/use-conversation-history";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type V1_WebSocketConnectionState =
   | "CONNECTING"
   | "OPEN"
@@ -778,7 +778,7 @@ export function ConversationWebSocketProvider({
       const currentSocket =
         currentMode === "plan" ? planningAgentSocket : mainSocket;
 
-      if (!currentSocket || currentSocket.readyState !== WebSocket.OPEN) {
+      if (currentSocket?.readyState !== WebSocket.OPEN) {
         const error = "WebSocket is not connected";
         setErrorMessage(error);
         throw new Error(error);

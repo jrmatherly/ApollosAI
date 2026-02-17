@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
+
 import { useSettings } from "#/hooks/query/use-settings";
 
 /**

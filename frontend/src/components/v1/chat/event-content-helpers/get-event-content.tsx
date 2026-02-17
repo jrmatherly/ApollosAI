@@ -1,15 +1,18 @@
 import { Trans } from "react-i18next";
 import React from "react";
+
 import { OpenHandsEvent, ObservationEvent } from "#/types/v1/core";
 import { isActionEvent, isObservationEvent } from "#/types/v1/type-guards";
+import { TaskTrackerObservation } from "#/types/v1/core/base/observation";
+import i18n from "#/i18n";
+
 import { MonoComponent } from "../../../features/chat/mono-component";
 import { PathComponent } from "../../../features/chat/path-component";
+import { TaskTrackingObservationContent } from "../task-tracking/task-tracking-observation-content";
+
 import { getActionContent } from "./get-action-content";
 import { getObservationContent } from "./get-observation-content";
-import { TaskTrackingObservationContent } from "../task-tracking/task-tracking-observation-content";
-import { TaskTrackerObservation } from "#/types/v1/core/base/observation";
 import { SkillReadyEvent, isSkillReadyEvent } from "./create-skill-ready-event";
-import i18n from "#/i18n";
 
 const trimText = (text: string, maxLength: number): string => {
   if (!text) return "";

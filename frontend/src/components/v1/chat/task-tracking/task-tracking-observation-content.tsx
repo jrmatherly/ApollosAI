@@ -1,6 +1,8 @@
 import React from "react";
+
 import { ObservationEvent } from "#/types/v1/core";
 import { TaskTrackerObservation } from "#/types/v1/core/base/observation";
+
 import { TaskListSection } from "./task-list-section";
 
 interface TaskTrackingObservationContentProps {

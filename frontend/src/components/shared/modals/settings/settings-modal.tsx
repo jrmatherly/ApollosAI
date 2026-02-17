@@ -1,12 +1,15 @@
 import { useTranslation } from "react-i18next";
+
 import { useAIConfigOptions } from "#/hooks/query/use-ai-config-options";
 import { I18nKey } from "#/i18n/declaration";
-import { LoadingSpinner } from "../../loading-spinner";
-import { ModalBackdrop } from "../modal-backdrop";
-import { SettingsForm } from "./settings-form";
 import { Settings } from "#/types/settings";
 import { DEFAULT_SETTINGS } from "#/services/settings";
 import { HelpLink } from "#/ui/help-link";
+
+import { LoadingSpinner } from "../../loading-spinner";
+import { ModalBackdrop } from "../modal-backdrop";
+
+import { SettingsForm } from "./settings-form";
 
 interface SettingsModalProps {
   settings?: Settings;

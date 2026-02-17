@@ -1,9 +1,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useConfig } from "./use-config";
-import { useUserProviders } from "../use-user-providers";
+
 import { Provider } from "#/types/settings";
 import GitService from "#/api/git-service/git-service.api";
 import { shouldUseInstallationRepos } from "#/utils/utils";
+
+import { useUserProviders } from "../use-user-providers";
+
+import { useConfig } from "./use-config";
 
 export const useUserRepositories = (selectedProvider: Provider | null) => {
   const { providers } = useUserProviders();

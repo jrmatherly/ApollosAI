@@ -1,4 +1,5 @@
 import React from "react";
+
 import { OpenHandsAction } from "#/types/core/actions";
 import {
   isUserMessage,
@@ -14,6 +15,7 @@ import { OpenHandsObservation } from "#/types/core/observations";
 import { MicroagentStatus } from "#/types/microagent-status";
 import { useConfig } from "#/hooks/query/use-config";
 import { useFeedbackExists } from "#/hooks/query/use-feedback-exists";
+
 import {
   ErrorEventMessage,
   UserAssistantEventMessage,
@@ -41,7 +43,6 @@ interface EventMessageProps {
   isInLast10Actions: boolean;
 }
 
-/* eslint-disable react/jsx-props-no-spreading */
 export function EventMessage({
   event,
   hasObservationPair,

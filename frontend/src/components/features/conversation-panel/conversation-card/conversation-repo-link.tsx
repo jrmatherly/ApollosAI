@@ -1,6 +1,7 @@
 import { FaBitbucket, FaGithub, FaGitlab, FaUserShield } from "react-icons/fa6";
 import { FaCodeBranch } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
+
 import { RepositorySelection } from "#/api/open-hands.types";
 import { Provider } from "#/types/settings";
 import AzureDevOpsLogo from "#/assets/branding/azure-devops-logo.svg?react";

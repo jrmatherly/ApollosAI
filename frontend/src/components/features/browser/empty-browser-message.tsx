@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { IoIosGlobe } from "react-icons/io";
+
 import { I18nKey } from "#/i18n/declaration";
 
 export function EmptyBrowserMessage() {

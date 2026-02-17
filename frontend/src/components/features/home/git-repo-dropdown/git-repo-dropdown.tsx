@@ -7,24 +7,26 @@ import React, {
 } from "react";
 import { useCombobox } from "downshift";
 import { useTranslation } from "react-i18next";
+
 import { Provider, ProviderOptions } from "#/types/settings";
 import { GitRepository } from "#/types/git";
 import { useDebounce } from "#/hooks/use-debounce";
 import { cn } from "#/utils/utils";
+import { useConfig } from "#/hooks/query/use-config";
+import { I18nKey } from "#/i18n/declaration";
+import RepoIcon from "#/icons/repo.svg?react";
+import { useHomeStore } from "#/stores/home-store";
+import { Typography } from "#/ui/typography";
 
 import { ClearButton } from "../shared/clear-button";
 import { ToggleButton } from "../shared/toggle-button";
 import { ErrorMessage } from "../shared/error-message";
 import { DropdownItem } from "../shared/dropdown-item";
 import { EmptyState } from "../shared/empty-state";
+import { GenericDropdownMenu } from "../shared/generic-dropdown-menu";
+
 import { useUrlSearch } from "./use-url-search";
 import { useRepositoryData } from "./use-repository-data";
-import { GenericDropdownMenu } from "../shared/generic-dropdown-menu";
-import { useConfig } from "#/hooks/query/use-config";
-import { I18nKey } from "#/i18n/declaration";
-import RepoIcon from "#/icons/repo.svg?react";
-import { useHomeStore } from "#/stores/home-store";
-import { Typography } from "#/ui/typography";
 
 export interface GitRepoDropdownProps {
   provider: Provider;
@@ -139,10 +141,7 @@ export function GitRepoDropdown({
       baseRepositories = repositories;
     }
     // If we have a selected repository and the input matches it exactly, show all repositories
-    else if (
-      selectedRepository &&
-      inputValue === selectedRepository.full_name
-    ) {
+    else if (inputValue === selectedRepository?.full_name) {
       baseRepositories = repositories;
     }
     // If no input value, show all repositories
@@ -328,7 +327,6 @@ export function GitRepoDropdown({
           )}
         </div>
         <input
-          // eslint-disable-next-line react/jsx-props-no-spreading
           {...getInputProps({
             disabled,
             placeholder,

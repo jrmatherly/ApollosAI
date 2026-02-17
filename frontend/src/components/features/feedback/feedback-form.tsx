@@ -1,11 +1,13 @@
 import React from "react";
 import hotToast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { Feedback } from "#/api/open-hands.types";
 import { useSubmitFeedback } from "#/hooks/mutation/use-submit-feedback";
-import { BrandButton } from "../settings/brand-button";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
+
+import { BrandButton } from "../settings/brand-button";
 
 const FEEDBACK_VERSION = "1.0";
 const VIEWER_PAGE = "https://www.all-hands.dev/share";
@@ -92,7 +94,7 @@ export function FeedbackForm({ onClose, polarity }: FeedbackFormProps) {
       { feedback },
       {
         onSuccess: (data) => {
-          const { message, feedback_id, password } = data.body; // eslint-disable-line
+          const { message, feedback_id, password } = data.body;
           const link = `${VIEWER_PAGE}?share_id=${feedback_id}`;
           shareFeedbackToast(message, link, password);
           onClose();

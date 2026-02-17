@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
+
 import { FileDiffViewer } from "#/components/features/diff-viewer/file-diff-viewer";
 import { EmptyChangesMessage } from "#/components/features/diff-viewer/empty-changes-message";
 import { retrieveAxiosErrorMessage } from "#/utils/retrieve-axios-error-message";

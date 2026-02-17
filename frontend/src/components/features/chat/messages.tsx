@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
+
 import { OpenHandsAction } from "#/types/core/actions";
 import { OpenHandsObservation } from "#/types/core/observations";
 import {
@@ -10,10 +11,7 @@ import {
   isAgentStateChangeObservation,
   isFinishAction,
 } from "#/types/core/guards";
-import { EventMessage } from "./event-message";
-import { ChatMessage } from "./chat-message";
 import { useOptimisticUserMessageStore } from "#/stores/optimistic-user-message-store";
-import { LaunchMicroagentModal } from "./microagent/launch-microagent-modal";
 import { useUserConversation } from "#/hooks/query/use-user-conversation";
 import { useConversationId } from "#/hooks/use-conversation-id";
 import { useCreateConversationAndSubscribeMultiple } from "#/hooks/use-create-conversation-and-subscribe-multiple";
@@ -25,6 +23,10 @@ import { AgentState } from "#/types/agent-state";
 import { getFirstPRUrl } from "#/utils/parse-pr-url";
 import MemoryIcon from "#/icons/memory_icon.svg?react";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
+
+import { LaunchMicroagentModal } from "./microagent/launch-microagent-modal";
+import { ChatMessage } from "./chat-message";
+import { EventMessage } from "./event-message";
 
 const isErrorEvent = (evt: unknown): evt is { error: true; message: string } =>
   typeof evt === "object" &&

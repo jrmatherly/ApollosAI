@@ -28,7 +28,7 @@ export function BrandButton({
       data-testid={testId}
       disabled={isDisabled}
       // The type is alreadt passed as a prop to the button component
-      // eslint-disable-next-line react/button-has-type
+
       type={type}
       onClick={onClick}
       className={cn(

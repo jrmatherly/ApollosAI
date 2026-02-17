@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { FaCodeCompare } from "react-icons/fa6";
+
 import { I18nKey } from "#/i18n/declaration";
 
 export function EmptyChangesMessage() {

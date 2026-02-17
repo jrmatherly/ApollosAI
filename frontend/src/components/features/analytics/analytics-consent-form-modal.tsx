@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { usePostHog } from "posthog-js/react";
+
 import {
   BaseModalTitle,
   BaseModalDescription,
@@ -8,8 +9,9 @@ import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
 import { useSaveSettings } from "#/hooks/mutation/use-save-settings";
 import { handleCaptureConsent } from "#/utils/handle-capture-consent";
-import { BrandButton } from "../settings/brand-button";
 import { I18nKey } from "#/i18n/declaration";
+
+import { BrandButton } from "../settings/brand-button";
 
 interface AnalyticsConsentFormModalProps {
   onClose: () => void;

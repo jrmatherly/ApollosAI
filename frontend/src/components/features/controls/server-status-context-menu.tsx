@@ -1,14 +1,16 @@
 import { useTranslation } from "react-i18next";
+
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { ContextMenu } from "#/ui/context-menu";
 import { I18nKey } from "#/i18n/declaration";
 import { ConversationStatus } from "#/types/conversation-status";
 import StopCircleIcon from "#/icons/stop-circle.svg?react";
 import PlayCircleIcon from "#/icons/play-circle.svg?react";
-import { ServerStatusContextMenuIconText } from "./server-status-context-menu-icon-text";
-import { ServerStatus } from "./server-status";
 import { Divider } from "#/ui/divider";
 import { cn } from "#/utils/utils";
+
+import { ServerStatusContextMenuIconText } from "./server-status-context-menu-icon-text";
+import { ServerStatus } from "./server-status";
 
 interface ServerStatusContextMenuProps {
   onClose: () => void;

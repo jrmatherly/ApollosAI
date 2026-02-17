@@ -1,14 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+
 import { ContextMenu } from "#/ui/context-menu";
-import { ContextMenuListItem } from "./context-menu-list-item";
 import { Divider } from "#/ui/divider";
 import { useClickOutsideElement } from "#/hooks/use-click-outside-element";
 import { I18nKey } from "#/i18n/declaration";
 import LogOutIcon from "#/icons/log-out.svg?react";
 import DocumentIcon from "#/icons/document.svg?react";
 import { useSettingsNavItems } from "#/hooks/use-settings-nav-items";
+
+import { ContextMenuListItem } from "./context-menu-list-item";
 
 interface AccountSettingsContextMenuProps {
   onLogout: () => void;

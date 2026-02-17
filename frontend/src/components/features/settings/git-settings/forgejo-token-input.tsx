@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
+import { cn } from "#/utils/utils";
+
 import { SettingsInput } from "../settings-input";
 import { KeyStatusIcon } from "../key-status-icon";
-import { cn } from "#/utils/utils";
 
 interface ForgejoTokenInputProps {
   onChange: (value: string) => void;

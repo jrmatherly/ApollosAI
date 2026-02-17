@@ -1,6 +1,7 @@
 import { RUNTIME_INACTIVE_STATES } from "#/types/agent-state";
-import { useActiveConversation } from "./query/use-active-conversation";
 import { useAgentState } from "#/hooks/use-agent-state";
+
+import { useActiveConversation } from "./query/use-active-conversation";
 
 /**
  * Hook to determine if the runtime is ready for operations

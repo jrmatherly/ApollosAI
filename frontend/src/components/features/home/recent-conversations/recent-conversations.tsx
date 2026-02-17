@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { RecentConversationsSkeleton } from "./recent-conversations-skeleton";
-import { RecentConversation } from "./recent-conversation";
 import { usePaginatedConversations } from "#/hooks/query/use-paginated-conversations";
 import { useInfiniteScroll } from "#/hooks/use-infinite-scroll";
 import { cn } from "#/utils/utils";
+
+import { RecentConversation } from "./recent-conversation";
+import { RecentConversationsSkeleton } from "./recent-conversations-skeleton";
 
 export function RecentConversations() {
   const { t } = useTranslation();

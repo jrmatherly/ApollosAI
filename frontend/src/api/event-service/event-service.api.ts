@@ -1,12 +1,15 @@
 import axios from "axios";
+
 import { buildHttpBaseUrl } from "#/utils/websocket-url";
 import { buildSessionHeaders } from "#/utils/utils";
+import { OpenHandsEvent } from "#/types/v1/core";
+
+import { openHands } from "../open-hands-axios";
+
 import type {
   ConfirmationResponseRequest,
   ConfirmationResponseResponse,
 } from "./event-service.types";
-import { openHands } from "../open-hands-axios";
-import { OpenHandsEvent } from "#/types/v1/core";
 
 class EventService {
   /**

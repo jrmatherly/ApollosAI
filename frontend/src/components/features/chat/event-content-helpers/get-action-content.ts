@@ -11,8 +11,9 @@ import {
   FinishAction,
   TaskTrackingAction,
 } from "#/types/core/actions";
-import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 import i18n from "#/i18n";
+
+import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 
 const getRiskText = (risk: ActionSecurityRisk) => {
   switch (risk) {

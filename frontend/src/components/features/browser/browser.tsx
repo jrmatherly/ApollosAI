@@ -1,8 +1,10 @@
 import { useEffect } from "react";
-import { BrowserSnapshot } from "./browser-snapshot";
-import { EmptyBrowserMessage } from "./empty-browser-message";
+
 import { useConversationId } from "#/hooks/use-conversation-id";
 import { useBrowserStore } from "#/stores/browser-store";
+
+import { BrowserSnapshot } from "./browser-snapshot";
+import { EmptyBrowserMessage } from "./empty-browser-message";
 
 export function BrowserPanel() {
   const { url, screenshotSrc, reset } = useBrowserStore();

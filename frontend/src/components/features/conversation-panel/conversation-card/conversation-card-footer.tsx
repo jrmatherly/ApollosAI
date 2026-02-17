@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
+
 import { formatTimeDelta } from "#/utils/format-time-delta";
 import { cn } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";
 import { RepositorySelection } from "#/api/open-hands.types";
+import { ConversationStatus } from "#/types/conversation-status";
+
 import { ConversationRepoLink } from "./conversation-repo-link";
 import { NoRepository } from "./no-repository";
-import { ConversationStatus } from "#/types/conversation-status";
 
 interface ConversationCardFooterProps {
   selectedRepository: RepositorySelection | null;

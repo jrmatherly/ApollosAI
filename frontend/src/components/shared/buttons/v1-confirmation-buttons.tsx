@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { AgentState } from "#/types/agent-state";
-import { ActionTooltip } from "../action-tooltip";
 import { RiskAlert } from "#/components/shared/risk-alert";
 import WarningIcon from "#/icons/u-warning.svg?react";
 import { useEventMessageStore } from "#/stores/event-message-store";
@@ -12,6 +12,8 @@ import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useAgentState } from "#/hooks/use-agent-state";
 import { useRespondToConfirmation } from "#/hooks/mutation/use-respond-to-confirmation";
 import { SecurityRisk } from "#/types/v1/core/base/common";
+
+import { ActionTooltip } from "../action-tooltip";
 
 export function V1ConfirmationButtons() {
   const v1SubmittedEventIds = useEventMessageStore(

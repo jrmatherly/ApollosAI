@@ -1,6 +1,7 @@
+import { useConversationStore } from "#/stores/conversation-store";
+
 import { UploadedFile } from "./uploaded-file";
 import { UploadedImage } from "./uploaded-image";
-import { useConversationStore } from "#/stores/conversation-store";
 
 export function UploadedFiles() {
   const {

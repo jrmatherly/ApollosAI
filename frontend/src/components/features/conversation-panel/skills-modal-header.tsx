@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { RefreshCw } from "lucide-react";
+
 import { BaseModalTitle } from "#/components/shared/modals/confirmation-modals/base-modal";
 import { I18nKey } from "#/i18n/declaration";
+
 import { BrandButton } from "../settings/brand-button";
 
 interface SkillsModalHeaderProps {

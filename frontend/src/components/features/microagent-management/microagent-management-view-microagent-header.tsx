@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { BrandButton } from "../settings/brand-button";
+
 import { getProviderName, constructMicroagentUrl } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";
 import { useMicroagentManagementStore } from "#/stores/microagent-management-store";
+
+import { BrandButton } from "../settings/brand-button";
 
 export function MicroagentManagementViewMicroagentHeader() {
   const { t } = useTranslation();

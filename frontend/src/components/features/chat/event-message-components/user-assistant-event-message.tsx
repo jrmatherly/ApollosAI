@@ -1,14 +1,17 @@
 import React from "react";
+
 import { OpenHandsAction } from "#/types/core/actions";
 import { isUserMessage, isAssistantMessage } from "#/types/core/guards";
+import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
+import { MicroagentStatus } from "#/types/microagent-status";
+
 import { ChatMessage } from "../chat-message";
 import { ImageCarousel } from "../../images/image-carousel";
 import { FileList } from "../../files/file-list";
-import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
+import { parseMessageFromEvent } from "../event-content-helpers/parse-message-from-event";
+
 import { MicroagentStatusWrapper } from "./microagent-status-wrapper";
 import { LikertScaleWrapper } from "./likert-scale-wrapper";
-import { parseMessageFromEvent } from "../event-content-helpers/parse-message-from-event";
-import { MicroagentStatus } from "#/types/microagent-status";
 
 interface UserAssistantEventMessageProps {
   event: OpenHandsAction;

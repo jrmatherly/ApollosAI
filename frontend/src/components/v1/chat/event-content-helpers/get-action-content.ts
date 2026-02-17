@@ -1,5 +1,4 @@
 import { ActionEvent } from "#/types/v1/core";
-import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 import i18n from "#/i18n";
 import { SecurityRisk } from "#/types/v1/core/base/common";
 import {
@@ -22,6 +21,8 @@ import {
   BrowserSwitchTabAction,
   BrowserCloseTabAction,
 } from "#/types/v1/core/base/action";
+
+import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 
 const getRiskText = (risk: SecurityRisk) => {
   switch (risk) {

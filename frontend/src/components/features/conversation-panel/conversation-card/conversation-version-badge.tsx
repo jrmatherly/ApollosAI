@@ -1,5 +1,6 @@
 import { Tooltip } from "@heroui/react";
 import { useTranslation } from "react-i18next";
+
 import { cn } from "#/utils/utils";
 import { I18nKey } from "#/i18n/declaration";
 

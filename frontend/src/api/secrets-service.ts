@@ -1,10 +1,11 @@
+import { Provider, ProviderToken } from "#/types/settings";
+
 import { openHands } from "./open-hands-axios";
 import {
   CustomSecret,
   GetSecretsResponse,
   POSTProviderTokens,
 } from "./secrets-service.types";
-import { Provider, ProviderToken } from "#/types/settings";
 
 export class SecretsService {
   static async getSecrets() {

@@ -1,7 +1,10 @@
 import React from "react";
+
 import { cn } from "#/utils/utils";
+
 import { ChatAddFileButton } from "../chat-add-file-button";
 import { ChatSendButton } from "../chat-send-button";
+
 import { ChatInputField } from "./chat-input-field";
 
 interface ChatInputRowProps {

@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import OpenHandsLogo from "#/assets/branding/openhands-logo.svg?react";
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
 import { TermsAndPrivacyNotice } from "#/components/shared/terms-and-privacy-notice";
-import { BrandButton } from "../settings/brand-button";
 import { useEmailVerification } from "#/hooks/use-email-verification";
+
+import { BrandButton } from "../settings/brand-button";
 
 interface EmailVerificationModalProps {
   onClose: () => void;

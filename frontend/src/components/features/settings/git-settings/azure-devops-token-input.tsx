@@ -1,8 +1,11 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
+
 import { SettingsInput } from "../settings-input";
-import { AzureDevOpsTokenHelpAnchor } from "./azure-devops-token-help-anchor";
 import { KeyStatusIcon } from "../key-status-icon";
+
+import { AzureDevOpsTokenHelpAnchor } from "./azure-devops-token-help-anchor";
 
 interface AzureDevOpsTokenInputProps {
   onChange: (value: string) => void;

@@ -1,5 +1,3 @@
-import React from "react";
-
 const SKELETON_PATTERN = [
   { width: "w-[25%]", height: "h-4", align: "justify-end" },
   { width: "w-[60%]", height: "h-4", align: "justify-start" },

@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCircleInfo } from "react-icons/fa6";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
-import { BrandButton } from "../settings/brand-button";
 import { I18nKey } from "#/i18n/declaration";
 import { useMicroagentManagementStore } from "#/stores/microagent-management-store";
 import XIcon from "#/icons/x.svg?react";
@@ -12,6 +12,8 @@ import { BadgeInput } from "#/components/shared/inputs/badge-input";
 import { MicroagentFormData } from "#/types/microagent-management";
 import { GitRepository } from "#/types/git";
 import { useRepositoryMicroagentContent } from "#/hooks/query/use-repository-microagent-content";
+
+import { BrandButton } from "../settings/brand-button";
 
 interface MicroagentManagementUpsertMicroagentModalProps {
   onConfirm: (formData: MicroagentFormData) => void;

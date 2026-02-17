@@ -1,5 +1,5 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { BrandButton } from "#/components/features/settings/brand-button";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
@@ -8,8 +8,9 @@ import {
   displayErrorToast,
   displaySuccessToast,
 } from "#/utils/custom-toast-handlers";
-import { ApiKeyModalBase } from "./api-key-modal-base";
 import { useDeleteApiKey } from "#/hooks/mutation/use-delete-api-key";
+
+import { ApiKeyModalBase } from "./api-key-modal-base";
 
 interface DeleteApiKeyModalProps {
   isOpen: boolean;

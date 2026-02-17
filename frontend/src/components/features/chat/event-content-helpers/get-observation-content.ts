@@ -8,9 +8,10 @@ import {
   RecallObservation,
   TaskTrackingObservation,
 } from "#/types/core/observations";
+import i18n from "#/i18n";
+
 import { getObservationResult } from "./get-observation-result";
 import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
-import i18n from "#/i18n";
 
 const getReadObservationContent = (event: ReadObservation): string =>
   `\`\`\`\n${event.content}\n\`\`\``;

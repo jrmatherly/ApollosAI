@@ -1,4 +1,5 @@
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+
 import GitService from "#/api/git-service/git-service.api";
 import { Branch, PaginatedBranchesResponse } from "#/types/git";
 import { Provider } from "#/types/settings";

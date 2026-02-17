@@ -2,6 +2,7 @@ import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { X } from "lucide-react";
+
 import { I18nKey } from "#/i18n/declaration";
 import { cn } from "#/utils/utils";
 

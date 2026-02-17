@@ -1,4 +1,5 @@
 import { useMemo, useEffect } from "react";
+
 import { Provider } from "#/types/settings";
 import { GitRepository } from "#/types/git";
 import { useGitRepositories } from "#/hooks/query/use-git-repositories";
@@ -67,7 +68,7 @@ export function useRepositoryData(
     const shouldUseSearch =
       processedSearchInput &&
       searchData &&
-      !(selectedRepository && inputValue === selectedRepository.full_name);
+      !(inputValue === selectedRepository?.full_name);
 
     if (shouldUseSearch) {
       return searchData;

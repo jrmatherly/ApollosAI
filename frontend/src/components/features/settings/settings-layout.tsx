@@ -1,7 +1,9 @@
 import { useState } from "react";
+
+import { SettingsNavItem } from "#/constants/settings-nav";
+
 import { MobileHeader } from "./mobile-header";
 import { SettingsNavigation } from "./settings-navigation";
-import { SettingsNavItem } from "#/constants/settings-nav";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;

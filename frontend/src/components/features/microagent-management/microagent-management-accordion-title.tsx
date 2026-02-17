@@ -1,7 +1,8 @@
 import { GitProviderIcon } from "#/components/shared/git-provider-icon";
 import { GitRepository } from "#/types/git";
-import { MicroagentManagementAddMicroagentButton } from "./microagent-management-add-microagent-button";
 import { StyledTooltip } from "#/components/shared/buttons/styled-tooltip";
+
+import { MicroagentManagementAddMicroagentButton } from "./microagent-management-add-microagent-button";
 
 interface MicroagentManagementAccordionTitleProps {
   repository: GitRepository;

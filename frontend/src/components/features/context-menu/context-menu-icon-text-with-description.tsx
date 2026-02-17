@@ -1,7 +1,9 @@
 import React from "react";
-import { ContextMenuIconText } from "./context-menu-icon-text";
+
 import { Typography } from "#/ui/typography";
 import { cn } from "#/utils/utils";
+
+import { ContextMenuIconText } from "./context-menu-icon-text";
 
 interface ContextMenuIconTextWithDescriptionProps {
   icon: React.ComponentType<{ className?: string }>;

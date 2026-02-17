@@ -1,6 +1,7 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
+
 import { BudgetProgressBar } from "./budget-progress-bar";
 import { BudgetUsageText } from "./budget-usage-text";
 

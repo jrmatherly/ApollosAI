@@ -1,21 +1,24 @@
 import React from "react";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { useGitUser } from "#/hooks/query/use-git-user";
-import { UserActions } from "./user-actions";
 import { OpenHandsLogoButton } from "#/components/shared/buttons/openhands-logo-button";
 import { NewProjectButton } from "#/components/shared/buttons/new-project-button";
 import { ConversationPanelButton } from "#/components/shared/buttons/conversation-panel-button";
 import { SettingsModal } from "#/components/shared/modals/settings/settings-modal";
 import { useSettings } from "#/hooks/query/use-settings";
-import { ConversationPanel } from "../conversation-panel/conversation-panel";
-import { ConversationPanelWrapper } from "../conversation-panel/conversation-panel-wrapper";
 import { useLogout } from "#/hooks/mutation/use-logout";
 import { useConfig } from "#/hooks/query/use-config";
 import { displayErrorToast } from "#/utils/custom-toast-handlers";
 import { I18nKey } from "#/i18n/declaration";
 import { MicroagentManagementButton } from "#/components/shared/buttons/microagent-management-button";
 import { cn } from "#/utils/utils";
+
+import { ConversationPanelWrapper } from "../conversation-panel/conversation-panel-wrapper";
+import { ConversationPanel } from "../conversation-panel/conversation-panel";
+
+import { UserActions } from "./user-actions";
 
 export function Sidebar() {
   const { t } = useTranslation();

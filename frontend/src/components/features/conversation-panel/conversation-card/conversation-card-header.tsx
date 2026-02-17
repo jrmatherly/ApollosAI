@@ -1,6 +1,8 @@
 import { ConversationStatus } from "#/types/conversation-status";
-import { ConversationCardTitle } from "./conversation-card-title";
+
 import { ConversationStatusIndicator } from "../../home/recent-conversations/conversation-status-indicator";
+
+import { ConversationCardTitle } from "./conversation-card-title";
 import { ConversationStatusBadges } from "./conversation-status-badges";
 import { ConversationVersionBadge } from "./conversation-version-badge";
 

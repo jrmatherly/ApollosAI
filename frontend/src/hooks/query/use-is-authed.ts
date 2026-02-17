@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+
 import AuthService from "#/api/auth-service/auth-service.api";
-import { useConfig } from "./use-config";
 import { useIsOnTosPage } from "#/hooks/use-is-on-tos-page";
+
+import { useConfig } from "./use-config";
 
 export const useIsAuthed = () => {
   const { data: config } = useConfig();

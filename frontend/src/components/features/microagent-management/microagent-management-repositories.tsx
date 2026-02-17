@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionItem, Spinner } from "@heroui/react";
-import { MicroagentManagementRepoMicroagents } from "./microagent-management-repo-microagents";
+
 import { GitRepository } from "#/types/git";
 import { TabType } from "#/types/microagent-management";
-import { MicroagentManagementNoRepositories } from "./microagent-management-no-repositories";
 import { I18nKey } from "#/i18n/declaration";
 import { DOCUMENTATION_URL } from "#/utils/constants";
+
+import { MicroagentManagementNoRepositories } from "./microagent-management-no-repositories";
+import { MicroagentManagementRepoMicroagents } from "./microagent-management-repo-microagents";
 import { MicroagentManagementAccordionTitle } from "./microagent-management-accordion-title";
 
 type MicroagentManagementRepositoriesProps = {

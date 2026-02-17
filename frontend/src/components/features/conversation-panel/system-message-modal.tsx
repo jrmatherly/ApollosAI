@@ -1,10 +1,12 @@
 import { useState } from "react";
+
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
+import { SystemMessageForModal } from "#/utils/system-message-adapter";
+
 import { SystemMessageHeader } from "./system-message-modal/system-message-header";
 import { TabNavigation } from "./system-message-modal/tab-navigation";
 import { TabContent } from "./system-message-modal/tab-content";
-import { SystemMessageForModal } from "#/utils/system-message-adapter";
 
 interface SystemMessageModalProps {
   isOpen: boolean;

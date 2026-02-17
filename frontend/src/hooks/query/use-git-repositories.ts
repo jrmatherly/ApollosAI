@@ -1,11 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useConfig } from "./use-config";
-import { useUserProviders } from "../use-user-providers";
-import { useAppInstallations } from "./use-app-installations";
-import { GitRepository } from "../../types/git";
-import { Provider } from "../../types/settings";
+
 import GitService from "#/api/git-service/git-service.api";
 import { shouldUseInstallationRepos } from "#/utils/utils";
+
+import { useUserProviders } from "../use-user-providers";
+import { GitRepository } from "../../types/git";
+import { Provider } from "../../types/settings";
+
+import { useConfig } from "./use-config";
+import { useAppInstallations } from "./use-app-installations";
 
 interface UseGitRepositoriesOptions {
   provider: Provider | null;

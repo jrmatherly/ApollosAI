@@ -1,6 +1,4 @@
 import { ObservationEvent } from "#/types/v1/core";
-import { getObservationResult } from "./get-observation-result";
-import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 import i18n from "#/i18n";
 import {
   MCPToolObservation,
@@ -13,6 +11,9 @@ import {
   StrReplaceEditorObservation,
   TaskTrackerObservation,
 } from "#/types/v1/core/base/observation";
+
+import { getObservationResult } from "./get-observation-result";
+import { getDefaultEventContent, MAX_CONTENT_LENGTH } from "./shared";
 
 // File Editor Observations
 const getFileEditorObservationContent = (

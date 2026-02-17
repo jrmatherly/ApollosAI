@@ -1,4 +1,5 @@
 import { SuggestedTask } from "#/utils/types";
+
 import { openHands } from "../open-hands-axios";
 
 export class SuggestionsService {

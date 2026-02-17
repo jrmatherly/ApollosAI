@@ -1,4 +1,5 @@
 import { TaskTrackingObservation } from "#/types/core/observations";
+
 import { TaskListSection } from "./task-tracking/task-list-section";
 
 interface TaskTrackingObservationContentProps {

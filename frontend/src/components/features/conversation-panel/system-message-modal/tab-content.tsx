@@ -1,7 +1,8 @@
+import { ChatCompletionToolParam } from "#/types/v1/core";
+
 import { SystemMessageContent } from "./system-message-content";
 import { ToolsList } from "./tools-list";
 import { EmptyToolsState } from "./empty-tools-state";
-import { ChatCompletionToolParam } from "#/types/v1/core";
 
 interface TabContentProps {
   activeTab: "system" | "tools";

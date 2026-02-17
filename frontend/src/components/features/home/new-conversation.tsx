@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
-import { BrandButton } from "../settings/brand-button";
 import { useCreateConversation } from "#/hooks/mutation/use-create-conversation";
 import { useIsCreatingConversation } from "#/hooks/use-is-creating-conversation";
 import PlusIcon from "#/icons/u-plus.svg?react";
+
+import { BrandButton } from "../settings/brand-button";
 
 export function NewConversation() {
   const { t } = useTranslation();

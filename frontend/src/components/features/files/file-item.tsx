@@ -1,4 +1,5 @@
 import { FaFile } from "react-icons/fa";
+
 import { RemoveButton } from "#/components/shared/buttons/remove-button";
 
 interface FileItemProps {

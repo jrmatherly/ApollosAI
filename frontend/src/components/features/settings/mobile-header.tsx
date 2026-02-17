@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import SettingsIcon from "#/icons/settings-gear.svg?react";
 import { Typography } from "#/ui/typography";
 import { I18nKey } from "#/i18n/declaration";

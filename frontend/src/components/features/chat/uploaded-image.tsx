@@ -1,5 +1,6 @@
 import React from "react";
 import { LoaderCircle } from "lucide-react";
+
 import { RemoveFileButton } from "./remove-file-button";
 
 interface UploadedImageProps {

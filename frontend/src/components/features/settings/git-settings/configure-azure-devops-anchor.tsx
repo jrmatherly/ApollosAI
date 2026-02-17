@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { useConfig } from "#/hooks/query/use-config";
 import { useAuthUrl } from "#/hooks/use-auth-url";
+
 import { BrandButton } from "../brand-button";
 
 export function ConfigureAzureDevOpsAnchor() {

@@ -1,10 +1,12 @@
 import { cn } from "#/utils/utils";
-import { ChatInterfaceWrapper } from "./chat-interface-wrapper";
-import { ConversationTabContent } from "../conversation-tabs/conversation-tab-content/conversation-tab-content";
-import { ResizeHandle } from "../../../ui/resize-handle";
 import { useResizablePanels } from "#/hooks/use-resizable-panels";
 import { useConversationStore } from "#/stores/conversation-store";
 import { useBreakpoint } from "#/hooks/use-breakpoint";
+
+import { ResizeHandle } from "../../../ui/resize-handle";
+import { ConversationTabContent } from "../conversation-tabs/conversation-tab-content/conversation-tab-content";
+
+import { ChatInterfaceWrapper } from "./chat-interface-wrapper";
 
 function getMobileChatPanelClass(isRightPanelShown: boolean) {
   return isRightPanelShown ? "h-160" : "flex-1";

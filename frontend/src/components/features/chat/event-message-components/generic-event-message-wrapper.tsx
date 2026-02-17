@@ -1,10 +1,10 @@
-import React from "react";
 import { OpenHandsAction } from "#/types/core/actions";
 import { OpenHandsObservation } from "#/types/core/observations";
 import { isOpenHandsAction, isOpenHandsObservation } from "#/types/core/guards";
+import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
+
 import { ChatMessage } from "../chat-message";
 import { GenericEventMessage } from "../generic-event-message";
-import { ConfirmationButtons } from "#/components/shared/buttons/confirmation-buttons";
 import { getEventContent } from "../event-content-helpers/get-event-content";
 import { getObservationResult } from "../event-content-helpers/get-observation-result";
 

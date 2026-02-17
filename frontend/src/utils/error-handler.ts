@@ -1,5 +1,7 @@
 import type { PostHog } from "posthog-js";
+
 import { handleStatusMessage } from "#/services/actions";
+
 import { displayErrorToast } from "./custom-toast-handlers";
 
 interface ErrorDetails {

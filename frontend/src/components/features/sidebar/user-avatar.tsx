@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
 import ProfileIcon from "#/icons/profile.svg?react";
 import { cn } from "#/utils/utils";
+
 import { Avatar } from "./avatar";
 
 interface UserAvatarProps {

@@ -2,14 +2,11 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import { usePostHog } from "posthog-js/react";
 import { useParams, useNavigate } from "react-router";
+
 import { transformVSCodeUrl } from "#/utils/vscode-url-helper";
 import useMetricsStore from "#/stores/metrics-store";
 import { ConversationStatus } from "#/types/conversation-status";
 import ConversationService from "#/api/conversation-service/conversation-service.api";
-import { useDeleteConversation } from "./mutation/use-delete-conversation";
-import { useUnifiedPauseConversationSandbox } from "./mutation/use-unified-stop-conversation";
-import { useGetTrajectory } from "./mutation/use-get-trajectory";
-import { useUpdateConversationPublicFlag } from "./mutation/use-update-conversation-public-flag";
 import { downloadTrajectory } from "#/utils/download-trajectory";
 import {
   displayErrorToast,
@@ -17,13 +14,17 @@ import {
 } from "#/utils/custom-toast-handlers";
 import { I18nKey } from "#/i18n/declaration";
 import { useEventStore } from "#/stores/use-event-store";
-
-import { useActiveConversation } from "./query/use-active-conversation";
-import { useDownloadConversation } from "./use-download-conversation";
 import {
   adaptSystemMessage,
   SystemMessageForModal,
 } from "#/utils/system-message-adapter";
+
+import { useDeleteConversation } from "./mutation/use-delete-conversation";
+import { useUnifiedPauseConversationSandbox } from "./mutation/use-unified-stop-conversation";
+import { useGetTrajectory } from "./mutation/use-get-trajectory";
+import { useUpdateConversationPublicFlag } from "./mutation/use-update-conversation-public-flag";
+import { useActiveConversation } from "./query/use-active-conversation";
+import { useDownloadConversation } from "./use-download-conversation";
 
 interface UseConversationNameContextMenuProps {
   conversationId?: string;

@@ -1,5 +1,6 @@
 import { CSSProperties } from "react";
 import toast, { ToastOptions } from "react-hot-toast";
+
 import { calculateToastDuration } from "./toast-duration";
 
 const TOAST_STYLE: CSSProperties = {

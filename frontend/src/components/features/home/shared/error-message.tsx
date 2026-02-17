@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ErrorMessageProps {
   isError: boolean;
   message?: string;

@@ -1,9 +1,12 @@
 import React from "react";
-import { UserAvatar } from "./user-avatar";
-import { AccountSettingsContextMenu } from "../context-menu/account-settings-context-menu";
+
 import { useShouldShowUserFeatures } from "#/hooks/use-should-show-user-features";
 import { cn } from "#/utils/utils";
 import { useConfig } from "#/hooks/query/use-config";
+
+import { AccountSettingsContextMenu } from "../context-menu/account-settings-context-menu";
+
+import { UserAvatar } from "./user-avatar";
 
 interface UserActionsProps {
   onLogout: () => void;

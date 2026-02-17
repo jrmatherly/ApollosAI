@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { sharedConversationService } from "#/api/shared-conversation-service.api";
 
 export const useSharedConversationEvents = (conversationId?: string) =>

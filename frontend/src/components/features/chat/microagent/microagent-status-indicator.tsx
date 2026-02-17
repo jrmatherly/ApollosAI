@@ -1,9 +1,10 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "@heroui/react";
+
 import { MicroagentStatus } from "#/types/microagent-status";
-import { SuccessIndicator } from "../success-indicator";
 import { Typography } from "#/ui/typography";
+
+import { SuccessIndicator } from "../success-indicator";
 
 interface MicroagentStatusIndicatorProps {
   status: MicroagentStatus;

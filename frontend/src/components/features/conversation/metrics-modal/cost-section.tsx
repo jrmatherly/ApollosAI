@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { BudgetDisplay } from "../../conversation-panel/budget-display";
+
 import { I18nKey } from "#/i18n/declaration";
+
+import { BudgetDisplay } from "../../conversation-panel/budget-display";
 
 interface CostSectionProps {
   cost: number | null;

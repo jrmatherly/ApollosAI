@@ -1,4 +1,5 @@
 import { toSocketIo } from "@mswjs/socket.io-binding";
+
 import { AgentState } from "#/types/agent-state";
 import {
   AssistantMessageAction,
@@ -8,6 +9,7 @@ import { AgentStateChangeObservation } from "#/types/core/observations";
 import { MessageEvent } from "#/types/v1/core";
 import { AgentErrorEvent } from "#/types/v1/core/events/observation-event";
 import { ConversationErrorEvent } from "#/types/v1/core/events/conversation-state-event";
+
 import { MockSessionMessaage } from "./session-history.mock";
 
 export const generateAgentStateChangeObservation = (

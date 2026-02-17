@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import { I18nKey } from "#/i18n/declaration";
 import TachometerFastIcon from "#/icons/tachometer-fast.svg?react";
 import PrStatusIcon from "#/icons/pr-status.svg?react";

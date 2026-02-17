@@ -2,6 +2,7 @@ import React from "react";
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { FaExternalLinkAlt, FaHome } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+
 import { useUnifiedActiveHost } from "#/hooks/query/use-unified-active-host";
 import { PathForm } from "#/components/features/served-host/path-form";
 import { I18nKey } from "#/i18n/declaration";

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+
 import { isMobileDevice } from "#/utils/utils";
 import {
   ensureCursorVisible,

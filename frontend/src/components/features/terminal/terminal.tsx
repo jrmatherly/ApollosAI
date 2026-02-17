@@ -2,8 +2,9 @@ import { useTerminal } from "#/hooks/use-terminal";
 import "@xterm/xterm/css/xterm.css";
 import { RUNTIME_INACTIVE_STATES } from "#/types/agent-state";
 import { cn } from "#/utils/utils";
-import { WaitingForRuntimeMessage } from "../chat/waiting-for-runtime-message";
 import { useAgentState } from "#/hooks/use-agent-state";
+
+import { WaitingForRuntimeMessage } from "../chat/waiting-for-runtime-message";
 
 function Terminal() {
   const { curAgentState } = useAgentState();

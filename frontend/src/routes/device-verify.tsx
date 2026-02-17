@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState } from "react";
 import { useSearchParams } from "react-router";
+
 import { useIsAuthed } from "#/hooks/query/use-is-authed";
 
 export default function DeviceVerify() {

@@ -2,43 +2,45 @@ import React from "react";
 import { usePostHog } from "posthog-js/react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+
 import { convertImageToBase64 } from "#/utils/convert-image-to-base-64";
-import { TrajectoryActions } from "../trajectory/trajectory-actions";
 import { createChatMessage } from "#/services/chat-service";
-import { InteractiveChatBox } from "./interactive-chat-box";
 import { AgentState } from "#/types/agent-state";
 import { useFilteredEvents } from "#/hooks/use-filtered-events";
-import { FeedbackModal } from "../feedback/feedback-modal";
 import { useScrollToBottom } from "#/hooks/use-scroll-to-bottom";
-import { TypingIndicator } from "./typing-indicator";
 import { useWsClient } from "#/context/ws-client-provider";
-import { Messages as V0Messages } from "./messages";
-import { ChatSuggestions } from "./chat-suggestions";
 import { ScrollProvider } from "#/context/scroll-context";
 import { useInitialQueryStore } from "#/stores/initial-query-store";
 import { useSendMessage } from "#/hooks/use-send-message";
 import { useAgentState } from "#/hooks/use-agent-state";
 import { useHandleBuildPlanClick } from "#/hooks/use-handle-build-plan-click";
 import { USE_PLANNING_AGENT } from "#/utils/feature-flags";
-
 import { ScrollToBottomButton } from "#/components/shared/buttons/scroll-to-bottom-button";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
-import { ChatMessagesSkeleton } from "./chat-messages-skeleton";
 import { displayErrorToast } from "#/utils/custom-toast-handlers";
 import { useErrorMessageStore } from "#/stores/error-message-store";
 import { useOptimisticUserMessageStore } from "#/stores/optimistic-user-message-store";
-import { ErrorMessageBanner } from "./error-message-banner";
 import { Messages as V1Messages } from "#/components/v1/chat";
 import { useUnifiedUploadFiles } from "#/hooks/mutation/use-unified-upload-files";
 import { useConfig } from "#/hooks/query/use-config";
 import { validateFiles } from "#/utils/file-validation";
 import { useConversationStore } from "#/stores/conversation-store";
-import ConfirmationModeEnabled from "./confirmation-mode-enabled";
 import { useActiveConversation } from "#/hooks/query/use-active-conversation";
 import { useTaskPolling } from "#/hooks/query/use-task-polling";
 import { useConversationWebSocket } from "#/contexts/conversation-websocket-context";
-import ChatStatusIndicator from "./chat-status-indicator";
 import { getStatusColor, getStatusText } from "#/utils/utils";
+
+import { FeedbackModal } from "../feedback/feedback-modal";
+import { TrajectoryActions } from "../trajectory/trajectory-actions";
+
+import ChatStatusIndicator from "./chat-status-indicator";
+import ConfirmationModeEnabled from "./confirmation-mode-enabled";
+import { ErrorMessageBanner } from "./error-message-banner";
+import { ChatMessagesSkeleton } from "./chat-messages-skeleton";
+import { ChatSuggestions } from "./chat-suggestions";
+import { Messages as V0Messages } from "./messages";
+import { TypingIndicator } from "./typing-indicator";
+import { InteractiveChatBox } from "./interactive-chat-box";
 
 function getEntryPoint(
   hasRepository: boolean | null,
@@ -216,7 +218,6 @@ export function ChatInterface() {
     }
     // Note: We intentionally exclude autoScroll from deps because we only want
     // to scroll when message content changes, not when autoScroll state changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     v1UiEvents.length,
     v0Events.length,

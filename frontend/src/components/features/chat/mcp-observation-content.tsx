@@ -1,6 +1,6 @@
-import React from "react";
 import ReactJsonView from "@microlink/react-json-view";
 import { useTranslation } from "react-i18next";
+
 import { MCPObservation } from "#/types/core/observations";
 import { JSON_VIEW_THEME } from "#/utils/constants";
 

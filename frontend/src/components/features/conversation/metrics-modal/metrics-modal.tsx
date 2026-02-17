@@ -1,16 +1,18 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import { BaseModalTitle } from "#/components/shared/modals/confirmation-modals/base-modal";
 import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModalBody } from "#/components/shared/modals/modal-body";
 import { I18nKey } from "#/i18n/declaration";
+import useMetricsStore from "#/stores/metrics-store";
+import { useActiveConversation } from "#/hooks/query/use-active-conversation";
+import { useSandboxMetrics } from "#/hooks/query/use-sandbox-metrics";
+
 import { CostSection } from "./cost-section";
 import { UsageSection } from "./usage-section";
 import { ContextWindowSection } from "./context-window-section";
 import { EmptyState } from "./empty-state";
-import useMetricsStore from "#/stores/metrics-store";
-import { useActiveConversation } from "#/hooks/query/use-active-conversation";
-import { useSandboxMetrics } from "#/hooks/query/use-sandbox-metrics";
 
 interface MetricsModalProps {
   isOpen: boolean;

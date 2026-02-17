@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useConfig } from "./use-config";
-import { useIsAuthed } from "./use-is-authed";
+
 import GitService from "#/api/git-service/git-service.api";
-import { useUserProviders } from "../use-user-providers";
 import { Provider } from "#/types/settings";
 import { shouldUseInstallationRepos } from "#/utils/utils";
+
+import { useUserProviders } from "../use-user-providers";
+
+import { useIsAuthed } from "./use-is-authed";
+import { useConfig } from "./use-config";
 
 export const useAppInstallations = (selectedProvider: Provider | null) => {
   const { data: config } = useConfig();

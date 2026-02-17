@@ -1,10 +1,13 @@
 import React from "react";
+
 import { OpenHandsObservation } from "#/types/core/observations";
 import { isErrorObservation } from "#/types/core/guards";
+import { MicroagentStatus } from "#/types/microagent-status";
+
 import { ErrorMessage } from "../error-message";
+
 import { MicroagentStatusWrapper } from "./microagent-status-wrapper";
 import { LikertScaleWrapper } from "./likert-scale-wrapper";
-import { MicroagentStatus } from "#/types/microagent-status";
 
 interface ErrorEventMessageProps {
   event: OpenHandsObservation;

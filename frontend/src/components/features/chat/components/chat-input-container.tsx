@@ -1,10 +1,13 @@
 import React from "react";
-import { DragOver } from "../drag-over";
-import { UploadedFiles } from "../uploaded-files";
-import { ChatInputRow } from "./chat-input-row";
-import { ChatInputActions } from "./chat-input-actions";
+
 import { useConversationStore } from "#/stores/conversation-store";
 import { cn } from "#/utils/utils";
+
+import { DragOver } from "../drag-over";
+import { UploadedFiles } from "../uploaded-files";
+
+import { ChatInputRow } from "./chat-input-row";
+import { ChatInputActions } from "./chat-input-actions";
 
 interface ChatInputContainerProps {
   chatContainerRef: React.RefObject<HTMLDivElement | null>;

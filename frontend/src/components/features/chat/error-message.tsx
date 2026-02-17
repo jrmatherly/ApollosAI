@@ -1,8 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+
 import ArrowDown from "#/icons/angle-down-solid.svg?react";
 import ArrowUp from "#/icons/angle-up-solid.svg?react";
 import i18n from "#/i18n";
+
 import { MarkdownRenderer } from "../markdown/markdown-renderer";
 
 interface ErrorMessageProps {

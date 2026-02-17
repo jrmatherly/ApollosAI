@@ -2,6 +2,7 @@ import { IoLockClosed } from "react-icons/io5";
 import { Tooltip } from "@heroui/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+
 import { I18nKey } from "#/i18n/declaration";
 
 export function SecurityLock() {

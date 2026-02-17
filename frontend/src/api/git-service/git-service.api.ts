@@ -1,8 +1,9 @@
-import { openHands } from "../open-hands-axios";
 import { Provider } from "#/types/settings";
 import { GitRepository, PaginatedBranchesResponse, Branch } from "#/types/git";
 import { extractNextPageFromLink } from "#/utils/extract-next-page-from-link";
 import { RepositoryMicroagent } from "#/types/microagent-management";
+
+import { openHands } from "../open-hands-axios";
 import {
   MicroagentContentResponse,
   GitChange,
