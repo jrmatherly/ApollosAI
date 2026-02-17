@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 # Without this, tables for models imported only inside test functions
 # may not exist when the engine fixture runs.
 import apollosai.storage.models.api_key  # noqa: F401
+import apollosai.storage.models.audit_log  # noqa: F401
 import apollosai.storage.models.auth_token  # noqa: F401
 import apollosai.storage.models.conversation  # noqa: F401
 import apollosai.storage.models.encrypted_secret  # noqa: F401
