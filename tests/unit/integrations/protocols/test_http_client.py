@@ -20,6 +20,8 @@ from openhands.integrations.service_types import (
 class TestableHTTPClient(HTTPClient):
     """Testable concrete implementation of HTTPClient for unit testing."""
 
+    __test__ = False  # Prevent pytest from collecting this as a test class
+
     def __init__(self, provider_name: str = 'test-provider'):
         self.token = SecretStr('test-token')
         self.refresh = False
