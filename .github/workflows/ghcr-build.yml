@@ -201,7 +201,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/jrmatherly/ApollosAI/enterprise-server
+          images: ghcr.io/jrmatherly/apollosai/enterprise-server
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -228,7 +228,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: enterprise/Dockerfile
+          file: containers/apollosai/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
