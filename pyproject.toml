@@ -28,6 +28,7 @@ dependencies = [
   "bashlex>=0.18",
   "boto3",
   "browsergym-core==0.13.3",
+  "cryptography>=46.0.5,<47",
   "deprecated",
   "deprecation>=2.1",
   "dirhash",
@@ -42,6 +43,7 @@ dependencies = [
   "html2text",
   "httpx-aiohttp>=0.1.8",
   "ipywidgets>=8.1.5",
+  "itsdangerous>=2.2,<3",
   "jinja2>=3.1.6",
   "joblib",
   "json-repair",
@@ -51,6 +53,7 @@ dependencies = [
   "litellm!=1.64.4,!=1.67.*,>=1.74.3",
   "lmnr>=0.7.20",
   "memory-profiler>=0.61",
+  "msal>=1.34,<2",
   "numpy",
   "openai==2.8",
   "openhands-aci==0.3.2",
@@ -151,6 +154,7 @@ repository = "https://github.com/OpenHands/OpenHands"
 packages = [
   { include = "openhands/**/*" },
   { include = "third_party/**/*" },
+  { include = "apollosai/**/*" },
   { include = "pyproject.toml", to = "openhands" },
   { include = "poetry.lock", to = "openhands" },
 ]
