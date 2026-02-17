@@ -9,10 +9,7 @@ class ApollosAIServerConfig(ServerConfig):
     app_mode = AppMode.SAAS
     enable_billing = False
     hide_llm_settings = False
-    # Disable V1 routes in Phase 1 — V1 UserContextInjector deferred to Phase 1.5.
-    # Without V1 injectors configured, V1 routes would use the default bridge which
-    # may not resolve to EntraIDUserAuth correctly.
-    enable_v1: bool = False
+    enable_v1: bool = True
 
     settings_store_class: str = (
         'apollosai.storage.stores.settings_store.ApollosAISettingsStore'
@@ -27,7 +24,40 @@ class ApollosAIServerConfig(ServerConfig):
     monitoring_listener_class: str = 'openhands.server.monitoring.MonitoringListener'
 
     def verify_config(self):
-        pass
+        """Validate required environment variables for production.
+
+        In production mode (APOLLOSAI_ALLOW_UNAUTHENTICATED not set),
+        raises ValueError for missing required config. In dev mode,
+        logs a warning instead.
+        """
+        from apollosai.server.auth.constants import (
+            get_entra_client_id,
+            get_entra_tenant_id,
+            get_jwt_secret,
+        )
+
+        checks = {
+            'ENTRA_TENANT_ID': get_entra_tenant_id(),
+            'ENTRA_CLIENT_ID': get_entra_client_id(),
+            'JWT_SECRET': get_jwt_secret(),
+        }
+        missing = [name for name, value in checks.items() if not value]
+        if not missing:
+            return
+        # Parse APOLLOSAI_ALLOW_UNAUTHENTICATED explicitly (same as get_instance)
+        allow_unauth = os.environ.get(
+            'APOLLOSAI_ALLOW_UNAUTHENTICATED', ''
+        ).lower() in ('1', 'true', 'yes')
+        msg = (
+            f'Missing required environment variables: {", ".join(missing)}. '
+            'Set APOLLOSAI_ALLOW_UNAUTHENTICATED=1 for development.'
+        )
+        if allow_unauth:
+            import logging
+
+            logging.getLogger(__name__).warning(msg)
+        else:
+            raise ValueError(msg)
 
     def get_config(self):
         return {
