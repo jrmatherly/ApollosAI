@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        // Python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        // Frontend
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        // Docker & Infrastructure
+        "ms-azuretools.vscode-docker",
+        // General
+        "editorconfig.editorconfig",
+        "github.copilot"
+    ],
+    "unwantedRecommendations": [
+        // Avoid conflicts with Ruff
+        "ms-python.autopep8",
+        "ms-python.black-formatter",
+        "ms-python.isort"
+    ]
+}

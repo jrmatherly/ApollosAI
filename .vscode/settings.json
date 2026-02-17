@@ -1,21 +1,62 @@
 {
-    // force *nix line endings so files don't look modified in container run from Windows clone
+    // ── File Handling ──────────────────────────────────────────────
+    // Force *nix line endings so files don't look modified in container runs from Windows clones
     "files.eol": "\n",
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
+    // ── Python ─────────────────────────────────────────────────────
     "python.defaultInterpreterPath": "./.venv/bin/python",
     "python.terminal.activateEnvironment": true,
     "python.analysis.autoImportCompletions": true,
     "python.analysis.autoSearchPaths": true,
-    "python.analysis.extraPaths": [
-        "./.venv/lib/python3.12/site-packages"
-    ],
     "python.analysis.packageIndexDepths": [
         {
             "name": "openhands",
             "depth": 10,
             "includeAllSymbols": true
+        },
+        {
+            "name": "enterprise",
+            "depth": 10,
+            "includeAllSymbols": true
         }
     ],
-    "python.analysis.stubPath": "./.venv/lib/python3.12/site-packages",
+    // ── Python Formatting & Linting (Ruff) ─────────────────────────
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    "ruff.configuration": "dev_config/python/ruff.toml",
+    // ── TypeScript ─────────────────────────────────────────────────
+    "typescript.tsdk": "frontend/node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    // ── Frontend Formatting ────────────────────────────────────────
+    "[typescript][typescriptreact][javascript][javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[json][jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    // ── Tailwind CSS ───────────────────────────────────────────────
+    "tailwindCSS.experimental.configFile": "frontend/tailwind.config.js",
+    // ── Search Exclusions ──────────────────────────────────────────
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/dist": true,
+        "**/__pycache__": true,
+        "**/poetry.lock": true,
+        "**/package-lock.json": true,
+        "frontend/.react-router": true
+    },
+    "files.watcherExclude": {
+        "**/.venv/**": true,
+        "**/node_modules/**": true,
+        "**/__pycache__/**": true
+    }
 }

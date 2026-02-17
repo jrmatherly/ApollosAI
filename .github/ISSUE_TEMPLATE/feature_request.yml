@@ -1,7 +1,7 @@
 name: Feature Request or Enhancement
 description: Suggest a new feature or improvement for OpenHands
-title: '[Feature]: '
-labels: ['enhancement']
+title: "[Feature]: "
+labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
@@ -15,8 +15,8 @@ body:
       label: Is there an existing feature request for this?
       description: Please search existing issues and feature requests before creating a new one. If found, react or comment to the duplicate issue instead of making a new one.
       options:
-      - label: I have searched existing issues and feature requests, and this is not a duplicate.
-        required: true
+        - label: I have searched existing issues and feature requests, and this is not a duplicate.
+          required: true
 
   - type: textarea
     id: problem-statement

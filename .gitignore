@@ -267,3 +267,5 @@ test-results
 # local docs
 .scratchpad/
 .local_docs/
+.todos/
+.sidecar/
