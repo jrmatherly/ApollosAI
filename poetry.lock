@@ -362,6 +362,21 @@ doc = ["doc8", "sphinx (>=7.0.0)", "sphinx-autobuild", "sphinx-autodoc-typehints
 test = ["dateparser (==1.*)", "pre-commit", "pytest", "pytest-cov", "pytest-mock", "pytz (==2025.2)", "simplejson (==3.*)"]
 
 [[package]]
+name = "asgiref"
+version = "3.11.1"
+description = "ASGI specs, helper code, and adapters"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "asgiref-3.11.1-py3-none-any.whl", hash = "sha256:e8667a091e69529631969fd45dc268fa79b99c92c5fcdda727757e52146ec133"},
+    {file = "asgiref-3.11.1.tar.gz", hash = "sha256:5f184dc43b7e763efe848065441eac62229c9f7b0475f41f80e207a114eda4ce"},
+]
+
+[package.extras]
+tests = ["mypy (>=1.14.0)", "pytest", "pytest-asyncio"]
+
+[[package]]
 name = "asn1crypto"
 version = "1.5.1"
 description = "Fast ASN.1 parser and serializer with definitions for private keys, public keys, certificates, CRL, OCSP, CMS, PKCS#3, PKCS#7, PKCS#8, PKCS#12, PKCS#5, X.509 and TSP"
@@ -551,6 +566,45 @@ files = [
 
 [package.dependencies]
 cryptography = "*"
+
+[[package]]
+name = "azure-core"
+version = "1.38.1"
+description = "Microsoft Azure Core Library for Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "azure_core-1.38.1-py3-none-any.whl", hash = "sha256:69f08ee3d55136071b7100de5b198994fc1c5f89d2b91f2f43156d20fcf200a4"},
+    {file = "azure_core-1.38.1.tar.gz", hash = "sha256:9317db1d838e39877eb94a2240ce92fa607db68adf821817b723f0d679facbf6"},
+]
+
+[package.dependencies]
+requests = ">=2.21.0"
+typing-extensions = ">=4.6.0"
+
+[package.extras]
+aio = ["aiohttp (>=3.0)"]
+tracing = ["opentelemetry-api (>=1.26,<2.0)"]
+
+[[package]]
+name = "azure-identity"
+version = "1.25.2"
+description = "Microsoft Azure Identity Library for Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "azure_identity-1.25.2-py3-none-any.whl", hash = "sha256:1b40060553d01a72ba0d708b9a46d0f61f56312e215d8896d836653ffdc6753d"},
+    {file = "azure_identity-1.25.2.tar.gz", hash = "sha256:030dbaa720266c796221c6cdbd1999b408c079032c919fef725fcc348a540fe9"},
+]
+
+[package.dependencies]
+azure-core = ">=1.31.0"
+cryptography = ">=2.5"
+msal = ">=1.31.0"
+msal-extensions = ">=1.2.0"
+typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "babel"
@@ -3394,10 +3448,9 @@ files = [
 name = "h2"
 version = "4.3.0"
 description = "Pure-Python HTTP/2 protocol implementation"
-optional = true
+optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"third-party-runtimes\""
 files = [
     {file = "h2-4.3.0-py3-none-any.whl", hash = "sha256:c438f029a25f7945c69e0ccf0fb951dc3f73a5f6412981daee861431b70e2bdd"},
     {file = "h2-4.3.0.tar.gz", hash = "sha256:6c59efe4323fa18b47a632221a1888bd7fde6249819beda254aeca909f221bf1"},
@@ -3447,10 +3500,9 @@ tests = ["pytest"]
 name = "hpack"
 version = "4.1.0"
 description = "Pure-Python HPACK header encoding"
-optional = true
+optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"third-party-runtimes\""
 files = [
     {file = "hpack-4.1.0-py3-none-any.whl", hash = "sha256:157ac792668d995c657d93111f46b4535ed114f0c9c8d672271bbec7eae1b496"},
     {file = "hpack-4.1.0.tar.gz", hash = "sha256:ec5eca154f7056aa06f196a557655c5b009b382873ac8d1e66e79e87535f1dca"},
@@ -3520,6 +3572,7 @@ files = [
 [package.dependencies]
 anyio = "*"
 certifi = "*"
+h2 = {version = ">=3,<5", optional = true, markers = "extra == \"http2\""}
 httpcore = "==1.*"
 idna = "*"
 
@@ -3601,10 +3654,9 @@ typing = ["types-PyYAML", "types-requests", "types-simplejson", "types-toml", "t
 name = "hyperframe"
 version = "6.1.0"
 description = "Pure-Python HTTP/2 framing"
-optional = true
+optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"third-party-runtimes\""
 files = [
     {file = "hyperframe-6.1.0-py3-none-any.whl", hash = "sha256:b03380493a519fce58ea5af42e4a42317bf9bd425596f7a0835ffce80f1a42e5"},
     {file = "hyperframe-6.1.0.tar.gz", hash = "sha256:f630908a00854a7adeabd6382b43923a4c4cd4b821fcb527e6ab9e15382a3b08"},
@@ -5391,6 +5443,120 @@ files = [
 psutil = "*"
 
 [[package]]
+name = "microsoft-kiota-abstractions"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_abstractions-1.9.8-py3-none-any.whl", hash = "sha256:bb3243ce776dc0197cb006289a6f0b8a0db699b3885206adde7e6a76c17904a1"},
+    {file = "microsoft_kiota_abstractions-1.9.8.tar.gz", hash = "sha256:920cbe280fb827e8839c6dbe3cd3233b1d7308d204847d82797717d1160356c6"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.27.0"
+opentelemetry-sdk = ">=1.27.0"
+std-uritemplate = ">=2.0.0"
+
+[[package]]
+name = "microsoft-kiota-authentication-azure"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_authentication_azure-1.9.8-py3-none-any.whl", hash = "sha256:953e184cdbfcc6d1c6da18477458856c7ff8a69087896cf638b72b34785b036d"},
+    {file = "microsoft_kiota_authentication_azure-1.9.8.tar.gz", hash = "sha256:8bc2b3819c650d10555b897c47d6f9ec231b1300fac0fb5756d7d3a612b9f1c9"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.8.0"
+azure-core = ">=1.21.1"
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+opentelemetry-api = ">=1.27.0"
+opentelemetry-sdk = ">=1.27.0"
+
+[[package]]
+name = "microsoft-kiota-http"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_http-1.9.8-py3-none-any.whl", hash = "sha256:d632a8283bce707b0efa75517a0da92cdd0d81204246f06b164f4e72d99eb20a"},
+    {file = "microsoft_kiota_http-1.9.8.tar.gz", hash = "sha256:01c4afe3ea61184b20053ad1d59d277e8c53fc1766d1b4d7b20a61d8c2883ce5"},
+]
+
+[package.dependencies]
+httpx = {version = ">=0.25,<1.0.0", extras = ["http2"]}
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+opentelemetry-api = ">=1.27.0"
+opentelemetry-sdk = ">=1.27.0"
+
+[[package]]
+name = "microsoft-kiota-serialization-form"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_serialization_form-1.9.8-py3-none-any.whl", hash = "sha256:5ef2e8d9c13717e52addacb11a0967702918b6e94b082ac36b8fe6f883854972"},
+    {file = "microsoft_kiota_serialization_form-1.9.8.tar.gz", hash = "sha256:1a8dcf9c69050415c17f213ee0748d617dc51f4d123848e30b0fda185525eefd"},
+]
+
+[package.dependencies]
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+
+[[package]]
+name = "microsoft-kiota-serialization-json"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_serialization_json-1.9.8-py3-none-any.whl", hash = "sha256:9990c109950c58aee96d0a46f25560631ba4c51439448262a9ebc5f7e5b4aa4d"},
+    {file = "microsoft_kiota_serialization_json-1.9.8.tar.gz", hash = "sha256:bd0ef4cca8e0b29357f1ea9217fac7e37218323040c84b3464cbbba43a8e46a9"},
+]
+
+[package.dependencies]
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+
+[[package]]
+name = "microsoft-kiota-serialization-multipart"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_serialization_multipart-1.9.8-py3-none-any.whl", hash = "sha256:2d1402b578cece154150aed812237609fced571f78149ad08193b4f592928354"},
+    {file = "microsoft_kiota_serialization_multipart-1.9.8.tar.gz", hash = "sha256:bd526e3a4ccd719b2be4d1392a5d8558ffc973561e372faba01933960cb3a04a"},
+]
+
+[package.dependencies]
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+
+[[package]]
+name = "microsoft-kiota-serialization-text"
+version = "1.9.8"
+description = "Core abstractions for kiota generated libraries in Python"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "microsoft_kiota_serialization_text-1.9.8-py3-none-any.whl", hash = "sha256:dd89ae49693623c0e1d8f07414aa7d71b34959a5253131b8b63d81920f08c6b1"},
+    {file = "microsoft_kiota_serialization_text-1.9.8.tar.gz", hash = "sha256:4e94c3b5a85cfc630249956f390ada2311708de43129f6d2c91bee38c2c6d5fd"},
+]
+
+[package.dependencies]
+microsoft-kiota-abstractions = ">=1.9.8,<1.10.0"
+
+[[package]]
 name = "mistune"
 version = "3.2.0"
 description = "A sane and fast Markdown parser with useful plugins and renderers"
@@ -5463,6 +5629,24 @@ requests = ">=2.0.0,<3"
 broker = ["pymsalruntime (>=0.14,<0.19) ; python_version >= \"3.6\" and platform_system == \"Windows\"", "pymsalruntime (>=0.17,<0.19) ; python_version >= \"3.8\" and platform_system == \"Darwin\"", "pymsalruntime (>=0.18,<0.19) ; python_version >= \"3.8\" and platform_system == \"Linux\""]
 
 [[package]]
+name = "msal-extensions"
+version = "1.3.1"
+description = "Microsoft Authentication Library extensions (MSAL EX) provides a persistence API that can save your data on disk, encrypted on Windows, macOS and Linux. Concurrent data access will be coordinated by a file lock mechanism."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "msal_extensions-1.3.1-py3-none-any.whl", hash = "sha256:96d3de4d034504e969ac5e85bae8106c8373b5c6568e4c8fa7af2eca9dbe6bca"},
+    {file = "msal_extensions-1.3.1.tar.gz", hash = "sha256:c5b0fd10f65ef62b5f1d62f4251d51cbcaf003fcedae8c91b040a488614be1a4"},
+]
+
+[package.dependencies]
+msal = ">=1.29,<2"
+
+[package.extras]
+portalocker = ["portalocker (>=1.4,<4)"]
+
+[[package]]
 name = "msgpack"
 version = "1.1.2"
 description = "MessagePack serializer"
@@ -5533,6 +5717,50 @@ files = [
     {file = "msgpack-1.1.2-cp39-cp39-win_amd64.whl", hash = "sha256:67016ae8c8965124fdede9d3769528ad8284f14d635337ffa6a713a580f6c030"},
     {file = "msgpack-1.1.2.tar.gz", hash = "sha256:3b60763c1373dd60f398488069bcdc703cd08a711477b5d480eecc9f9626f47e"},
 ]
+
+[[package]]
+name = "msgraph-core"
+version = "1.3.8"
+description = "Core component of the Microsoft Graph Python SDK"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "msgraph_core-1.3.8-py3-none-any.whl", hash = "sha256:86d83edcf62119946f201d13b7e857c947ef67addb088883940197081de85bea"},
+    {file = "msgraph_core-1.3.8.tar.gz", hash = "sha256:6e883f9d4c4ad57501234749e07b010478c1a5f19550ef4cf005bbcac4a63ae7"},
+]
+
+[package.dependencies]
+httpx = {version = ">=0.23.0", extras = ["http2"]}
+microsoft-kiota-abstractions = ">=1.8.0,<2.0.0"
+microsoft-kiota-authentication-azure = ">=1.8.0,<2.0.0"
+microsoft-kiota-http = ">=1.8.0,<2.0.0"
+
+[package.extras]
+dev = ["bumpver", "isort", "mypy", "pylint", "pytest", "yapf"]
+
+[[package]]
+name = "msgraph-sdk"
+version = "1.54.0"
+description = "The Microsoft Graph Python SDK"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "msgraph_sdk-1.54.0-py3-none-any.whl", hash = "sha256:2b9894fd9f21ed9a71188e3d68bd1a9a58b2d1077e96ee4cb10a9f3d9d59a58e"},
+    {file = "msgraph_sdk-1.54.0.tar.gz", hash = "sha256:4dc294fc7f8a173f5bee30ccfc396b81fa1a16d7dcc95debe76fdf706920e5b3"},
+]
+
+[package.dependencies]
+azure-identity = ">=1.12.0"
+microsoft-kiota-serialization-form = ">=1.8.0,<2.0.0"
+microsoft-kiota-serialization-json = ">=1.8.0,<2.0.0"
+microsoft-kiota-serialization-multipart = ">=1.8.0,<2.0.0"
+microsoft-kiota-serialization-text = ">=1.8.0,<2.0.0"
+msgraph_core = ">=1.3.1"
+
+[package.extras]
+dev = ["bumpver", "isort", "mypy", "pylint", "pytest", "yapf"]
 
 [[package]]
 name = "multidict"
@@ -6479,6 +6707,94 @@ packaging = ">=18.0"
 wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
+name = "opentelemetry-instrumentation-asgi"
+version = "0.60b1"
+description = "ASGI instrumentation for OpenTelemetry"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "opentelemetry_instrumentation_asgi-0.60b1-py3-none-any.whl", hash = "sha256:d48def2dbed10294c99cfcf41ebbd0c414d390a11773a41f472d20000fcddc25"},
+    {file = "opentelemetry_instrumentation_asgi-0.60b1.tar.gz", hash = "sha256:16bfbe595cd24cda309a957456d0fc2523f41bc7b076d1f2d7e98a1ad9876d6f"},
+]
+
+[package.dependencies]
+asgiref = ">=3.0,<4.0"
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.60b1"
+opentelemetry-semantic-conventions = "0.60b1"
+opentelemetry-util-http = "0.60b1"
+
+[package.extras]
+instruments = ["asgiref (>=3.0,<4.0)"]
+
+[[package]]
+name = "opentelemetry-instrumentation-fastapi"
+version = "0.60b1"
+description = "OpenTelemetry FastAPI Instrumentation"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "opentelemetry_instrumentation_fastapi-0.60b1-py3-none-any.whl", hash = "sha256:af94b7a239ad1085fc3a820ecf069f67f579d7faf4c085aaa7bd9b64eafc8eaf"},
+    {file = "opentelemetry_instrumentation_fastapi-0.60b1.tar.gz", hash = "sha256:de608955f7ff8eecf35d056578346a5365015fd7d8623df9b1f08d1c74769c01"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.60b1"
+opentelemetry-instrumentation-asgi = "0.60b1"
+opentelemetry-semantic-conventions = "0.60b1"
+opentelemetry-util-http = "0.60b1"
+
+[package.extras]
+instruments = ["fastapi (>=0.92,<1.0)"]
+
+[[package]]
+name = "opentelemetry-instrumentation-httpx"
+version = "0.60b1"
+description = "OpenTelemetry HTTPX Instrumentation"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "opentelemetry_instrumentation_httpx-0.60b1-py3-none-any.whl", hash = "sha256:f37636dd742ad2af83d896ba69601ed28da51fa4e25d1ab62fde89ce413e275b"},
+    {file = "opentelemetry_instrumentation_httpx-0.60b1.tar.gz", hash = "sha256:a506ebaf28c60112cbe70ad4f0338f8603f148938cb7b6794ce1051cd2b270ae"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.60b1"
+opentelemetry-semantic-conventions = "0.60b1"
+opentelemetry-util-http = "0.60b1"
+wrapt = ">=1.0.0,<2.0.0"
+
+[package.extras]
+instruments = ["httpx (>=0.18.0)"]
+
+[[package]]
+name = "opentelemetry-instrumentation-sqlalchemy"
+version = "0.60b1"
+description = "OpenTelemetry SQLAlchemy instrumentation"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "opentelemetry_instrumentation_sqlalchemy-0.60b1-py3-none-any.whl", hash = "sha256:486a5f264d264c44e07e0320e33fd19d09cecd2fd4b99c1064046e77a27d9f9f"},
+    {file = "opentelemetry_instrumentation_sqlalchemy-0.60b1.tar.gz", hash = "sha256:b614e874a7c0a692838a0da613d1654e81a0612867836a1f0765e40e9c8cc49b"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.60b1"
+opentelemetry-semantic-conventions = "0.60b1"
+packaging = ">=21.0"
+wrapt = ">=1.11.2"
+
+[package.extras]
+instruments = ["sqlalchemy (>=1.0.0,<2.1.0)"]
+
+[[package]]
 name = "opentelemetry-instrumentation-threading"
 version = "0.60b1"
 description = "Thread context propagation support for OpenTelemetry"
@@ -6553,6 +6869,18 @@ groups = ["main"]
 files = [
     {file = "opentelemetry_semantic_conventions_ai-0.4.13-py3-none-any.whl", hash = "sha256:883a30a6bb5deaec0d646912b5f9f6dcbb9f6f72557b73d0f2560bf25d13e2d5"},
     {file = "opentelemetry_semantic_conventions_ai-0.4.13.tar.gz", hash = "sha256:94efa9fb4ffac18c45f54a3a338ffeb7eedb7e1bb4d147786e77202e159f0036"},
+]
+
+[[package]]
+name = "opentelemetry-util-http"
+version = "0.60b1"
+description = "Web util for OpenTelemetry"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "opentelemetry_util_http-0.60b1-py3-none-any.whl", hash = "sha256:66381ba28550c91bee14dcba8979ace443444af1ed609226634596b4b0faf199"},
+    {file = "opentelemetry_util_http-0.60b1.tar.gz", hash = "sha256:0d97152ca8c8a41ced7172d29d3622a219317f74ae6bb3027cfbdcf22c3cc0d6"},
 ]
 
 [[package]]
@@ -12973,6 +13301,21 @@ files = [
 ]
 
 [[package]]
+name = "slack-sdk"
+version = "3.40.0"
+description = "The Slack API Platform SDK for Python"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "slack_sdk-3.40.0-py2.py3-none-any.whl", hash = "sha256:f2bada5ed3adb10a01e154e90db01d6d8938d0461b5790c12bcb807b2d28bbe2"},
+    {file = "slack_sdk-3.40.0.tar.gz", hash = "sha256:87b9a79d1d6e19a2b1877727a0ec6f016d82d30a6a410389fba87c221c99f10e"},
+]
+
+[package.extras]
+optional = ["SQLAlchemy (>=1.4,<3)", "aiodns (>1.0)", "aiohttp (>=3.7.3,<4)", "boto3 (<=2)", "websocket-client (>=1,<2)", "websockets (>=9.1,<16)"]
+
+[[package]]
 name = "slowapi"
 version = "0.1.9"
 description = "A rate limiting extension for Starlette and Fastapi"
@@ -13235,6 +13578,18 @@ typing-extensions = {version = ">=4.10.0", markers = "python_version < \"3.13\""
 
 [package.extras]
 full = ["httpx (>=0.27.0,<0.29.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.18)", "pyyaml"]
+
+[[package]]
+name = "std-uritemplate"
+version = "2.0.8"
+description = "std-uritemplate implementation for Python"
+optional = false
+python-versions = "<4.0,>=3.8"
+groups = ["main"]
+files = [
+    {file = "std_uritemplate-2.0.8-py3-none-any.whl", hash = "sha256:839807a7f9d07f0bad1a88977c3428bd97b9ff0d229412a0bf36123d8c724257"},
+    {file = "std_uritemplate-2.0.8.tar.gz", hash = "sha256:138ceff2c5bfef18a650372a5e8c82fe7f780c87235513de6c342fb5f7e18347"},
+]
 
 [[package]]
 name = "synchronicity"
@@ -14782,4 +15137,4 @@ third-party-runtimes = ["daytona", "e2b-code-interpreter", "modal", "runloop-api
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12,<3.14"
-content-hash = "f271e9a08a960525770a5289c38a7402b14560e3894dc712f6e83af85397dae7"
+content-hash = "8eb911dc8ea998a240a3bb52eaf72518031987cfcf693724a3e21dc9fa8aef93"

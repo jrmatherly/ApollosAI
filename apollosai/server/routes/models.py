@@ -3,6 +3,7 @@
 Review fix [M1]: Input validation on org/team names to prevent XSS.
 """
 
+import datetime
 import uuid
 
 from pydantic import BaseModel, Field
@@ -88,3 +89,52 @@ class AddTeamMemberRequest(BaseModel):
 
     user_id: uuid.UUID
     role: str = Field(default='member', pattern=r'^(admin|manager|member)$')
+
+
+# --- Audit Log ---
+
+
+class AuditLogResponse(BaseModel):
+    """Response for an audit log entry."""
+
+    id: uuid.UUID
+    actor_id: uuid.UUID | None
+    action: str
+    resource_type: str
+    resource_id: str
+    details: dict | None = None
+    ip_address: str | None = None
+    created_at: datetime.datetime
+
+
+# --- MCP Servers (BYOMCP) ---
+
+
+class CreateMCPServerRequest(BaseModel):
+    """Request body for adding a user MCP server."""
+
+    name: str = Field(min_length=1, max_length=100)
+    server_type: str = Field(pattern=r'^(stdio|sse|shttp)$')
+    config_json: dict
+    description: str | None = None
+
+
+class UpdateMCPServerRequest(BaseModel):
+    """Request body for updating a user MCP server."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    config_json: dict | None = None
+    enabled: bool | None = None
+    description: str | None = None
+
+
+class MCPServerResponse(BaseModel):
+    """Response for a user MCP server."""
+
+    id: uuid.UUID
+    name: str
+    server_type: str
+    enabled: bool
+    approved: bool
+    description: str | None = None
+    created_at: datetime.datetime
