@@ -390,14 +390,13 @@ migrate-status: check-env
 dev-exposed:
 	@$(MAKE) run BACKEND_HOST="0.0.0.0" BACKEND_PORT="12000" FRONTEND_HOST="0.0.0.0" FRONTEND_PORT="12001"
 
-# Docker builds
+# Docker builds (unified image — apollosai source is built into the app image)
 docker-build-app:
-	@echo "$(YELLOW)Building ApollosAI app image...$(RESET)"
+	@echo "$(YELLOW)Building ApollosAI image...$(RESET)"
 	@./containers/build.sh -i openhands --load
 
-docker-build-ent:
-	@echo "$(YELLOW)Building ApollosAI enterprise image...$(RESET)"
-	@./containers/build.sh -i apollosai --load
+docker-build-ent: docker-build-app
+	@echo "$(YELLOW)(docker-build-ent is now an alias for docker-build-app — single unified image)$(RESET)"
 
 # Develop in container
 docker-dev:
@@ -445,8 +444,8 @@ help:
 	@echo "  $(GREEN)lint-frontend$(RESET)       - Run frontend linters"
 	@echo ""
 	@echo "$(YELLOW)Docker:$(RESET)"
-	@echo "  $(GREEN)docker-build-app$(RESET)    - Build ApollosAI app Docker image"
-	@echo "  $(GREEN)docker-build-ent$(RESET)    - Build ApollosAI enterprise Docker image"
+	@echo "  $(GREEN)docker-build-app$(RESET)    - Build ApollosAI Docker image (unified)"
+	@echo "  $(GREEN)docker-build-ent$(RESET)    - Alias for docker-build-app"
 	@echo "  $(GREEN)docker-run$(RESET)          - Run ApollosAI via Docker Compose"
 	@echo "  $(GREEN)docker-dev$(RESET)          - Develop inside Docker container"
 	@echo ""
