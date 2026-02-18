@@ -3,6 +3,7 @@
 import logging
 import re
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 
 import httpx
 from fastapi import Request
@@ -75,6 +76,21 @@ class ApollosAIIntegrationManager(ABC):
     """
 
     source_type: SourceType
+    _seen_events: OrderedDict = OrderedDict()
+    _MAX_SEEN: int = 10_000
+
+    def _check_replay(self, external_id: str) -> bool:
+        """Return True if this event was already processed (replay detected).
+
+        Uses an OrderedDict as a bounded LRU cache. Oldest entries are
+        evicted when the cache exceeds _MAX_SEEN entries.
+        """
+        if external_id in self._seen_events:
+            return True
+        self._seen_events[external_id] = True
+        while len(self._seen_events) > self._MAX_SEEN:
+            self._seen_events.popitem(last=False)
+        return False
 
     @abstractmethod
     async def validate_webhook(self, request: Request) -> bool:
@@ -133,6 +149,17 @@ class ApollosAIIntegrationManager(ABC):
         event = await self.parse_event(body)
         if event is None:
             return {'status': 'skipped'}
+
+        # Replay protection (M1): reject duplicate external_ids
+        if self._check_replay(event.external_id):
+            logger.info(
+                'replay_detected',
+                extra={
+                    'source': self.source_type.value,
+                    'external_id': event.external_id,
+                },
+            )
+            return {'status': 'duplicate'}
 
         context = await self.build_context(event)
         logger.info(
