@@ -4,9 +4,6 @@
 name: Docker Publish (Validated)
 
 on:
-  push:
-    tags:
-      - "deploy-*"
   workflow_dispatch:
     inputs:
       image:
@@ -39,9 +36,6 @@ jobs:
     name: Build, Test, Push
     runs-on: ubuntu-22.04
     env:
-      GH_REF_NAME: ${{ github.ref_name }}
-      GH_REF_TYPE: ${{ github.ref_type }}
-      GH_EVENT_NAME: ${{ github.event_name }}
       INPUT_IMAGE: ${{ inputs.image }}
     steps:
       - name: Checkout
@@ -65,14 +59,7 @@ jobs:
         id: meta
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
-
-          # Determine which image to build
-          if [[ "${GH_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            IMAGE_NAME="${INPUT_IMAGE}"
-          else
-            # deploy-* tags build the enterprise image
-            IMAGE_NAME="apollosai"
-          fi
+          IMAGE_NAME="${INPUT_IMAGE}"
 
           if [[ "${IMAGE_NAME}" == "apollosai" ]]; then
             DOCKERFILE="containers/apollosai/Dockerfile"
@@ -82,14 +69,7 @@ jobs:
             IMAGE_REF="${REGISTRY}/${REPO_OWNER}/openhands"
           fi
 
-          # Build tag list
           TAGS="${IMAGE_REF}:sha-${SHORT_SHA}"
-
-          # Add semver tag if this is a deploy-* tag push
-          if [[ "${GH_REF_TYPE}" == "tag" ]]; then
-            VERSION="${GH_REF_NAME#deploy-}"
-            TAGS="${TAGS},${IMAGE_REF}:${VERSION}"
-          fi
 
           echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
           echo "dockerfile=${DOCKERFILE}" >> "$GITHUB_OUTPUT"

@@ -55,10 +55,15 @@ spec:
                 secretKeyRef:
                   name: apollosai-secrets
                   key: DATABASE_URL
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           resources:
             limits:
               cpu: "500m"
@@ -66,4 +71,7 @@ spec:
             requests:
               cpu: "100m"
               memory: "128Mi"
+      volumes:
+        - name: tmp
+          emptyDir: {}
       # No Docker socket mount — migration only needs database access

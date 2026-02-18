@@ -312,7 +312,7 @@ All `CHANGE_ME_BEFORE_PRODUCTION` values in `.env.example` **must** be replaced 
 
 ### Container image pinning
 
-All Docker Compose and Helm configurations pin images to specific versions (e.g., `pgvector/pgvector:0.8.1-pg18`, `redis:8-alpine`). Do **not** use `:latest` tags in production. See the [Operational Runbook](runbook.md#image-version-management) for update procedures.
+All Docker Compose and Helm configurations pin images to specific versions (e.g., `pgvector/pgvector:0.8.1-pg18`, `redis:8.0.2`). Do **not** use `:latest` tags in production. See the [Operational Runbook](runbook.md#image-version-management) for update procedures.
 
 ### Network isolation
 

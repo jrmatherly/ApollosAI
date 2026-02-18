@@ -105,7 +105,7 @@ services:
           memory: 512M
 
   redis:
-    image: redis:8
+    image: redis:8.0.2
     container_name: apollosai-redis
     command: >-
       redis-server

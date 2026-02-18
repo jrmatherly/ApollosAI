@@ -193,12 +193,7 @@ ApollosAI outputs structured JSON logs. Key fields:
 | Jaeger | `http://localhost:16686` | Distributed trace viewer |
 | Prometheus | `http://localhost:9090` | Metric queries and alerting |
 
-In Kubernetes, use port-forwarding:
-```bash
-kubectl port-forward -n apollosai svc/apollosai-grafana 3001:3000
-kubectl port-forward -n apollosai svc/jaeger 16686:16686
-kubectl port-forward -n apollosai svc/prometheus 9090:9090
-```
+In Kubernetes, Grafana/Jaeger/Prometheus are not included in the Helm chart or Kustomize manifests (they are Docker Compose only). For K8s observability, install these separately (e.g., via `kube-prometheus-stack` Helm chart) and configure them to scrape the OTEL collector.
 
 ### Key metrics to watch
 
@@ -213,9 +208,8 @@ kubectl port-forward -n apollosai svc/prometheus 9090:9090
 
 ### Pre-provisioned dashboards
 
-Grafana ships with two dashboards:
+Grafana ships with a pre-provisioned dashboard:
 1. **ApollosAI Overview** — HTTP request rate, latency, error rate, active users
-2. **Infrastructure** — PostgreSQL connections, Redis memory, container resource usage
 
 ---
 

@@ -62,22 +62,14 @@ spec:
               protocol: TCP
           livenessProbe:
             exec:
-              command:
-                - redis-cli
-                - -a
-                - $(REDIS_PASSWORD)
-                - ping
+              command: ["/bin/sh", "-c", "redis-cli -a $REDIS_PASSWORD ping"]
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             exec:
-              command:
-                - redis-cli
-                - -a
-                - $(REDIS_PASSWORD)
-                - ping
+              command: ["/bin/sh", "-c", "redis-cli -a $REDIS_PASSWORD ping"]
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 3
