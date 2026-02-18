@@ -1,24 +1,43 @@
-"""Tests for Entra ID OAuth2 auth routes (login, callback, logout).
+"""Tests for Entra ID OAuth2 auth routes (authenticate, login, callback, logout).
 
 Uses FastAPI TestClient with Starlette SessionMiddleware to test the full
 request/response cycle including session cookie persistence.
 """
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.middleware.sessions import SessionMiddleware
 
+from apollosai.server.auth.auth_error import InvalidTokenError, NoCredentialsError
 from apollosai.server.routes.auth import router
+
+
+@pytest.fixture(autouse=True)
+def _reset_limiter_storage():
+    """Reset limiter storage between tests to avoid state bleed and Redis hangs."""
+    from apollosai.server.rate_limit import limiter
+
+    try:
+        limiter._storage.reset()
+    except Exception:
+        pass
+    yield
+    try:
+        limiter._storage.reset()
+    except Exception:
+        pass
 
 
 @pytest.fixture
 def app(async_session):
     from apollosai.server.deps import get_db_session
+    from apollosai.server.rate_limit import limiter
 
     app = FastAPI()
+    app.state.limiter = limiter
     app.add_middleware(
         SessionMiddleware, secret_key='test-session-secret-32-chars!!!!!'
     )
@@ -39,6 +58,10 @@ def client(app):
 class TestRouterRegistration:
     """Verify all expected routes are registered on the router."""
 
+    def test_router_has_authenticate_route(self):
+        paths = [route.path for route in router.routes]
+        assert '/authenticate' in paths
+
     def test_router_has_login_route(self):
         paths = [route.path for route in router.routes]
         assert '/auth/login' in paths
@@ -50,6 +73,49 @@ class TestRouterRegistration:
     def test_router_has_logout_route(self):
         paths = [route.path for route in router.routes]
         assert '/auth/logout' in paths
+
+
+class TestAuthenticateRoute:
+    """Tests for POST /authenticate."""
+
+    def test_authenticate_returns_401_when_no_credentials(self, client):
+        """Unauthenticated request should return 401."""
+        with patch(
+            'apollosai.server.routes.auth.EntraIDUserAuth.get_instance',
+            new_callable=AsyncMock,
+            side_effect=NoCredentialsError('Not authenticated'),
+        ):
+            response = client.post('/authenticate')
+        assert response.status_code == 401
+        assert response.json()['error'] == 'Not authenticated'
+
+    def test_authenticate_returns_401_on_invalid_token(self, client):
+        """Request with invalid token should return 401."""
+        with patch(
+            'apollosai.server.routes.auth.EntraIDUserAuth.get_instance',
+            new_callable=AsyncMock,
+            side_effect=InvalidTokenError('Token expired'),
+        ):
+            response = client.post('/authenticate')
+        assert response.status_code == 401
+
+    def test_authenticate_returns_200_when_valid(self, client):
+        """Request with valid session should return 200."""
+        from apollosai.server.auth.entraid_auth import EntraIDUserAuth
+
+        mock_user = EntraIDUserAuth(
+            user_id='user-123', email='user@example.com'
+        )
+        with patch(
+            'apollosai.server.routes.auth.EntraIDUserAuth.get_instance',
+            new_callable=AsyncMock,
+            return_value=mock_user,
+        ):
+            response = client.post('/authenticate')
+        assert response.status_code == 200
+        data = response.json()
+        assert data['message'] == 'User authenticated'
+        assert data['email'] == 'user@example.com'
 
 
 class TestLoginRoute:

@@ -19,8 +19,15 @@ def get_entra_client_id() -> str:
 
 
 def get_entra_redirect_uri() -> str:
-    """Get Entra ID redirect URI from environment at call time."""
-    return os.environ.get('ENTRA_REDIRECT_URI', '')
+    """Get Entra ID redirect URI from environment at call time.
+
+    Defaults to http://localhost:3000/api/auth/callback if not set.
+    The /api prefix is required because the auth router is mounted
+    at /api in apollosai/app_server.py.
+    """
+    return os.environ.get(
+        'ENTRA_REDIRECT_URI', 'http://localhost:3000/api/auth/callback'
+    )
 
 
 def get_entra_client_secret() -> str:

@@ -4,13 +4,21 @@
 #
 # Prerequisites:
 #   1. Copy .env.example to .env and fill in all CHANGE_ME values
-#   2. The apollosai image requires a pre-built base OpenHands image.
-#      Either pull from GHCR or build locally first:
+#   2. Build the app image locally (it is NOT available on a public registry):
+#        docker compose build app
+#      This requires the base image. Pull it once (or rebuild when deps change):
+#        docker pull ghcr.io/jrmatherly/apollosai:latest   # OR
 #        ./containers/build.sh -i openhands
 #
 # Usage:
-#   docker compose up -d                                          # Production
+#   docker compose build app && docker compose up -d              # Production
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml up  # Dev
+#
+# NOTE: Do NOT use "docker compose pull" — it will fail on the app service
+# because the image (apollosai:latest) is built locally, not from a registry.
+# Use "docker compose pull --ignore-buildable" to pull only external images,
+# or just "docker compose up -d" which pulls missing external images
+# automatically.
 #
 # =============================================================================
 
@@ -43,6 +51,7 @@ services:
       - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
       - ENTRA_CLIENT_ID=${ENTRA_CLIENT_ID}
       - ENTRA_CLIENT_SECRET=${ENTRA_CLIENT_SECRET}
+      - ENTRA_REDIRECT_URI=${ENTRA_REDIRECT_URI:-http://localhost:3000/api/auth/callback}
       - SANDBOX_RUNTIME_CONTAINER_IMAGE=${SANDBOX_RUNTIME_CONTAINER_IMAGE}
       - SQLALCHEMY_POOL_SIZE=${SQLALCHEMY_POOL_SIZE:-20}
       - SQLALCHEMY_MAX_OVERFLOW=${SQLALCHEMY_MAX_OVERFLOW:-30}

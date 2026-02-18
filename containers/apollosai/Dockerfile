@@ -4,9 +4,12 @@ FROM ${BASE}:${APOLLOS_VERSION}
 
 LABEL org.apollosai.component="enterprise-server"
 
-# Copy ApollosAI enterprise layer
-# Python deps (msal, pyjwt, etc.) are already installed in the base image
-# via the root pyproject.toml — no pip install needed
+# Overlay BOTH openhands/ and apollosai/ from the repo so that a single
+# `docker compose build app` picks up ALL code changes without needing
+# to rebuild the heavy base image. The base image provides Python deps,
+# frontend build, OS setup, and user creation — this layer just refreshes
+# the Python source.
+COPY --chown=openhands:openhands --chmod=770 openhands /app/openhands
 COPY --chown=openhands:openhands --chmod=770 apollosai /app/apollosai
 
 ENV OPENHANDS_CONFIG_CLS=apollosai.server.config.ApollosAIServerConfig

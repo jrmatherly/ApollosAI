@@ -18,19 +18,25 @@
 
 ## Quick Start (Docker Compose)
 
-### 1. Build or pull images
+### 1. Build the app image
 
-The ApollosAI enterprise image (`containers/apollosai/Dockerfile`) requires the base OpenHands image as a build dependency. Either:
+The app image (`apollosai:latest`) is built locally — it is not available on a public registry. It uses a base image for Python deps, frontend build, and OS setup, then overlays the current `openhands/` and `apollosai/` source:
 
 ```bash
-# Option A: Pull pre-built images from GHCR
-docker pull ghcr.io/jrmatherly/openhands:main
-docker pull ghcr.io/jrmatherly/apollosai/enterprise-server:main
+# First time only: ensure the base image exists (pull from GHCR or build locally)
+docker pull ghcr.io/jrmatherly/apollosai:latest
+# OR: ./containers/build.sh -i openhands
 
-# Option B: Build locally
-./containers/build.sh -i openhands
-./containers/build.sh -i apollosai
+# Build the ApollosAI enterprise image (picks up ALL code changes)
+cd deploy/docker-compose
+docker compose build app
 ```
+
+The base image only needs to be rebuilt when Python dependencies or the frontend change. Code-only changes to `openhands/` or `apollosai/` are picked up by `docker compose build app` alone.
+
+> **Cross-platform note:** On Apple Silicon (ARM), you can pull the amd64 base image with
+> `docker pull --platform linux/amd64 ghcr.io/jrmatherly/apollosai:latest`. The container
+> will run under QEMU emulation (slower, but functional for testing).
 
 ### 2. Configure environment
 
@@ -48,13 +54,30 @@ Edit `.env` and replace all `CHANGE_ME_BEFORE_PRODUCTION` values:
 - `GF_SECURITY_ADMIN_PASSWORD` — Grafana admin password
 - `LLM_API_KEY` — your LLM provider API key
 
+**Entra ID (Microsoft SSO) configuration:**
+- `ENTRA_TENANT_ID` — Azure AD tenant ID
+- `ENTRA_CLIENT_ID` — App registration client ID
+- `ENTRA_CLIENT_SECRET` — App registration client secret
+- `ENTRA_REDIRECT_URI` — OAuth2 callback URL (default: `http://localhost:3000/api/auth/callback`)
+
+> **Important:** The redirect URI must be registered as a **Web** platform redirect URI in your
+> Azure Entra ID app registration (Azure Portal → App registrations → Authentication → Add a platform → Web).
+> For local development, register `http://localhost:3000/api/auth/callback`.
+> For production, use your public HTTPS URL: `https://app.example.com/api/auth/callback`.
+>
+> To skip Entra ID auth for local development, set `APOLLOSAI_ALLOW_UNAUTHENTICATED=true`.
+
 ### 3. Start services
 
 ```bash
 docker compose up -d
 ```
 
-This starts 7 services: app, PostgreSQL (with pgvector), Redis, OTEL collector, Jaeger, Prometheus, and Grafana.
+This builds the app (if not already built), pulls external images (PostgreSQL, Redis, etc.), and starts all 7 services: app, PostgreSQL (with pgvector), Redis, OTEL collector, Jaeger, Prometheus, and Grafana.
+
+> **Important:** Do NOT use `docker compose pull` — it will fail on the app service because
+> `apollosai:latest` is a locally-built image, not a registry image. Use
+> `docker compose pull --ignore-buildable` if you only want to update external images.
 
 ### 4. Verify
 
@@ -253,8 +276,9 @@ Use a reverse proxy (Traefik, Caddy, or nginx) in front of the app service for T
 
 ```bash
 cd deploy/docker-compose
-docker compose pull
-docker compose up -d
+docker compose build app                 # Rebuild app image with latest code
+docker compose pull --ignore-buildable   # Update external images (PG, Redis, etc.)
+docker compose up -d                     # Recreate changed containers
 ```
 
 Migrations run automatically on startup.

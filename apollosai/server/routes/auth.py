@@ -1,9 +1,10 @@
-"""Entra ID OAuth2 auth routes: login, callback, logout.
+"""Entra ID OAuth2 auth routes: login, callback, logout, authenticate.
 
 Flow:
-1. GET /auth/login -> redirect to Entra ID login page
-2. GET /auth/callback -> exchange code for tokens, set JWT session cookie
-3. POST /auth/logout -> clear session cookie, revoke JWT, return MSAL signout URL
+1. POST /authenticate -> check session cookie/bearer token, return 200 or 401
+2. GET /auth/login -> redirect to Entra ID login page
+3. GET /auth/callback -> exchange code for tokens, set JWT session cookie
+4. POST /auth/logout -> clear session cookie, revoke JWT, return MSAL signout URL
 """
 
 import datetime
@@ -13,8 +14,11 @@ from urllib.parse import quote, urlparse
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
+from apollosai.server.auth.auth_error import InvalidTokenError, NoCredentialsError
 from apollosai.server.auth.constants import get_entra_tenant_id
+from apollosai.server.auth.entraid_auth import EntraIDUserAuth
 from apollosai.server.auth.jwt_utils import create_session_token, decode_session_token
 from apollosai.server.auth.msal_client import (
     acquire_token_by_auth_code_flow,
@@ -29,6 +33,33 @@ router = APIRouter()
 # Cookie settings
 COOKIE_NAME = 'session'
 COOKIE_MAX_AGE = 86400  # 24 hours
+
+
+@router.post('/authenticate')
+@limiter.limit('30/minute')
+async def authenticate(request: Request):
+    """Check whether the current request has a valid session.
+
+    The frontend calls this endpoint on page load to determine auth status.
+    Returns 200 if the user has a valid session cookie or Bearer token,
+    or 401 if not authenticated. This drives the login redirect flow:
+    the frontend's useIsAuthed hook treats 401 as 'not authenticated'
+    and redirects to /login.
+    """
+    try:
+        user = await EntraIDUserAuth.get_instance(request)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                'message': 'User authenticated',
+                'email': user.email or '',
+            },
+        )
+    except (NoCredentialsError, InvalidTokenError):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={'error': 'Not authenticated'},
+        )
 
 
 @router.get('/auth/login')

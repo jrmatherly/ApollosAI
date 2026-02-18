@@ -48,9 +48,13 @@ kubectl exec -i -n apollosai apollosai-postgresql-0 -- psql -U apollosai apollos
 
 ```bash
 cd deploy/docker-compose
-docker compose pull          # Pull latest images
-docker compose up -d         # Recreate changed containers
+docker compose build app                 # Rebuild app image with latest code
+docker compose pull --ignore-buildable   # Update external images (PG, Redis, etc.)
+docker compose up -d                     # Recreate changed containers
 ```
+
+> **Note:** Do not use bare `docker compose pull` — it fails on the app service because
+> `apollosai:latest` is built locally, not pulled from a registry.
 
 Migrations run automatically on app startup.
 
