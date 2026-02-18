@@ -317,8 +317,8 @@ mkdir -p frontend/build && touch frontend/build/index.html  # stub for imports
 | `make migrate-status` | Check migration status |
 | `make setup-config` | Interactive LLM config |
 | `make setup-env` | Bootstrap .env |
-| `make docker-build-app` | Build app Docker image |
-| `make docker-build-ent` | Build enterprise Docker image |
+| `make docker-build-app` | Build ApollosAI Docker image (unified) |
+| `make docker-build-ent` | Alias for docker-build-app |
 | `make docker-run` | Run via Docker Compose |
 | `make clean` | Remove caches |
 | `make help` | Show all targets |
