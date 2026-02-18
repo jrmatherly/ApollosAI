@@ -12,8 +12,8 @@ from starlette.responses import JSONResponse, Response
 from apollosai.integrations.models import (
     ConversationContext,
     IntegrationEvent,
+    IntegrationType,
     OAuthConfig,
-    SourceType,
 )
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class ApollosAIIntegrationManager(ABC):
     Subclasses implement platform-specific logic.
     """
 
-    source_type: SourceType
+    source_type: IntegrationType
     _seen_events: OrderedDict = OrderedDict()
     _MAX_SEEN: int = 10_000
 

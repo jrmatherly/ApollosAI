@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apollosai.integrations.models import SourceType
+from apollosai.integrations.models import IntegrationType
 from apollosai.integrations.registry import get_integration, list_integrations
 from apollosai.server.auth.rbac import require_role
 from apollosai.server.deps import get_db_session
@@ -27,7 +27,7 @@ async def receive_webhook(
 ):
     """Receive webhook from any integration. No JWT — verified by per-integration signature."""
     try:
-        source = SourceType(integration_type)
+        source = IntegrationType(integration_type)
     except ValueError:
         return JSONResponse(
             status_code=404,

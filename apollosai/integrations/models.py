@@ -54,14 +54,10 @@ class IntegrationType(str, enum.Enum):
     OPENHANDS = 'openhands'  # internal events only
 
 
-# Alias for backward compatibility in integration code
-SourceType = IntegrationType
-
-
 class IntegrationEvent(BaseModel):
     """Normalized event from any integration."""
 
-    source: SourceType
+    source: IntegrationType
     event_type: str
     external_id: str
     external_url: str | None = None
@@ -102,6 +98,5 @@ __all__ = [
     'IntegrationEvent',
     'IntegrationType',
     'OAuthConfig',
-    'SourceType',
     'sanitize_payload',
 ]
