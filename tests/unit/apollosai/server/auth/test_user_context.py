@@ -54,7 +54,7 @@ async def test_injector_produces_user_context(monkeypatch):
         entra_oid='oid-1',
     )
     request = MagicMock()
-    request.cookies = {'session': token}
+    request.cookies = {'apollosai_auth': token}
     request.headers = {}
 
     injector = EntraIDUserContextInjector()
@@ -78,7 +78,7 @@ async def test_injector_caches_context(monkeypatch):
         entra_oid='oid-2',
     )
     request = MagicMock()
-    request.cookies = {'session': token}
+    request.cookies = {'apollosai_auth': token}
     request.headers = {}
 
     injector = EntraIDUserContextInjector()

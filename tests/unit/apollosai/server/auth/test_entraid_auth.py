@@ -83,7 +83,7 @@ async def test_get_instance_from_jwt_cookie(monkeypatch, _set_jwt_secret):
         email='test@example.com',
         entra_oid='oid-456',
     )
-    request = _make_mock_request(cookies={'session': token})
+    request = _make_mock_request(cookies={'apollosai_auth': token})
 
     auth = await EntraIDUserAuth.get_instance(request)
     assert await auth.get_user_id() == 'user-uuid-123'
@@ -116,7 +116,7 @@ async def test_get_instance_invalid_token_raises(monkeypatch, _set_jwt_secret):
     from apollosai.server.auth.auth_error import InvalidTokenError
 
     monkeypatch.delenv('APOLLOSAI_ALLOW_UNAUTHENTICATED', raising=False)
-    request = _make_mock_request(cookies={'session': 'invalid-jwt-token'})
+    request = _make_mock_request(cookies={'apollosai_auth': 'invalid-jwt-token'})
 
     with pytest.raises(InvalidTokenError):
         await EntraIDUserAuth.get_instance(request)
@@ -130,7 +130,7 @@ async def test_get_instance_invalid_token_does_not_fallthrough(
     from apollosai.server.auth.auth_error import InvalidTokenError
 
     monkeypatch.setenv('APOLLOSAI_ALLOW_UNAUTHENTICATED', '1')
-    request = _make_mock_request(cookies={'session': 'forged-jwt'})
+    request = _make_mock_request(cookies={'apollosai_auth': 'forged-jwt'})
 
     with pytest.raises(InvalidTokenError):
         await EntraIDUserAuth.get_instance(request)

@@ -185,9 +185,9 @@ class TestCallbackRoute:
 
         assert response.status_code == 307
         assert response.headers['location'] == '/'
-        # Check that a session cookie was set
+        # Check that the auth cookie was set
         set_cookie = response.headers.get('set-cookie', '')
-        assert 'session' in set_cookie.lower()
+        assert 'apollosai_auth' in set_cookie.lower()
 
     def test_callback_auth_error_returns_401(self, client):
         """Callback with MSAL error should return 401."""
@@ -230,8 +230,8 @@ class TestLogoutRoute:
         response = client.post('/auth/logout')
         assert response.status_code == 200
         set_cookie = response.headers.get('set-cookie', '')
-        # Cookie should either be cleared or session should be cleared
-        assert 'session' in set_cookie.lower() or response.status_code == 200
+        # Cookie should either be cleared or response should be 200
+        assert 'apollosai_auth' in set_cookie.lower() or response.status_code == 200
 
     def test_logout_returns_signout_url(self, client, monkeypatch):
         """Logout should return MSAL signout URL."""

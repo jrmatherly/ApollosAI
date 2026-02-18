@@ -82,7 +82,7 @@ class EntraIDUserAuth(UserAuth):
         """Extract user identity from JWT session cookie or Bearer token.
 
         Priority:
-        1. JWT session cookie ('session')
+        1. JWT session cookie ('apollosai_auth')
         2. Bearer token in Authorization header
         3. APOLLOSAI_ALLOW_UNAUTHENTICATED env var (dev mode ONLY -- no credentials path)
 
@@ -96,8 +96,8 @@ class EntraIDUserAuth(UserAuth):
 
         logger = logging.getLogger(__name__)
 
-        # Try JWT session cookie
-        token = request.cookies.get('session')
+        # Try JWT session cookie (name must match COOKIE_NAME in routes/auth.py)
+        token = request.cookies.get('apollosai_auth')
         if not token:
             # Try Bearer token
             auth_header = request.headers.get('authorization', '')

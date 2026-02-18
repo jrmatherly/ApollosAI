@@ -8,6 +8,7 @@ Flow:
 """
 
 import datetime
+import os
 import secrets
 from urllib.parse import quote, urlparse
 
@@ -30,8 +31,10 @@ from apollosai.storage.services.token_revocation_service import revoke_token
 
 router = APIRouter()
 
-# Cookie settings
-COOKIE_NAME = 'session'
+# Cookie settings — name MUST NOT collide with Starlette SessionMiddleware
+# (which defaults to 'session'). Using a distinct name avoids the middleware
+# overwriting our JWT cookie with its own base64+signature format.
+COOKIE_NAME = 'apollosai_auth'
 COOKIE_MAX_AGE = 86400  # 24 hours
 
 
@@ -127,13 +130,20 @@ async def callback(request: Request):
     parsed = urlparse(redirect_url)
     if parsed.netloc and parsed.netloc != request.url.netloc:
         redirect_url = '/'  # Reject external redirects
+    # secure=True requires HTTPS; disable for local HTTP dev environments
+    _secure_cookie = os.environ.get('APOLLOSAI_SESSION_INSECURE', '').lower() not in (
+        '1',
+        'true',
+        'yes',
+    )
+
     response = RedirectResponse(url=redirect_url)
     response.set_cookie(
         key=COOKIE_NAME,
         value=token,
         max_age=COOKIE_MAX_AGE,
         httponly=True,
-        secure=True,
+        secure=_secure_cookie,
         samesite='lax',
     )
 
