@@ -55,6 +55,49 @@ export const SAAS_NAV_ITEMS: SettingsNavItem[] = [
   },
 ];
 
+export const ADMIN_NAV_ITEMS: SettingsNavItem[] = [
+  {
+    icon: <UserIcon width={22} height={22} />,
+    to: "/admin",
+    text: "ADMIN$NAV_MEMBERS",
+  },
+  {
+    icon: <UserIcon width={22} height={22} />,
+    to: "/admin/teams",
+    text: "ADMIN$NAV_TEAMS",
+  },
+  {
+    icon: <PuzzlePieceIcon width={22} height={22} />,
+    to: "/admin/integrations",
+    text: "ADMIN$NAV_INTEGRATIONS",
+  },
+  {
+    icon: <ServerProcessIcon width={22} height={22} />,
+    to: "/admin/mcp",
+    text: "ADMIN$NAV_MCP",
+  },
+  {
+    icon: <CircuitIcon width={22} height={22} />,
+    to: "/admin/models",
+    text: "ADMIN$NAV_MODELS",
+  },
+  {
+    icon: <KeyIcon width={22} height={22} />,
+    to: "/admin/api-keys",
+    text: "ADMIN$NAV_API_KEYS",
+  },
+  {
+    icon: <SettingsGearIcon width={22} height={22} />,
+    to: "/admin/audit",
+    text: "ADMIN$NAV_AUDIT",
+  },
+  {
+    icon: <SettingsGearIcon width={22} height={22} />,
+    to: "/admin/alerts",
+    text: "ADMIN$NAV_ALERTS",
+  },
+];
+
 export const OSS_NAV_ITEMS: SettingsNavItem[] = [
   {
     icon: <CircuitIcon width={22} height={22} />,
