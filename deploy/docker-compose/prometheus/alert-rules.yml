@@ -1,0 +1,37 @@
+groups:
+  - name: apollosai
+    rules:
+      - alert: HighErrorRate
+        expr: rate(apollosai_http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP 5xx error rate"
+          description: "Error rate is {{ $value }} req/s over the last 5 minutes"
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.99, rate(apollosai_http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p99 latency"
+          description: "p99 latency is {{ $value }}s"
+
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: apollosai_db_pool_size - apollosai_db_pool_available < 2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+
+      - alert: AuthFailureSpike
+        expr: rate(apollosai_auth_failures_total[5m]) > 1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Auth failure rate spike"
+          description: "{{ $value }} auth failures/s over 5 minutes"

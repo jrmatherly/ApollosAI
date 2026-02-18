@@ -1,0 +1,49 @@
+# =============================================================================
+# ApollosAI Docker Compose — Development Overrides
+# =============================================================================
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Adds: source code hot-reload, debug mode, debugpy port, and host port
+# bindings for internal services (Postgres, Redis, Jaeger, Prometheus, OTEL).
+#
+# =============================================================================
+
+services:
+  app:
+    build:
+      context: ../../
+      # Inherit dockerfile from main compose (containers/apollosai/Dockerfile).
+      # DO NOT override to containers/app/Dockerfile — that builds the base
+      # OpenHands image without the apollosai enterprise layer.
+    environment:
+      - DEBUG=1
+    volumes:
+      - ../../openhands:/app/openhands
+      - ../../apollosai:/app/apollosai
+    ports:
+      - "5678:5678"  # debugpy
+
+  # Dev-only: expose internal services to host for debugging/tooling
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  otel-collector:
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus exporter
+
+  jaeger:
+    ports:
+      - "16686:16686"  # Jaeger UI
+
+  prometheus:
+    ports:
+      - "9090:9090"

@@ -1,0 +1,164 @@
+# =============================================================================
+# ApollosAI Helm Chart — Default Values
+# =============================================================================
+#
+# Override per-environment with:
+#   helm install apollosai ./deploy/helm/apollosai -f values-prod.yaml
+#
+# Secrets: set values.secrets.* for Helm-managed Secret, or set
+# existingSecret to reference a pre-created Kubernetes Secret.
+# =============================================================================
+
+# -- Number of app replicas
+replicaCount: 1
+
+image:
+  repository: ghcr.io/jrmatherly/apollosai
+  tag: latest
+  pullPolicy: Always
+
+# -- Image pull secrets (for private registries)
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: apollosai.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilization: 80
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# -- Reference an existing Secret instead of creating one from values.secrets.
+# When set, the chart skips Secret creation and mounts this secret instead.
+existingSecret: ""
+
+# ---------------------------------------------------------------------------
+# Non-secret environment variables (mounted via ConfigMap)
+# ---------------------------------------------------------------------------
+env:
+  APP_MODE: "saas"
+  APP_DISPLAY_NAME: "ApollosAI"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://apollosai-otel-collector:4317"
+  OTEL_SERVICE_NAME: "apollosai"
+  OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
+  SQLALCHEMY_POOL_SIZE: "20"
+  SQLALCHEMY_MAX_OVERFLOW: "30"
+  SQLALCHEMY_POOL_RECYCLE: "1800"
+
+# ---------------------------------------------------------------------------
+# Secret environment variables (mounted via Secret, base64-encoded by Helm)
+# Provide values as PLAINTEXT here — Helm handles base64 encoding.
+# ---------------------------------------------------------------------------
+secrets:
+  JWT_SECRET: ""
+  SESSION_SECRET: ""
+  APOLLOSAI_ENCRYPTION_KEY: ""
+  LLM_API_KEY: ""
+  DATABASE_URL: ""
+  REDIS_URL: ""
+  POSTGRES_PASSWORD: ""
+  REDIS_PASSWORD: ""
+
+# ---------------------------------------------------------------------------
+# PostgreSQL (in-cluster)
+# ---------------------------------------------------------------------------
+postgresql:
+  enabled: true
+  image:
+    repository: pgvector/pgvector
+    tag: "0.8.1-pg18"
+  auth:
+    username: apollosai
+    password: ""
+    database: apollosai
+  # -- Use an external database instead of in-cluster PostgreSQL.
+  # Set postgresql.enabled=false and provide the full connection URL.
+  externalUrl: ""
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: ""
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+
+# ---------------------------------------------------------------------------
+# Redis (in-cluster)
+# ---------------------------------------------------------------------------
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "8.0.2"
+  password: ""
+  maxmemory: "256mb"
+  # -- Use an external Redis instead of in-cluster Redis.
+  # Set redis.enabled=false and provide the full connection URL.
+  externalUrl: ""
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: ""
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+    requests:
+      cpu: "100m"
+      memory: "64Mi"
+
+# ---------------------------------------------------------------------------
+# OTEL Collector
+# ---------------------------------------------------------------------------
+otelCollector:
+  enabled: true
+  image:
+    repository: otel/opentelemetry-collector-contrib
+    tag: "0.98.0"
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+
+# ---------------------------------------------------------------------------
+# Alembic migration job (runs as pre-install/pre-upgrade hook)
+# ---------------------------------------------------------------------------
+migration:
+  enabled: true
+  backoffLimit: 3

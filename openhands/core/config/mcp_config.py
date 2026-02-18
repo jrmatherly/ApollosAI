@@ -387,4 +387,13 @@ openhands_mcp_config_cls = os.environ.get(
     'openhands.core.config.mcp_config.OpenHandsMCPConfig',
 )
 
-OpenHandsMCPConfigImpl = get_impl(OpenHandsMCPConfig, openhands_mcp_config_cls)
+
+def get_mcp_config_impl() -> type[OpenHandsMCPConfig]:
+    """Resolve MCP config implementation lazily to avoid circular imports.
+
+    The impl class (e.g. ApollosAIMCPConfig) may itself import from this
+    module. Resolving eagerly at module scope would trigger a circular
+    import. Deferring to first call breaks the cycle. Result is cached
+    by the underlying ``get_impl`` (``@lru_cache``).
+    """
+    return get_impl(OpenHandsMCPConfig, openhands_mcp_config_cls)

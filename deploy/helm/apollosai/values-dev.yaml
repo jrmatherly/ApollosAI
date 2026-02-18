@@ -1,0 +1,15 @@
+# Development overrides
+replicaCount: 1
+resources:
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+autoscaling:
+  enabled: false
+podDisruptionBudget:
+  enabled: false
+env:
+  DEBUG: "1"

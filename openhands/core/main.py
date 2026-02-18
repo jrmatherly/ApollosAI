@@ -21,7 +21,7 @@ from openhands.core.config import (
     parse_arguments,
     setup_config_from_args,
 )
-from openhands.core.config.mcp_config import OpenHandsMCPConfigImpl
+from openhands.core.config.mcp_config import get_mcp_config_impl
 from openhands.core.logger import openhands_logger as logger
 from openhands.core.loop import run_agent_until_done
 from openhands.core.schema import AgentState
@@ -156,7 +156,7 @@ async def run_controller(
         (
             _,
             openhands_mcp_stdio_servers,
-        ) = await OpenHandsMCPConfigImpl.create_default_mcp_server_config(
+        ) = await get_mcp_config_impl().create_default_mcp_server_config(
             config.mcp_host, config, None
         )
         runtime.config.mcp.stdio_servers.extend(openhands_mcp_stdio_servers)

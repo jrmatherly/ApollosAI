@@ -20,7 +20,7 @@ from openhands.core.config.condenser_config import (
     ConversationWindowCondenserConfig,
     LLMSummarizingCondenserConfig,
 )
-from openhands.core.config.mcp_config import OpenHandsMCPConfigImpl
+from openhands.core.config.mcp_config import get_mcp_config_impl
 from openhands.core.exceptions import MicroagentValidationError
 from openhands.core.logger import OpenHandsLoggerAdapter
 from openhands.core.schema import AgentState
@@ -205,7 +205,7 @@ class WebSession:
         (
             openhands_mcp_server,
             openhands_mcp_stdio_servers,
-        ) = await OpenHandsMCPConfigImpl.create_default_mcp_server_config(
+        ) = await get_mcp_config_impl().create_default_mcp_server_config(
             self.config.mcp_host, self.config, self.user_id
         )
 
