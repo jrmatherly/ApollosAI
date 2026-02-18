@@ -1,6 +1,6 @@
 # Project Index: ApollosAI (OpenHands)
 
-Generated: 2026-02-16 | v1.3.0 | Python 3.12+ | React 19 | TypeScript
+Generated: 2026-02-18 | v1.3.0 | Python 3.12+ | React 19 | TypeScript
 
 ## Project Structure
 
@@ -17,23 +17,26 @@ openhands/           460 .py  - Python backend (AI agent engine)
   runtime/                    - Sandboxed execution (Docker/K8s/Local)
   server/                     - V0 FastAPI HTTP server
   storage/                    - File backends (Local/S3/GCS)
-frontend/src/        726 files - React/TypeScript frontend
-  api/                        - 16 typed API services
-  hooks/                      - 100+ TanStack Query/Mutation hooks
-  components/                 - 28 feature component directories
+frontend/src/        884 files - React/TypeScript frontend
+  api/                        - 24 typed API services
+  hooks/                      - 111 TanStack Query/Mutation hooks
+  components/                 - Feature components (chat, settings, admin, home, sidebar)
   stores/                     - 15 Zustand stores
-  routes/                     - React Router 7 (23 route files)
+  routes/                     - React Router 7 (31 route files)
   types/                      - V0 + V1 type systems
 enterprise/          406 .py  - Enterprise features (Polyform license)
   integrations/               - 8 platforms (GitHub/GitLab/Jira/Linear/Slack)
   storage/                    - 74 DB models/stores (PostgreSQL)
   migrations/                 - 92 Alembic versions
   server/                     - 17 API route modules
-apollosai/            35 .py  - ApollosAI enterprise auth layer
-  server/                     - Config, auth (Entra ID), routes, lifespan
+apollosai/            99 .py  - ApollosAI enterprise layer
+  server/                     - Config, auth (Entra ID), routes (9 modules), lifespan
   storage/                    - PostgreSQL models, stores, encryption
+  integrations/               - 5 platforms (GitHub/Jira/Slack/Bitbucket/Microsoft)
+  monitoring/                 - OTEL, audit logging, health probes
+  mcp/                        - MCP server configuration
   migrations/                 - Alembic versions (separate from enterprise)
-tests/               204 .py  - Test suite
+tests/               278 .py  - Test suite (391 unit tests)
   unit/                       - Unit tests (pytest)
   e2e/                        - End-to-end tests
   runtime/                    - Runtime/sandbox tests
@@ -62,12 +65,20 @@ tests/               204 .py  - Test suite
 - `storage/` - FileStore: Local, S3, GoogleCloud, InMemory, WebHook
 - `mcp/` - MCPClient, tool conversion, tool execution
 
-### ApollosAI Enterprise Auth (`apollosai/`)
+### ApollosAI Enterprise Layer (`apollosai/`)
 - `server/config.py` - ApollosAIServerConfig (extends ServerConfig, app_mode=SAAS)
 - `server/auth/` - Entra ID OAuth2, JWT sessions, MSAL client, auth errors
 - `server/auth/user_context.py` - EntraIDUserContextInjector (V0->V1 bridge)
-- `server/routes/auth.py` - `/auth/login`, `/auth/callback`, `/auth/logout`
+- `server/routes/` - auth, admin, health, integrations, mcp, models, orgs, teams, api_keys
 - `server/lifespan.py` - ApollosAILifespanService (custom startup/shutdown)
+- `integrations/base.py` - ApollosAIIntegrationManager (ABC with replay protection, payload sanitization)
+- `integrations/` - GitHub, Jira, Slack, Bitbucket, Microsoft (typed views, HMAC validation)
+- `integrations/registry.py` - IntegrationRegistry (register/lookup by IntegrationType)
+- `monitoring/otel.py` - OpenTelemetry setup (traces, metrics, logging)
+- `monitoring/audit.py` - Structured audit logging for admin actions
+- `monitoring/health.py` - Liveness/readiness probes
+- `monitoring/listener.py` - EventStream listener for OTEL span creation
+- `mcp/config.py` - MCP server CRUD configuration
 - `storage/` - PostgreSQL models (user, org, team, role, api_key, auth_token), encrypted fields
 - `storage/database.py` - Async SQLAlchemy engine (auto-converts postgres:// URLs)
 - `storage/encrypt_utils.py` - AES-256-GCM field encryption (HKDF key derivation)
@@ -76,12 +87,18 @@ tests/               204 .py  - Test suite
 - `app_server.py` - Entry point for ApollosAI server
 
 ### Frontend (TypeScript/React)
-- `api/` - Axios-based services: conversation, git, settings, billing, auth, events
-- `hooks/query/` - 57 query hooks (`use[Resource]` pattern)
-- `hooks/mutation/` - 43 mutation hooks (`use[Action]` pattern)
+- `api/` - 24 Axios-based services: conversation, git, settings, billing, auth, events, admin, mcp-admin, integration
+- `hooks/query/` - 61 query hooks (`use[Resource]` pattern)
+- `hooks/mutation/` - 50 mutation hooks (`use[Action]` pattern)
+- `hooks/` - Utility hooks: use-branding, use-settings-nav-items, use-current-org-id
 - `stores/` - Zustand: conversation, agent, home, status, metrics, browser, events
 - `types/core/` - Event types with 40+ type guards, V0/V1 parallel systems
-- `components/` - chat (50 files), settings (32 dirs), home (15 dirs), sidebar, controls
+- `components/features/admin/` - 8 admin components (members, integrations, MCP, audit, roles)
+- `components/features/settings/` - Settings provenance, nav items
+- `components/features/` - chat (50 files), home (15 dirs), sidebar, controls
+- `routes/admin-*.tsx` - 8 admin routes (members, integrations, MCP, audit, alerts, API keys, models, teams)
+- `constants/settings-nav.tsx` - SAAS/OSS/APOLLOSAI nav item sets
+- `i18n/` - 14-language translations, declaration.ts enum
 
 ## Configuration
 
@@ -97,11 +114,14 @@ tests/               204 .py  - Test suite
 ```bash
 make build                    # Full build (backend + frontend + hooks)
 make run                      # Run application (port 3000)
+make start-apollosai          # ApollosAI backend only
+make test-apollosai           # Run 391 ApollosAI unit tests
+make migrate                  # Run Alembic migrations
 
 # Backend
 poetry install --with dev,test
 poetry run pytest tests/unit/test_xxx.py
-pre-commit run --config ./dev_config/python/.pre-commit-config.yaml
+pre-commit run --all-files --config ./dev_config/python/.pre-commit-config.yaml
 
 # Frontend
 cd frontend && npm install
@@ -124,7 +144,7 @@ npm run test                  # Vitest
 
 ## Key Patterns
 
-- **Registry**: Agents self-register via `Agent.register()`
+- **Registry**: Agents self-register via `Agent.register()`; integrations via `IntegrationRegistry`
 - **Pub-Sub**: EventStream central hub for all inter-component events
 - **Factory**: `get_file_store()`, runtime selection
 - **Strategy**: Pluggable condenser implementations
@@ -132,10 +152,14 @@ npm run test                  # Vitest
 - **Type Guards**: 40+ predicates for runtime event discrimination
 - **Env Var Getters**: Lazy `get_*()` functions prevent import-time caching (apollosai auth)
 - **V0/V1 Bridge**: `EntraIDUserContextInjector` wraps V0 `EntraIDUserAuth` into V1 `UserContext`
+- **Replay Protection**: Base manager dedup cache (OrderedDict, instance-level, 10k max)
+- **Payload Sanitization**: `sanitize_payload()` redacts sensitive keys before storage
+- **Fail-Closed Webhooks**: Missing signing secrets reject by default; `APOLLOSAI_ALLOW_UNSIGNED_WEBHOOKS` opt-in
+- **ApollosAI Mode**: Frontend `isSaasMode && !isBillingEnabled` → distinct nav/branding
 
 ## Conventions
 
 - Python: single quotes, `X | None` not `Optional[X]`, Google docstrings
-- Frontend: ESLint airbnb-ts + Prettier, i18n all strings
+- Frontend: ESLint 9 flat config + Prettier, i18n all strings (14 languages required)
 - Git: `git add <file>` not `git add .`, pre-commit must pass
 - Deprecated: `AppMode.OSS` -> use `AppMode.OPENHANDS`
