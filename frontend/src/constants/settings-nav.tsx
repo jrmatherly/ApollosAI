@@ -55,6 +55,91 @@ export const SAAS_NAV_ITEMS: SettingsNavItem[] = [
   },
 ];
 
+/**
+ * ApollosAI SaaS nav — like SAAS_NAV_ITEMS but without billing, experiments,
+ * and waitlist items that don't apply to the ApollosAI deployment.
+ */
+export const APOLLOSAI_NAV_ITEMS: SettingsNavItem[] = [
+  {
+    icon: <UserIcon width={22} height={22} />,
+    to: "/settings/user",
+    text: "SETTINGS$NAV_USER",
+  },
+  {
+    icon: <PuzzlePieceIcon width={22} height={22} />,
+    to: "/settings/integrations",
+    text: "SETTINGS$NAV_INTEGRATIONS",
+  },
+  {
+    icon: <SettingsGearIcon width={22} height={22} />,
+    to: "/settings/app",
+    text: "SETTINGS$NAV_APPLICATION",
+  },
+  {
+    icon: <CircuitIcon width={22} height={22} />,
+    to: "/settings",
+    text: "COMMON$LANGUAGE_MODEL_LLM",
+  },
+  {
+    icon: <KeyIcon width={22} height={22} />,
+    to: "/settings/secrets",
+    text: "SETTINGS$NAV_SECRETS",
+  },
+  {
+    icon: <KeyIcon width={22} height={22} />,
+    to: "/settings/api-keys",
+    text: "SETTINGS$NAV_API_KEYS",
+  },
+  {
+    icon: <ServerProcessIcon width={22} height={22} />,
+    to: "/settings/mcp",
+    text: "SETTINGS$NAV_MCP",
+  },
+];
+
+export const ADMIN_NAV_ITEMS: SettingsNavItem[] = [
+  {
+    icon: <UserIcon width={22} height={22} />,
+    to: "/admin",
+    text: "ADMIN$NAV_MEMBERS",
+  },
+  {
+    icon: <UserIcon width={22} height={22} />,
+    to: "/admin/teams",
+    text: "ADMIN$NAV_TEAMS",
+  },
+  {
+    icon: <PuzzlePieceIcon width={22} height={22} />,
+    to: "/admin/integrations",
+    text: "ADMIN$NAV_INTEGRATIONS",
+  },
+  {
+    icon: <ServerProcessIcon width={22} height={22} />,
+    to: "/admin/mcp",
+    text: "ADMIN$NAV_MCP",
+  },
+  {
+    icon: <CircuitIcon width={22} height={22} />,
+    to: "/admin/models",
+    text: "ADMIN$NAV_MODELS",
+  },
+  {
+    icon: <KeyIcon width={22} height={22} />,
+    to: "/admin/api-keys",
+    text: "ADMIN$NAV_API_KEYS",
+  },
+  {
+    icon: <SettingsGearIcon width={22} height={22} />,
+    to: "/admin/audit",
+    text: "ADMIN$NAV_AUDIT",
+  },
+  {
+    icon: <SettingsGearIcon width={22} height={22} />,
+    to: "/admin/alerts",
+    text: "ADMIN$NAV_ALERTS",
+  },
+];
+
 export const OSS_NAV_ITEMS: SettingsNavItem[] = [
   {
     icon: <CircuitIcon width={22} height={22} />,

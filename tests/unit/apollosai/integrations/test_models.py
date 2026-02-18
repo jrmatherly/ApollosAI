@@ -5,7 +5,6 @@ from apollosai.integrations.models import (
     IntegrationEvent,
     IntegrationType,
     OAuthConfig,
-    SourceType,
 )
 
 
@@ -24,7 +23,7 @@ def test_integration_event_minimal():
 
 def test_integration_event_full():
     event = IntegrationEvent(
-        source=SourceType.JIRA,
+        source=IntegrationType.JIRA,
         event_type='issue_created',
         external_id='PROJ-42',
         external_url='https://jira.example.com/browse/PROJ-42',
@@ -61,6 +60,8 @@ def test_oauth_config():
     assert len(config.scopes) == 2
 
 
-def test_source_type_alias():
-    assert SourceType is IntegrationType
-    assert SourceType.GITHUB == IntegrationType.GITHUB
+def test_integration_type_values():
+    """Verify IntegrationType enum has expected values."""
+    assert IntegrationType.GITHUB.value == 'github'
+    assert IntegrationType.JIRA.value == 'jira'
+    assert IntegrationType.SLACK.value == 'slack'

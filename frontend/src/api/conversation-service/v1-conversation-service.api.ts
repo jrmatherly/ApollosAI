@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { Provider } from "#/types/settings";
+import { SuggestedTask } from "#/utils/types";
 import { buildHttpBaseUrl } from "#/utils/websocket-url";
 import { buildSessionHeaders } from "#/utils/utils";
 
@@ -64,6 +65,7 @@ class V1ConversationService {
     initialUserMsg?: string,
     selected_branch?: string,
     conversationInstructions?: string,
+    suggestedTask?: SuggestedTask,
     trigger?: ConversationTrigger,
     parent_conversation_id?: string,
     agent_type?: "default" | "plan",
@@ -72,14 +74,15 @@ class V1ConversationService {
       selected_repository: selectedRepository,
       git_provider,
       selected_branch,
+      suggested_task: suggestedTask,
       title: conversationInstructions,
       trigger,
       parent_conversation_id: parent_conversation_id || null,
       agent_type,
     };
 
-    // Add initial message if provided
-    if (initialUserMsg) {
+    // suggested_task implies the backend will construct the initial_message
+    if (!suggestedTask && initialUserMsg) {
       body.initial_message = {
         role: "user",
         content: [

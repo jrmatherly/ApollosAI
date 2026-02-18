@@ -1,6 +1,7 @@
 """BYOMCP routes: CRUD for user-defined MCP servers."""
 
 import json
+import logging
 import uuid
 
 from fastapi import APIRouter, Depends
@@ -16,7 +17,10 @@ from apollosai.server.routes.models import (
     MCPServerResponse,
     UpdateMCPServerRequest,
 )
+from apollosai.storage.encrypt_utils import encrypt_value
 from apollosai.storage.models.user_mcp_server import MCPServerType, UserMCPServer
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 _require_member = require_role('member')
@@ -57,13 +61,18 @@ async def create_mcp_server(
     session: AsyncSession = Depends(get_db_session),
 ):
     """Add a new MCP server for the user."""
+    plaintext = json.dumps(body.config_json)
+    try:
+        encrypted = encrypt_value(plaintext)
+    except ValueError:
+        logger.warning('Encryption key not configured — storing config as plaintext')
+        encrypted = plaintext
     server = UserMCPServer(
         user_id=user.user_id,
         org_id=org_id,
         name=body.name,
         server_type=MCPServerType(body.server_type).value,
-        # TODO(phase3c): encrypt via SecretsStore before persisting
-        config_encrypted=json.dumps(body.config_json),
+        config_encrypted=encrypted,
         enabled=True,
         approved=False,  # requires admin approval
         description=body.description,
@@ -105,8 +114,14 @@ async def update_mcp_server(
     if body.name is not None:
         server.name = body.name
     if body.config_json is not None:
-        # TODO(phase3c): encrypt via SecretsStore before persisting
-        server.config_encrypted = json.dumps(body.config_json)
+        plaintext = json.dumps(body.config_json)
+        try:
+            server.config_encrypted = encrypt_value(plaintext)
+        except ValueError:
+            logger.warning(
+                'Encryption key not configured — storing config as plaintext'
+            )
+            server.config_encrypted = plaintext
     if body.enabled is not None:
         server.enabled = body.enabled
     if body.description is not None:

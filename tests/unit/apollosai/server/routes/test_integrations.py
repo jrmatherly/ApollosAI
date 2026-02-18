@@ -77,7 +77,7 @@ def test_webhook_unknown_integration():
     client = TestClient(app)
     resp = client.post('/api/webhooks/unknown', json={})
     assert resp.status_code == 404
-    assert 'Unknown integration' in resp.json()['error']
+    assert resp.json()['error'] == 'Not found'
 
 
 def test_webhook_not_registered():
@@ -85,7 +85,7 @@ def test_webhook_not_registered():
     client = TestClient(app)
     resp = client.post('/api/webhooks/github', json={})
     assert resp.status_code == 404
-    assert 'not registered' in resp.json()['error']
+    assert resp.json()['error'] == 'Not found'
 
 
 def test_webhook_success():

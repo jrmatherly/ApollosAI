@@ -16,7 +16,9 @@ export const useAppTitle = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const { data: conversation } = useUserConversation(conversationId ?? null);
 
-  const appTitle = config?.app_mode === "oss" ? APP_TITLE_OSS : APP_TITLE_SAAS;
+  const defaultTitle =
+    config?.app_mode === "oss" ? APP_TITLE_OSS : APP_TITLE_SAAS;
+  const appTitle = config?.app_display_name ?? defaultTitle;
   const conversationTitle = conversation?.title;
 
   if (conversationId && conversationTitle) {

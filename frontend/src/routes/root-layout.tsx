@@ -31,6 +31,7 @@ import { AlertBanner } from "#/components/features/alerts/alert-banner";
 import { cn, isMobileDevice } from "#/utils/utils";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
 import { useAppTitle } from "#/hooks/use-app-title";
+import { useBranding } from "#/hooks/use-branding";
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -67,6 +68,7 @@ export function ErrorBoundary() {
 
 export default function MainApp() {
   const appTitle = useAppTitle();
+  useBranding();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();

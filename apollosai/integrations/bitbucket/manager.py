@@ -8,6 +8,7 @@ import os
 from fastapi import Request
 
 from apollosai.integrations.base import ApollosAIIntegrationManager
+from apollosai.integrations.bitbucket.views import BitbucketWebhookPayload
 from apollosai.integrations.models import (
     ConversationContext,
     IntegrationEvent,
@@ -30,6 +31,7 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
         username: str | None = None,
         app_password: str | None = None,
     ):
+        super().__init__()
         self._webhook_secret = webhook_secret
         self._username = username
         self._app_password = app_password
@@ -71,56 +73,57 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
         return hmac.compare_digest(signature, expected)
 
     async def parse_event(self, payload: dict) -> IntegrationEvent | None:
-        """Parse Bitbucket webhook payload into an IntegrationEvent."""
+        """Parse Bitbucket webhook payload into an IntegrationEvent.
+
+        Uses typed views models (H9) for type-safe payload access.
+        """
+        typed = BitbucketWebhookPayload.model_validate(payload)
+
         # PR comment created
-        if 'pullrequest' in payload and 'comment' in payload:
-            comment = payload['comment']
-            content = comment.get('content', {})
+        if typed.pullrequest and typed.comment:
+            content = typed.comment.content or {}
             body = content.get('raw', '')
             if TRIGGER_MENTION not in body.lower():
                 return None
 
-            pr = payload['pullrequest']
-            repo = payload.get('repository', {})
-            actor = payload.get('actor', {})
-            repo_links = repo.get('links', {})
-            repo_url = repo_links.get('html', {}).get('href')
+            repo_url = None
+            if typed.repository and typed.repository.links:
+                repo_url = typed.repository.links.get('html', {}).get('href')
 
+            pr_links = typed.pullrequest.links or {}
             return IntegrationEvent(
                 source=IntegrationType.BITBUCKET,
                 event_type='pr_comment',
-                external_id=str(pr.get('id', '')),
-                external_url=pr.get('links', {}).get('html', {}).get('href'),
-                title=pr.get('title'),
+                external_id=str(typed.pullrequest.id),
+                external_url=pr_links.get('html', {}).get('href'),
+                title=typed.pullrequest.title,
                 body=body,
                 repo_url=repo_url,
-                user_email=actor.get('nickname'),
+                user_email=typed.actor.nickname if typed.actor else None,
                 raw_payload=payload,
             )
 
         # Issue comment created
-        if 'issue' in payload and 'comment' in payload:
-            comment = payload['comment']
-            content = comment.get('content', {})
+        if typed.issue and typed.comment:
+            content = typed.comment.content or {}
             body = content.get('raw', '')
             if TRIGGER_MENTION not in body.lower():
                 return None
 
-            issue = payload['issue']
-            repo = payload.get('repository', {})
-            actor = payload.get('actor', {})
-            repo_links = repo.get('links', {})
-            repo_url = repo_links.get('html', {}).get('href')
+            repo_url = None
+            if typed.repository and typed.repository.links:
+                repo_url = typed.repository.links.get('html', {}).get('href')
 
+            issue_links = typed.issue.links or {}
             return IntegrationEvent(
                 source=IntegrationType.BITBUCKET,
                 event_type='issue_comment',
-                external_id=str(issue.get('id', '')),
-                external_url=issue.get('links', {}).get('html', {}).get('href'),
-                title=issue.get('title'),
+                external_id=str(typed.issue.id or ''),
+                external_url=issue_links.get('html', {}).get('href'),
+                title=typed.issue.title,
                 body=body,
                 repo_url=repo_url,
-                user_email=actor.get('nickname'),
+                user_email=typed.actor.nickname if typed.actor else None,
                 raw_payload=payload,
             )
 

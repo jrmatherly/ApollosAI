@@ -20,4 +20,8 @@ export interface WebClientConfig {
   error_message: string | null;
   updated_at: string;
   github_app_slug: string | null;
+  app_display_name?: string;
+  app_logo_url?: string;
+  app_primary_color?: string;
+  app_favicon_url?: string;
 }

@@ -2,12 +2,12 @@
 
 import logging
 
-import httpx
+from apollosai.integrations.base import IntegrationServiceMixin, validate_repo_path
 
 logger = logging.getLogger(__name__)
 
 
-class GitHubService:
+class GitHubService(IntegrationServiceMixin):
     """Thin wrapper around GitHub REST API v3."""
 
     BASE_URL = 'https://api.github.com'
@@ -24,16 +24,18 @@ class GitHubService:
 
     async def post_comment(self, repo: str, issue_number: int, body: str) -> dict:
         """Post a comment on an issue or PR."""
+        validate_repo_path(repo)
         url = f'{self.BASE_URL}/repos/{repo}/issues/{issue_number}/comments'
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(url, json={'body': body}, headers=self._headers())
-            resp.raise_for_status()
-            return resp.json()
+        client = await self.get_client()
+        resp = await client.post(url, json={'body': body}, headers=self._headers())
+        resp.raise_for_status()
+        return resp.json()
 
     async def get_issue(self, repo: str, issue_number: int) -> dict:
         """Get issue details."""
+        validate_repo_path(repo)
         url = f'{self.BASE_URL}/repos/{repo}/issues/{issue_number}'
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, headers=self._headers())
-            resp.raise_for_status()
-            return resp.json()
+        client = await self.get_client()
+        resp = await client.get(url, headers=self._headers())
+        resp.raise_for_status()
+        return resp.json()

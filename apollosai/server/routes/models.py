@@ -107,6 +107,15 @@ class AuditLogResponse(BaseModel):
     created_at: datetime.datetime
 
 
+class PaginatedAuditLogResponse(BaseModel):
+    """Paginated audit log response with total count (M8)."""
+
+    items: list[AuditLogResponse]
+    total: int
+    limit: int
+    offset: int
+
+
 # --- MCP Servers (BYOMCP) ---
 
 

@@ -1,5 +1,6 @@
 """Tests for BYOMCP CRUD routes."""
 
+import json
 import uuid
 
 import pytest
@@ -14,6 +15,7 @@ import apollosai.storage.models.user  # noqa: F401
 import apollosai.storage.models.user_mcp_server  # noqa: F401
 from apollosai.server.auth.rbac import AuthedUser
 from apollosai.server.routes.mcp import _require_member, router
+from apollosai.storage.encrypt_utils import decrypt_value, reset_key_cache
 from apollosai.storage.models.base import Base
 from apollosai.storage.models.user_mcp_server import MCPServerType, UserMCPServer
 
@@ -177,3 +179,103 @@ async def test_delete_mcp_server_not_found(_db_session):
     fake_id = uuid.uuid4()
     resp = client.delete(f'/api/orgs/{ORG_ID}/mcp/servers/{fake_id}')
     assert resp.status_code == 404
+
+
+# --- C3: Encryption at rest tests ---
+
+
+@pytest.fixture
+def _encryption_env(monkeypatch):
+    """Set up encryption key for tests and reset key cache."""
+    monkeypatch.setenv(
+        'APOLLOSAI_ENCRYPTION_KEY', 'test-key-at-least-32-characters-long!!'
+    )
+    reset_key_cache()
+    yield
+    reset_key_cache()
+
+
+@pytest.mark.asyncio
+async def test_config_encrypted_at_rest(_db_session, _encryption_env):
+    """C3: config_encrypted column must contain encrypted bytes, not plaintext JSON."""
+    app = _make_app(_db_session)
+    client = TestClient(app)
+    config = {'command': 'npx', 'args': ['-y', 'my-tool']}
+    resp = client.post(
+        f'/api/orgs/{ORG_ID}/mcp/servers',
+        json={
+            'name': 'encrypted-test',
+            'server_type': 'stdio',
+            'config_json': config,
+        },
+    )
+    assert resp.status_code == 200
+
+    # Read raw from DB — should NOT be valid JSON
+    result = await _db_session.execute(
+        select(UserMCPServer).where(UserMCPServer.name == 'encrypted-test')
+    )
+    row = result.scalar_one()
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(row.config_encrypted)
+
+
+@pytest.mark.asyncio
+async def test_config_round_trips_through_encryption(_db_session, _encryption_env):
+    """C3: Config can be written encrypted and read back decrypted."""
+    app = _make_app(_db_session)
+    client = TestClient(app)
+    config = {'command': 'npx', 'args': ['-y', 'some-server']}
+    resp = client.post(
+        f'/api/orgs/{ORG_ID}/mcp/servers',
+        json={
+            'name': 'roundtrip-test',
+            'server_type': 'stdio',
+            'config_json': config,
+        },
+    )
+    assert resp.status_code == 200
+
+    # Verify the stored ciphertext decrypts back to original config
+    result = await _db_session.execute(
+        select(UserMCPServer).where(UserMCPServer.name == 'roundtrip-test')
+    )
+    row = result.scalar_one()
+    decrypted = decrypt_value(row.config_encrypted)
+    assert json.loads(decrypted) == config
+
+
+@pytest.mark.asyncio
+async def test_update_config_encrypted(_db_session, _encryption_env):
+    """C3: Updating config_json also encrypts the new value."""
+    # Create initial server
+    app = _make_app(_db_session)
+    client = TestClient(app)
+    resp = client.post(
+        f'/api/orgs/{ORG_ID}/mcp/servers',
+        json={
+            'name': 'update-enc-test',
+            'server_type': 'stdio',
+            'config_json': {'command': 'old'},
+        },
+    )
+    assert resp.status_code == 200
+    server_id = resp.json()['id']
+
+    # Update config
+    new_config = {'command': 'new', 'args': ['--flag']}
+    resp = client.put(
+        f'/api/orgs/{ORG_ID}/mcp/servers/{server_id}',
+        json={'config_json': new_config},
+    )
+    assert resp.status_code == 200
+
+    # Verify updated value is encrypted
+    result = await _db_session.execute(
+        select(UserMCPServer).where(UserMCPServer.id == uuid.UUID(server_id))
+    )
+    row = result.scalar_one()
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(row.config_encrypted)
+    decrypted = decrypt_value(row.config_encrypted)
+    assert json.loads(decrypted) == new_config

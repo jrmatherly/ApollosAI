@@ -1,6 +1,9 @@
 """Tests for ApollosAIMCPConfig cache behavior."""
 
+import time
+
 import pytest
+from cachetools import TTLCache
 
 from apollosai.mcp.config import ApollosAIMCPConfig
 
@@ -14,8 +17,8 @@ def _clear_cache():
 
 def test_invalidate_mcp_cache():
     """Cache invalidation removes a specific user's entry."""
-    ApollosAIMCPConfig._cache['user1'] = (0.0, (None, []))
-    ApollosAIMCPConfig._cache['user2'] = (0.0, (None, []))
+    ApollosAIMCPConfig._cache['user1'] = (None, [])
+    ApollosAIMCPConfig._cache['user2'] = (None, [])
     ApollosAIMCPConfig.invalidate_mcp_cache('user1')
     assert 'user1' not in ApollosAIMCPConfig._cache
     assert 'user2' in ApollosAIMCPConfig._cache
@@ -28,28 +31,53 @@ def test_invalidate_nonexistent_key():
 
 
 def test_clear_cache():
-    ApollosAIMCPConfig._cache['user1'] = (0.0, (None, []))
+    ApollosAIMCPConfig._cache['user1'] = (None, [])
     ApollosAIMCPConfig.clear_cache()
     assert len(ApollosAIMCPConfig._cache) == 0
 
 
-def test_cache_max_size_eviction():
-    """When cache hits max size, oldest entry is evicted."""
-    ApollosAIMCPConfig._cache_max_size = 3
+def test_cache_is_ttl_cache():
+    """H6: Cache must be a TTLCache for automatic expiry."""
+    assert isinstance(ApollosAIMCPConfig._cache, TTLCache)
+
+
+def test_cache_ttl_expiry(monkeypatch):
+    """H6: Verify stale entries are evicted after TTL."""
+    # Create a short-lived TTLCache for testing
+    original_cache = ApollosAIMCPConfig._cache
+    test_cache = TTLCache(maxsize=100, ttl=1)
+    ApollosAIMCPConfig._cache = test_cache
     try:
-        ApollosAIMCPConfig._cache['a'] = (1.0, (None, []))
-        ApollosAIMCPConfig._cache['b'] = (2.0, (None, []))
-        ApollosAIMCPConfig._cache['c'] = (3.0, (None, []))
-        # Simulate what the config code does when at capacity
-        if len(ApollosAIMCPConfig._cache) >= ApollosAIMCPConfig._cache_max_size:
-            oldest_key = min(
-                ApollosAIMCPConfig._cache,
-                key=lambda k: ApollosAIMCPConfig._cache[k][0],
-            )
-            del ApollosAIMCPConfig._cache[oldest_key]
-        ApollosAIMCPConfig._cache['d'] = (4.0, (None, []))
+        ApollosAIMCPConfig._cache['user1'] = (None, [])
+        assert 'user1' in ApollosAIMCPConfig._cache
+        # Wait for TTL to expire
+        time.sleep(1.1)
+        assert 'user1' not in ApollosAIMCPConfig._cache
+    finally:
+        ApollosAIMCPConfig._cache = original_cache
+
+
+def test_cache_max_size_eviction():
+    """TTLCache respects maxsize and evicts LRU entries."""
+    original_cache = ApollosAIMCPConfig._cache
+    test_cache = TTLCache(maxsize=3, ttl=300)
+    ApollosAIMCPConfig._cache = test_cache
+    try:
+        ApollosAIMCPConfig._cache['a'] = (None, [])
+        ApollosAIMCPConfig._cache['b'] = (None, [])
+        ApollosAIMCPConfig._cache['c'] = (None, [])
+        # Adding a 4th entry should evict the least recently used
+        ApollosAIMCPConfig._cache['d'] = (None, [])
         assert 'a' not in ApollosAIMCPConfig._cache
         assert 'd' in ApollosAIMCPConfig._cache
         assert len(ApollosAIMCPConfig._cache) == 3
     finally:
-        ApollosAIMCPConfig._cache_max_size = 1000
+        ApollosAIMCPConfig._cache = original_cache
+
+
+def test_create_default_is_classmethod():
+    """L5: create_default_mcp_server_config must be a classmethod, not staticmethod."""
+    assert isinstance(
+        ApollosAIMCPConfig.__dict__['create_default_mcp_server_config'],
+        classmethod,
+    )
