@@ -1,0 +1,8 @@
+apiVersion: v2
+name: apollosai
+description: ApollosAI — automated AI software engineer platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Jason Matherly

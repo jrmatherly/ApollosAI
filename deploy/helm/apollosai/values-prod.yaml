@@ -1,0 +1,23 @@
+# Production overrides
+replicaCount: 2
+resources:
+  limits:
+    cpu: "4"
+    memory: "8Gi"
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilization: 80  # AI workloads are I/O-bound; CPU rarely high
+  # TODO: Add custom metrics (active_conversations, request_queue_depth)
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+ingress:
+  enabled: true
+postgresql:
+  persistence:
+    size: 50Gi  # Production needs more than the 20Gi default
