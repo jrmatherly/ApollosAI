@@ -2758,6 +2758,27 @@ class TestApplySuggestedTask:
         with pytest.raises(ValueError, match='initial_message cannot be provided'):
             service._apply_suggested_task(request)
 
+    def test_apply_suggested_task_preserves_existing_repo_and_provider(self):
+        """Suggested task should not override existing repo/provider."""
+        service = self._make_service()
+        suggested_task = SuggestedTask(
+            git_provider=ProviderType.GITHUB,
+            task_type=TaskType.OPEN_ISSUE,
+            repo='suggested/repo',
+            issue_number=42,
+            title='Fix bug',
+        )
+        request = AppConversationStartRequest(
+            suggested_task=suggested_task,
+            selected_repository='existing/repo',
+            git_provider=ProviderType.GITLAB,
+        )
+
+        service._apply_suggested_task(request)
+
+        assert request.selected_repository == 'existing/repo'
+        assert request.git_provider == ProviderType.GITLAB
+
     def test_apply_suggested_task_noop_when_no_task(self):
         """No suggested task means no changes to request."""
         service = self._make_service()
