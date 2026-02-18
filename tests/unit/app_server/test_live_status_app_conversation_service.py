@@ -14,12 +14,15 @@ from pydantic import SecretStr
 from openhands.agent_server.models import (
     SendMessageRequest,
     StartConversationRequest,
+    TextContent,
 )
 from openhands.app_server.app_conversation.app_conversation_models import (
     AgentType,
     AppConversationInfo,
     AppConversationStartRequest,
 )
+from openhands.integrations.service_types import SuggestedTask, TaskType
+from openhands.storage.data_models.conversation_metadata import ConversationTrigger
 from openhands.app_server.app_conversation.live_status_app_conversation_service import (
     LiveStatusAppConversationService,
 )
@@ -2700,3 +2703,67 @@ class TestAppConversationStartRequestWithPlugins:
         assert request.plugins[0].source == 'github:owner/plugin1'
         assert request.plugins[1].repo_path == 'plugins/sub'
         assert request.plugins[2].source == '/local/path'
+
+
+class TestApplySuggestedTask:
+    """Tests for _apply_suggested_task method."""
+
+    def _make_service(self) -> LiveStatusAppConversationService:
+        service = LiveStatusAppConversationService.__new__(
+            LiveStatusAppConversationService
+        )
+        return service
+
+    def test_apply_suggested_task_sets_initial_message_and_trigger(self):
+        """Suggested task should populate initial_message from task prompt and set trigger."""
+        service = self._make_service()
+        suggested_task = SuggestedTask(
+            git_provider=ProviderType.GITHUB,
+            task_type=TaskType.OPEN_ISSUE,
+            repo='owner/repo',
+            issue_number=42,
+            title='Fix bug',
+        )
+        request = AppConversationStartRequest(suggested_task=suggested_task)
+
+        service._apply_suggested_task(request)
+
+        assert request.initial_message is not None
+        assert request.trigger == ConversationTrigger.SUGGESTED_TASK
+        assert request.selected_repository == 'owner/repo'
+        assert request.git_provider == ProviderType.GITHUB
+        # Verify the message content is a prompt string (not empty)
+        assert len(request.initial_message.content) == 1
+        assert isinstance(request.initial_message.content[0], TextContent)
+        assert len(request.initial_message.content[0].text) > 0
+
+    def test_apply_suggested_task_raises_if_initial_message_present(self):
+        """Cannot provide both initial_message and suggested_task."""
+        service = self._make_service()
+        suggested_task = SuggestedTask(
+            git_provider=ProviderType.GITHUB,
+            task_type=TaskType.OPEN_ISSUE,
+            repo='owner/repo',
+            issue_number=42,
+            title='Fix bug',
+        )
+        request = AppConversationStartRequest(
+            suggested_task=suggested_task,
+            initial_message=SendMessageRequest(
+                role='user',
+                content=[TextContent(text='hello')],
+            ),
+        )
+
+        with pytest.raises(ValueError, match='initial_message cannot be provided'):
+            service._apply_suggested_task(request)
+
+    def test_apply_suggested_task_noop_when_no_task(self):
+        """No suggested task means no changes to request."""
+        service = self._make_service()
+        request = AppConversationStartRequest(title='Test')
+
+        service._apply_suggested_task(request)
+
+        assert request.initial_message is None
+        assert request.trigger is None
