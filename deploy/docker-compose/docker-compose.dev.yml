@@ -14,9 +14,7 @@ services:
   app:
     build:
       context: ../../
-      # Inherit dockerfile from main compose (containers/apollosai/Dockerfile).
-      # DO NOT override to containers/app/Dockerfile — that builds the base
-      # OpenHands image without the apollosai enterprise layer.
+      # Inherit dockerfile from main compose (containers/app/Dockerfile).
     environment:
       - DEBUG=1
     volumes:
