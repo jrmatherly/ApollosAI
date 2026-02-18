@@ -103,9 +103,7 @@ class TestAuthenticateRoute:
         """Request with valid session should return 200."""
         from apollosai.server.auth.entraid_auth import EntraIDUserAuth
 
-        mock_user = EntraIDUserAuth(
-            user_id='user-123', email='user@example.com'
-        )
+        mock_user = EntraIDUserAuth(user_id='user-123', email='user@example.com')
         with patch(
             'apollosai.server.routes.auth.EntraIDUserAuth.get_instance',
             new_callable=AsyncMock,

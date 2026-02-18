@@ -73,15 +73,17 @@ def test_logout_rate_limited(client):
     assert resp.status_code == 429
 
 
-def test_rate_limit_uses_redis_when_available(monkeypatch):
-    """When REDIS_URL is set, limiter should use it."""
+def test_resolve_storage_uri_returns_redis_when_set(monkeypatch):
+    """When REDIS_URL is set, _resolve_storage_uri should return it."""
     monkeypatch.setenv('REDIS_URL', 'redis://localhost:6379')
-    import importlib
+    from apollosai.server.rate_limit import _resolve_storage_uri
 
-    import apollosai.server.rate_limit as rl_mod
+    assert _resolve_storage_uri() == 'redis://localhost:6379'
 
-    importlib.reload(rl_mod)
-    assert rl_mod.limiter._storage_uri == 'redis://localhost:6379'
-    # Clean up — reload with no REDIS_URL
+
+def test_resolve_storage_uri_returns_none_when_unset(monkeypatch):
+    """When REDIS_URL is not set, _resolve_storage_uri should return None."""
     monkeypatch.delenv('REDIS_URL', raising=False)
-    importlib.reload(rl_mod)
+    from apollosai.server.rate_limit import _resolve_storage_uri
+
+    assert _resolve_storage_uri() is None

@@ -67,13 +67,14 @@ class TestApollosAIWebClientConfigInjector:
             providers_configured=_get_providers_configured()
         )
 
-        # Mock get_global_config to return a minimal config
+        # Mock get_global_config — the local import inside
+        # get_web_client_config resolves from openhands.app_server.config
         from unittest.mock import MagicMock
 
         mock_config = MagicMock()
         mock_config.app_mode = 'saas'
         monkeypatch.setattr(
-            'openhands.app_server.web_client.default_web_client_config_injector.get_global_config',
+            'openhands.app_server.config.get_global_config',
             lambda: mock_config,
         )
 

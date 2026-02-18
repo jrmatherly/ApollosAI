@@ -57,6 +57,22 @@ _v1_config.web_client = ApollosAIWebClientConfigInjector()
 _v1_config.app_mode = AppMode.SAAS
 
 
+# ── Rate limiter ────────────────────────────────────────────────────────
+# The module-level limiter starts with in-memory storage (no network I/O
+# at import time). Here we re-init with Redis if REDIS_URL is set and
+# wire it into FastAPI's app.state so slowapi decorators work.
+from apollosai.server.rate_limit import _resolve_storage_uri, limiter  # noqa: E402
+
+_storage_uri = _resolve_storage_uri()
+if _storage_uri:
+    limiter._storage_uri = _storage_uri  # type: ignore[attr-defined]
+    from limits.storage import storage_from_string
+
+    limiter._storage = storage_from_string(_storage_uri)  # type: ignore[attr-defined]
+
+base_app.state.limiter = limiter
+
+
 # Health check
 @base_app.get('/apollosai')
 def is_apollosai():
