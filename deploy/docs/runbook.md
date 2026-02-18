@@ -92,7 +92,7 @@ Pin the previous image tag in `docker-compose.yml`:
 ```yaml
 services:
   app:
-    image: ghcr.io/jrmatherly/apollosai/enterprise-server:sha-abc1234
+    image: ghcr.io/jrmatherly/apollosai:sha-abc1234
 ```
 
 Then `docker compose up -d`.
@@ -234,7 +234,7 @@ kubectl get pods -n apollosai -o jsonpath='{range .items[*]}{.metadata.name}{"\t
 1. Check for new versions:
    ```bash
    # Check GHCR for latest app image
-   gh api /users/jrmatherly/packages/container/apollosai%2Fenterprise-server/versions --jq '.[0:5] | .[].metadata.container.tags'
+   gh api /users/jrmatherly/packages/container/apollosai/versions --jq '.[0:5] | .[].metadata.container.tags'
 
    # Check Docker Hub for dependency updates
    docker pull pgvector/pgvector:0.8.1-pg18  # Verify tag still exists

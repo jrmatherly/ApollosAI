@@ -20,19 +20,12 @@
 
 ### 1. Build the app image
 
-The app image (`apollosai:latest`) is built locally — it is not available on a public registry. It uses a base image for Python deps, frontend build, and OS setup, then overlays the current `openhands/` and `apollosai/` source:
+The app image (`apollosai:latest`) is built locally — it is not available on a public registry. It performs a full multi-stage build: frontend compilation, Python dependency installation, and packaging of all source code (`openhands/` and `apollosai/`) into a single unified image:
 
 ```bash
-# First time only: ensure the base image exists (pull from GHCR or build locally)
-docker pull ghcr.io/jrmatherly/apollosai:latest
-# OR: ./containers/build.sh -i openhands
-
-# Build the ApollosAI enterprise image (picks up ALL code changes)
 cd deploy/docker-compose
 docker compose build app
 ```
-
-The base image only needs to be rebuilt when Python dependencies or the frontend change. Code-only changes to `openhands/` or `apollosai/` are picked up by `docker compose build app` alone.
 
 > **Cross-platform note:** On Apple Silicon (ARM), you can pull the amd64 base image with
 > `docker pull --platform linux/amd64 ghcr.io/jrmatherly/apollosai:latest`. The container
