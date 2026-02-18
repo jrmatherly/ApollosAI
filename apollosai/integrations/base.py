@@ -76,8 +76,10 @@ class ApollosAIIntegrationManager(ABC):
     """
 
     source_type: IntegrationType
-    _seen_events: OrderedDict = OrderedDict()
     _MAX_SEEN: int = 10_000
+
+    def __init__(self) -> None:
+        self._seen_events: OrderedDict = OrderedDict()
 
     def _check_replay(self, external_id: str) -> bool:
         """Return True if this event was already processed (replay detected).

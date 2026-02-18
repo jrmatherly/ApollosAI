@@ -27,6 +27,7 @@ class GitHubIntegrationManager(ApollosAIIntegrationManager):
     SUPPORTED_EVENTS = {'issues', 'issue_comment', 'pull_request_review_comment'}
 
     def __init__(self, webhook_secret: str | None = None, api_token: str | None = None):
+        super().__init__()
         self._webhook_secret = webhook_secret
         self._api_token = api_token
 

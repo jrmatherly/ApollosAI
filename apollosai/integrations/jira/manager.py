@@ -31,6 +31,7 @@ class JiraIntegrationManager(ApollosAIIntegrationManager):
         email: str | None = None,
         api_token: str | None = None,
     ):
+        super().__init__()
         self._webhook_secret = webhook_secret
         self._base_url = base_url
         self._email = email

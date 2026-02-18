@@ -31,6 +31,7 @@ class BitbucketIntegrationManager(ApollosAIIntegrationManager):
         username: str | None = None,
         app_password: str | None = None,
     ):
+        super().__init__()
         self._webhook_secret = webhook_secret
         self._username = username
         self._app_password = app_password

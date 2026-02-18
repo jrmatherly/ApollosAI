@@ -17,6 +17,7 @@ class ConcreteManager(ApollosAIIntegrationManager):
     source_type = IntegrationType.GITHUB
 
     def __init__(self, *, valid=True, event=None, context=None):
+        super().__init__()
         self._valid = valid
         self._event = event
         self._context = context

@@ -34,6 +34,7 @@ class MicrosoftIntegrationManager(ApollosAIIntegrationManager):
         tenant_id: str | None = None,
         client_id: str | None = None,
     ):
+        super().__init__()
         self._client_state = client_state
         self._tenant_id = tenant_id
         self._client_id = client_id

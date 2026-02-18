@@ -20,8 +20,7 @@ class ReplayTestManager(ApollosAIIntegrationManager):
     source_type = IntegrationType.GITHUB
 
     def __init__(self):
-        # Each instance gets its own dedup cache to isolate tests
-        self._seen_events = type(self._seen_events)()
+        super().__init__()
 
     async def validate_webhook(self, request):
         return True

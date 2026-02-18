@@ -33,6 +33,7 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
         signing_secret: str | None = None,
         bot_token: str | None = None,
     ):
+        super().__init__()
         self._signing_secret = signing_secret
         self._bot_token = bot_token
 
@@ -125,6 +126,17 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
         event = await self.parse_event(payload)
         if event is None:
             return {'status': 'skipped'}
+
+        # Replay protection (M1): reject duplicate external_ids
+        if self._check_replay(event.external_id):
+            logger.info(
+                'replay_detected',
+                extra={
+                    'source': self.source_type.value,
+                    'external_id': event.external_id,
+                },
+            )
+            return {'status': 'duplicate'}
 
         context = await self.build_context(event)
         logger.info(

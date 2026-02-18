@@ -57,15 +57,17 @@ def test_allow_unsigned_env_permits_webhook(manager_cls, monkeypatch):
     client = TestClient(app)
     resp = client.post(
         '/webhook',
-        content=json.dumps({
-            'type': 'event_callback',
-            'event': {
-                'type': 'app_mention',
-                'text': 'hi',
-                'channel': 'C1',
-                'ts': '1',
-            },
-        }).encode(),
+        content=json.dumps(
+            {
+                'type': 'event_callback',
+                'event': {
+                    'type': 'app_mention',
+                    'text': 'hi',
+                    'channel': 'C1',
+                    'ts': '1',
+                },
+            }
+        ).encode(),
         headers={'content-type': 'application/json'},
     )
     assert resp.status_code != 401, (
