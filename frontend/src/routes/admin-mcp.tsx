@@ -1,13 +1,40 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useAdminMCPServers } from "#/hooks/query/use-admin-mcp-servers";
+import { useAdminAddMCPServer } from "#/hooks/mutation/use-admin-add-mcp-server";
+import { useAdminRemoveMCPServer } from "#/hooks/mutation/use-admin-remove-mcp-server";
 import { useCurrentOrgId } from "#/hooks/use-current-org-id";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
+import { BrandButton } from "#/components/features/settings/brand-button";
+import { MCPServerCard } from "#/components/features/admin/mcp-server-card";
+import { AddMCPServerModal } from "#/components/features/admin/add-mcp-server-modal";
+import MCPAdminService from "#/api/mcp-admin-service/mcp-admin-service.api";
 
 export default function AdminMCPPage() {
   const { t } = useTranslation();
   const orgId = useCurrentOrgId();
+  const queryClient = useQueryClient();
   const { data: servers, isLoading } = useAdminMCPServers(orgId);
+  const addServer = useAdminAddMCPServer(orgId ?? "");
+  const removeServer = useAdminRemoveMCPServer(orgId ?? "");
+
+  const [showAddModal, setShowAddModal] = React.useState(false);
+  const [isToggling, setIsToggling] = React.useState(false);
+
+  const handleToggle = async (serverId: string, enabled: boolean) => {
+    if (!orgId) return;
+    setIsToggling(true);
+    try {
+      await MCPAdminService.updateMCPServer(orgId, serverId, { enabled });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-mcp-servers", orgId],
+      });
+    } finally {
+      setIsToggling(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -23,6 +50,13 @@ export default function AdminMCPPage() {
         <h3 className="text-lg font-semibold">
           {t("ADMIN$MCP_TITLE", "MCP Servers")}
         </h3>
+        <BrandButton
+          type="button"
+          variant="primary"
+          onClick={() => setShowAddModal(true)}
+        >
+          {t("ADMIN$ADD_MCP_SERVER", "Add MCP Server")}
+        </BrandButton>
       </div>
       {servers && servers.length > 0 ? (
         <div className="rounded-lg border border-tertiary">
@@ -38,32 +72,20 @@ export default function AdminMCPPage() {
                 <th className="px-4 py-3 font-medium">
                   {t("ADMIN$MCP_STATUS", "Status")}
                 </th>
+                <th className="px-4 py-3 font-medium w-40" />
               </tr>
             </thead>
             <tbody>
               {servers.map((server) => (
-                <tr
+                <MCPServerCard
                   key={server.id}
-                  className="border-b border-tertiary last:border-b-0"
-                >
-                  <td className="px-4 py-3">{server.name}</td>
-                  <td className="px-4 py-3 uppercase text-xs">
-                    {server.server_type}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        server.enabled
-                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                          : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-                      }`}
-                    >
-                      {server.enabled
-                        ? t("ADMIN$STATUS_ENABLED", "Enabled")
-                        : t("ADMIN$STATUS_DISABLED", "Disabled")}
-                    </span>
-                  </td>
-                </tr>
+                  server={server}
+                  onToggle={handleToggle}
+                  onDelete={(serverId) => removeServer.mutate(serverId)}
+                  isUpdating={
+                    isToggling || removeServer.isPending || addServer.isPending
+                  }
+                />
               ))}
             </tbody>
           </table>
@@ -72,6 +94,17 @@ export default function AdminMCPPage() {
         <p className="text-tertiary">
           {t("ADMIN$NO_MCP_SERVERS", "No MCP servers configured.")}
         </p>
+      )}
+      {showAddModal && (
+        <AddMCPServerModal
+          onSubmit={(body) => {
+            addServer.mutate(body, {
+              onSuccess: () => setShowAddModal(false),
+            });
+          }}
+          onClose={() => setShowAddModal(false)}
+          isPending={addServer.isPending}
+        />
       )}
     </div>
   );
