@@ -22,8 +22,8 @@ make migrate                  # Run ApollosAI Alembic migrations
 make migrate-create MSG='...' # Create new Alembic migration (auto-generate)
 make migrate-status           # Check current migration status
 make test-apollosai           # Run ApollosAI unit tests
-make docker-build-app         # Build ApollosAI app Docker image
-make docker-build-ent         # Build ApollosAI enterprise Docker image
+make docker-build-app         # Build ApollosAI Docker image (unified)
+make docker-build-ent         # Alias for docker-build-app
 make help                     # List all available targets
 ```
 - ApollosAI targets (`start-apollosai`, `run`, `migrate*`) require `.env` — run `make setup-env` to bootstrap from `.env.example`
@@ -140,7 +140,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Ruff and Mypy exclude `third_party/` and `enterprise/` — enterprise has its own lint config at `enterprise/dev_config/`
 - `AppMode.OSS` is deprecated — use `AppMode.OPENHANDS`
 - Python package is `openhands/` (not `apollos/`) — CI workflows and imports must use `openhands.*` module paths
-- Container builds: `containers/build.sh -i openhands` maps to `./containers/app/`; `-i apollosai` maps to `./containers/apollosai/` (enterprise image)
+- Container builds: `containers/build.sh -i openhands` and `-i apollosai` both map to `./containers/app/` (single unified image)
 
 **Frontend**:
 - `npm run dev:mock` / `npm run dev:mock:saas` — develop with MSW-mocked backend
