@@ -5,7 +5,7 @@
 # dependencies (ddtrace, keycloak, stripe, etc.), and uses the wrong
 # entrypoint (saas_server:app).
 #
-# Use containers/apollosai/Dockerfile instead for ApollosAI builds.
+# Use containers/app/Dockerfile instead for ApollosAI builds.
 # See: .scratchpad/fix-enterprise-docker-workflow.md for full analysis.
 # ===========================================================================
 
