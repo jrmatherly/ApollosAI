@@ -1,0 +1,69 @@
+# =============================================================================
+# Alembic Migration Job
+# =============================================================================
+#
+# Kustomize does not have Helm-style hooks. Migration ordering options:
+#
+# 1. Manual:
+#    kubectl apply -f migration-job.yaml -n apollosai
+#    kubectl wait --for=condition=complete job/apollosai-migration -n apollosai --timeout=120s
+#    kubectl apply -k .
+#
+# 2. Init container: Add an init container to the app Deployment that runs
+#    `alembic upgrade head` before the app starts.
+#
+# 3. ArgoCD: Use sync-wave annotations on this Job:
+#    argocd.argoproj.io/sync-wave: "-1"
+#
+# =============================================================================
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: apollosai-migration
+  namespace: apollosai
+  labels:
+    app.kubernetes.io/name: apollosai
+    app.kubernetes.io/component: migration
+  annotations:
+    # ArgoCD sync-wave — uncomment if using ArgoCD:
+    # argocd.argoproj.io/sync-wave: "-1"
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: apollosai
+        app.kubernetes.io/component: migration
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 1000
+      containers:
+        - name: migration
+          image: ghcr.io/jrmatherly/apollosai:latest
+          workingDir: /app
+          command:
+            - alembic
+            - -c
+            - apollosai/alembic.ini
+            - upgrade
+            - head
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: apollosai-secrets
+                  key: DATABASE_URL
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+      # No Docker socket mount — migration only needs database access

@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: apollosai-postgresql
+  namespace: apollosai
+  labels:
+    app.kubernetes.io/name: apollosai
+    app.kubernetes.io/component: postgresql
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 5432
+      targetPort: postgresql
+      protocol: TCP
+      name: postgresql
+  selector:
+    app.kubernetes.io/name: apollosai
+    app.kubernetes.io/component: postgresql
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apollosai-pg-init
+  namespace: apollosai
+data:
+  01-init-extensions.sql: |
+    -- Enable pgvector extension for vector similarity search
+    CREATE EXTENSION IF NOT EXISTS vector;
+    -- Enable uuid-ossp for UUID generation
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: apollosai-postgresql
+  namespace: apollosai
+  labels:
+    app.kubernetes.io/name: apollosai
+    app.kubernetes.io/component: postgresql
+spec:
+  serviceName: apollosai-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apollosai
+      app.kubernetes.io/component: postgresql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: apollosai
+        app.kubernetes.io/component: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: pgvector/pgvector:0.8.1-pg18
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              value: "apollosai"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: apollosai-secrets
+                  key: POSTGRES_PASSWORD
+                  optional: true
+            - name: POSTGRES_DB
+              value: "apollosai"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "apollosai"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "apollosai"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: apollosai-pg-init
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi
