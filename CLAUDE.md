@@ -148,6 +148,8 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - ESLint 9 flat config (`eslint.config.js`) + Prettier. ESLint 9 is pinned — do NOT upgrade to 10 (plugin incompatibility)
 - In worktrees: use `npm run lint` or `./node_modules/.bin/eslint`, never bare `npx eslint` (resolves to v10)
 - All user-facing strings must be internationalized (`npm run make-i18n` after adding keys)
+- Frontend pre-commit runs `typecheck:staged` — partial mock objects need `as unknown as Type` double-cast to satisfy `tsc --noEmit`
+- `check-translation-completeness` pre-commit requires ALL 14 languages for every key in `translation.json` — English-only entries are rejected
 - Settings patterns: entity-based (immediate save for MCP/keys) vs form-based (manual save for LLM/app config)
 
 **Git**:
@@ -158,6 +160,7 @@ Extends core with auth, billing, and integrations. Licensed under Polyform Free 
 - Worktrees go in `.worktrees/` (gitignored). Use `git worktree add .worktrees/<name> -b <branch>`
 - `gh pr merge` must run from the main repo directory, NOT from a worktree (fails with `'main' is already used by worktree`)
 - Worktree cleanup order: `git worktree remove <path>` FIRST, then `git branch -d <branch>` — `gh pr merge --delete-branch` can't delete a branch held by a worktree
+- All git commands (`git add`, `git commit`) must run from the worktree directory, not the main repo root — paths are relative to the worktree
 
 **Dependency upgrades:**
 - `pyproject.toml` has TWO dep sections that must stay in sync: `[project].dependencies` (PEP 621) and `[tool.poetry.dependencies]` (Poetry)
@@ -193,6 +196,7 @@ The V0 backend is deprecated (removal April 2026). V1 uses the Software Agent SD
 - `asyncio_mode = "auto"` in `pyproject.toml` for pytest-asyncio
 - Custom pytest marks must be registered in `pytest.ini` under `[pytest] markers =` to avoid `PytestUnknownMarkWarning` in CI
 - Test helper classes starting with `Test` need `__test__ = False` to prevent `PytestCollectionWarning`
+- **ApollosAI mode detection**: Frontend uses `isSaasMode && !isBillingEnabled` → returns `APOLLOSAI_NAV_ITEMS`. Tests mocking `app_mode: "saas"` must set `enable_billing: true` for full SaaS behavior.
 
 ## Known Issues
 
