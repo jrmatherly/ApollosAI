@@ -43,4 +43,4 @@ inline-quotes = "single"
 quote-style = "single"
 
 [lint.flake8-bugbear]
-extend-immutable-calls = ["Depends", "fastapi.Depends", "fastapi.params.Depends"]
+extend-immutable-calls = ["Depends", "fastapi.Depends", "fastapi.params.Depends", "Query", "fastapi.Query"]

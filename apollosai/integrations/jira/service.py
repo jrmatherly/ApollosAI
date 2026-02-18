@@ -2,12 +2,12 @@
 
 import logging
 
-import httpx
+from apollosai.integrations.base import IntegrationServiceMixin, validate_jira_key
 
 logger = logging.getLogger(__name__)
 
 
-class JiraService:
+class JiraService(IntegrationServiceMixin):
     """Thin wrapper around Jira REST API v3."""
 
     def __init__(self, base_url: str, email: str, api_token: str):
@@ -17,6 +17,7 @@ class JiraService:
 
     async def post_comment(self, issue_key: str, body: str) -> dict:
         """Post a comment on a Jira issue using ADF format."""
+        validate_jira_key(issue_key)
         url = f'{self._base_url}/rest/api/3/issue/{issue_key}/comment'
         adf_body = {
             'body': {
@@ -30,24 +31,25 @@ class JiraService:
                 ],
             }
         }
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                url,
-                json=adf_body,
-                auth=(self._email, self._api_token),
-                headers={'Accept': 'application/json'},
-            )
-            resp.raise_for_status()
-            return resp.json()
+        client = await self.get_client()
+        resp = await client.post(
+            url,
+            json=adf_body,
+            auth=(self._email, self._api_token),
+            headers={'Accept': 'application/json'},
+        )
+        resp.raise_for_status()
+        return resp.json()
 
     async def get_issue(self, issue_key: str) -> dict:
         """Get issue details."""
+        validate_jira_key(issue_key)
         url = f'{self._base_url}/rest/api/3/issue/{issue_key}'
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                url,
-                auth=(self._email, self._api_token),
-                headers={'Accept': 'application/json'},
-            )
-            resp.raise_for_status()
-            return resp.json()
+        client = await self.get_client()
+        resp = await client.get(
+            url,
+            auth=(self._email, self._api_token),
+            headers={'Accept': 'application/json'},
+        )
+        resp.raise_for_status()
+        return resp.json()

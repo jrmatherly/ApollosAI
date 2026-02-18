@@ -12,6 +12,7 @@ from fastapi import Request
 from starlette.responses import PlainTextResponse, Response
 
 from apollosai.integrations.base import ApollosAIIntegrationManager
+from apollosai.integrations.microsoft.views import GraphSubscriptionPayload
 from apollosai.integrations.models import (
     ConversationContext,
     IntegrationEvent,
@@ -87,16 +88,20 @@ class MicrosoftIntegrationManager(ApollosAIIntegrationManager):
         return await super().handle_webhook(request)
 
     async def parse_event(self, payload: dict) -> IntegrationEvent | None:
-        """Parse Graph change notification into an IntegrationEvent."""
-        notifications = payload.get('value', [])
-        if not notifications:
+        """Parse Graph change notification into an IntegrationEvent.
+
+        Uses typed views models (H9) for type-safe payload access.
+        """
+        typed = GraphSubscriptionPayload.model_validate(payload)
+
+        if not typed.value:
             return None
 
         # Process the first notification (batch handling can be added later)
-        notification = notifications[0]
-        change_type = notification.get('changeType', '')
-        resource = notification.get('resource', '')
-        resource_data = notification.get('resourceData', {})
+        notification = typed.value[0]
+        change_type = notification.change_type or ''
+        resource = notification.resource or ''
+        resource_data = notification.resource_data or {}
 
         if not resource:
             return None

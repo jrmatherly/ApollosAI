@@ -63,15 +63,22 @@ class JiraIntegrationManager(ApollosAIIntegrationManager):
         return hmac.compare_digest(token, self._webhook_secret)
 
     async def parse_event(self, payload: dict) -> IntegrationEvent | None:
-        """Parse Jira webhook payload into an IntegrationEvent."""
-        webhook_event = payload.get('webhookEvent', '')
-        issue_data = payload.get('issue', {})
-        fields = issue_data.get('fields', {})
+        """Parse Jira webhook payload into an IntegrationEvent.
 
-        if not issue_data:
+        Uses typed views for structural validation (H9).
+        Jira payloads use camelCase keys (e.g. webhookEvent) that don't map
+        cleanly to Pydantic field names, so we keep dict access for the
+        top-level routing while using views models for nested structures.
+        """
+        from apollosai.integrations.jira.views import JiraWebhookPayload
+
+        typed = JiraWebhookPayload.model_validate(payload)
+
+        webhook_event = payload.get('webhookEvent', '')
+        if not typed.issue:
             return None
 
-        issue_key = issue_data.get('key', '')
+        issue_key = typed.issue.key
         jira_url = self._base_url or ''
         external_url = f'{jira_url}/browse/{issue_key}' if jira_url else None
 
@@ -79,60 +86,61 @@ class JiraIntegrationManager(ApollosAIIntegrationManager):
         if webhook_event == 'jira:issue_created':
             labels = [
                 lbl.get('name', '') if isinstance(lbl, dict) else lbl
-                for lbl in fields.get('labels', [])
+                for lbl in typed.issue.fields.labels
             ]
             if TRIGGER_LABEL not in [lbl.lower() for lbl in labels]:
                 return None
-            user = payload.get('user', {})
+            user = typed.user
             return IntegrationEvent(
                 source=IntegrationType.JIRA,
                 event_type='issue_created',
                 external_id=issue_key,
                 external_url=external_url,
-                title=fields.get('summary'),
-                body=fields.get('description'),
-                user_email=user.get('emailAddress'),
+                title=typed.issue.fields.summary,
+                body=typed.issue.fields.description,
+                user_email=user.email_address if user else None,
                 raw_payload=payload,
             )
 
         # Issue updated — label added
         if webhook_event == 'jira:issue_updated':
-            changelog = payload.get('changelog', {})
-            for item in changelog.get('items', []):
-                if item.get('field') == 'labels' and TRIGGER_LABEL in (
-                    item.get('toString', '').lower()
-                ):
-                    user = payload.get('user', {})
-                    return IntegrationEvent(
-                        source=IntegrationType.JIRA,
-                        event_type='issue_labeled',
-                        external_id=issue_key,
-                        external_url=external_url,
-                        title=fields.get('summary'),
-                        body=fields.get('description'),
-                        user_email=user.get('emailAddress'),
-                        raw_payload=payload,
-                    )
+            changelog = typed.changelog
+            if changelog:
+                for item in changelog.items:
+                    if item.get('field') == 'labels' and TRIGGER_LABEL in (
+                        item.get('toString', '').lower()
+                    ):
+                        user = typed.user
+                        return IntegrationEvent(
+                            source=IntegrationType.JIRA,
+                            event_type='issue_labeled',
+                            external_id=issue_key,
+                            external_url=external_url,
+                            title=typed.issue.fields.summary,
+                            body=typed.issue.fields.description,
+                            user_email=user.email_address if user else None,
+                            raw_payload=payload,
+                        )
             return None
 
         # Comment created with @openhands mention
         if webhook_event == 'comment_created':
-            comment = payload.get('comment', {})
-            comment_body = comment.get('body', '')
+            comment = typed.comment
+            comment_body = comment.body if comment else ''
             if isinstance(comment_body, dict):
                 # ADF format — extract text from content nodes
                 comment_body = _extract_adf_text(comment_body)
-            if '@openhands' not in comment_body.lower():
+            if not comment_body or '@openhands' not in comment_body.lower():
                 return None
-            user = comment.get('author', {})
+            author = comment.author if comment else None
             return IntegrationEvent(
                 source=IntegrationType.JIRA,
                 event_type='comment_created',
                 external_id=issue_key,
                 external_url=external_url,
-                title=fields.get('summary'),
+                title=typed.issue.fields.summary,
                 body=comment_body,
-                user_email=user.get('emailAddress'),
+                user_email=author.email_address if author else None,
                 raw_payload=payload,
             )
 

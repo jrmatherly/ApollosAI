@@ -15,6 +15,7 @@ from apollosai.integrations.models import (
     IntegrationEvent,
     IntegrationType,
 )
+from apollosai.integrations.slack.views import SlackEventPayload
 
 logger = logging.getLogger(__name__)
 
@@ -137,36 +138,46 @@ class SlackIntegrationManager(ApollosAIIntegrationManager):
         return {'status': 'processed', 'title': context.title}
 
     async def parse_event(self, payload: dict) -> IntegrationEvent | None:
-        """Parse Slack Events API payload into an IntegrationEvent."""
-        if payload.get('type') != 'event_callback':
+        """Parse Slack Events API payload into an IntegrationEvent.
+
+        Uses typed views models (H9) for type-safe payload access.
+        """
+        typed = SlackEventPayload.model_validate(payload)
+
+        if typed.type != 'event_callback':
             return None
 
-        event = payload.get('event', {})
-        event_type = event.get('type', '')
+        event = typed.event
+        if not event:
+            return None
+
+        event_type = event.type
 
         # app_mention — bot was @mentioned
         if event_type == 'app_mention':
             return IntegrationEvent(
                 source=IntegrationType.SLACK,
                 event_type='app_mention',
-                external_id=event.get('ts', ''),
-                title=f'Slack mention in #{event.get("channel", "unknown")}',
-                body=event.get('text', ''),
+                external_id=event.ts or '',
+                title=f'Slack mention in #{event.channel or "unknown"}',
+                body=event.text or '',
                 user_email=None,  # Slack uses user IDs, not emails
                 raw_payload=payload,
             )
 
         # Direct message to bot
-        if event_type == 'message' and event.get('channel_type') == 'im':
+        if event_type == 'message':
+            if event.channel_type != 'im':
+                return None
             # Ignore bot's own messages
-            if event.get('bot_id'):
+            if event.bot_id:
                 return None
             return IntegrationEvent(
                 source=IntegrationType.SLACK,
                 event_type='direct_message',
-                external_id=event.get('ts', ''),
+                external_id=event.ts or '',
                 title='Slack DM',
-                body=event.get('text', ''),
+                body=event.text or '',
                 raw_payload=payload,
             )
 

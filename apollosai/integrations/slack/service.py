@@ -2,13 +2,17 @@
 
 import logging
 
-import httpx
+from apollosai.integrations.base import IntegrationServiceMixin
 
 logger = logging.getLogger(__name__)
 
 
-class SlackService:
-    """Thin wrapper around Slack Web API using httpx."""
+class SlackService(IntegrationServiceMixin):
+    """Thin wrapper around Slack Web API using httpx.
+
+    TODO(phase4-H7): Evaluate migrating to slack_sdk.web.async_client.AsyncWebClient
+    for richer Slack API coverage (blocks, modals, slash commands).
+    """
 
     BASE_URL = 'https://slack.com/api'
 
@@ -28,11 +32,11 @@ class SlackService:
         payload: dict = {'channel': channel, 'text': text}
         if thread_ts:
             payload['thread_ts'] = thread_ts
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f'{self.BASE_URL}/chat.postMessage',
-                json=payload,
-                headers=self._headers(),
-            )
-            resp.raise_for_status()
-            return resp.json()
+        client = await self.get_client()
+        resp = await client.post(
+            f'{self.BASE_URL}/chat.postMessage',
+            json=payload,
+            headers=self._headers(),
+        )
+        resp.raise_for_status()
+        return resp.json()

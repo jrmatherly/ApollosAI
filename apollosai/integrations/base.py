@@ -1,8 +1,10 @@
 """Rich base manager for ApollosAI integrations."""
 
 import logging
+import re
 from abc import ABC, abstractmethod
 
+import httpx
 from fastapi import Request
 from starlette.responses import JSONResponse, Response
 
@@ -14,6 +16,54 @@ from apollosai.integrations.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+# --- URL path validation (M3: SSRF prevention) ---
+
+_REPO_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$')
+_JIRA_KEY_PATTERN = re.compile(r'^[A-Z][A-Z0-9_]+-\d+$')
+_SLUG_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+$')
+
+
+def validate_repo_path(repo: str) -> str:
+    """Validate GitHub/Bitbucket repo path (owner/name)."""
+    if not _REPO_PATTERN.match(repo):
+        raise ValueError(f'Invalid repository path: {repo}')
+    return repo
+
+
+def validate_jira_key(key: str) -> str:
+    """Validate Jira issue key (PROJECT-123)."""
+    if not _JIRA_KEY_PATTERN.match(key):
+        raise ValueError(f'Invalid Jira issue key: {key}')
+    return key
+
+
+def validate_slug(slug: str) -> str:
+    """Validate URL slug component."""
+    if not _SLUG_PATTERN.match(slug):
+        raise ValueError(f'Invalid slug: {slug}')
+    return slug
+
+
+class IntegrationServiceMixin:
+    """Provides a shared httpx.AsyncClient with connection pooling (H5)."""
+
+    _client: httpx.AsyncClient | None = None
+
+    async def get_client(self) -> httpx.AsyncClient:
+        """Get or create the shared httpx client."""
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(
+                timeout=httpx.Timeout(30.0),
+                limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
+            )
+        return self._client
+
+    async def close(self) -> None:
+        """Close the shared httpx client."""
+        if self._client and not self._client.is_closed:
+            await self._client.aclose()
+            self._client = None
 
 
 class ApollosAIIntegrationManager(ABC):

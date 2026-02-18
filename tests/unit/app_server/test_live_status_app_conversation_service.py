@@ -21,8 +21,6 @@ from openhands.app_server.app_conversation.app_conversation_models import (
     AppConversationInfo,
     AppConversationStartRequest,
 )
-from openhands.integrations.service_types import SuggestedTask, TaskType
-from openhands.storage.data_models.conversation_metadata import ConversationTrigger
 from openhands.app_server.app_conversation.live_status_app_conversation_service import (
     LiveStatusAppConversationService,
 )
@@ -35,12 +33,14 @@ from openhands.app_server.sandbox.sandbox_models import (
 from openhands.app_server.sandbox.sandbox_spec_models import SandboxSpecInfo
 from openhands.app_server.user.user_context import UserContext
 from openhands.integrations.provider import ProviderToken, ProviderType
+from openhands.integrations.service_types import SuggestedTask, TaskType
 from openhands.sdk import Agent, Event
 from openhands.sdk.llm import LLM
 from openhands.sdk.secret import LookupSecret, StaticSecret
 from openhands.sdk.workspace import LocalWorkspace
 from openhands.sdk.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
 from openhands.server.types import AppMode
+from openhands.storage.data_models.conversation_metadata import ConversationTrigger
 
 # Env var used by openhands SDK LLM to skip context-window validation (e.g. for gpt-4 in tests)
 _ALLOW_SHORT_CONTEXT_WINDOWS = 'ALLOW_SHORT_CONTEXT_WINDOWS'
