@@ -31,13 +31,13 @@ async def receive_webhook(
     except ValueError:
         return JSONResponse(
             status_code=404,
-            content={'error': f'Unknown integration: {integration_type}'},
+            content={'error': 'Not found'},
         )
     manager_cls = get_integration(source)
     if manager_cls is None:
         return JSONResponse(
             status_code=404,
-            content={'error': f'Integration not registered: {integration_type}'},
+            content={'error': 'Not found'},
         )
     try:
         # TODO(phase3c): load IntegrationConfig from DB to get webhook_secret
