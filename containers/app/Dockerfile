@@ -76,6 +76,7 @@ COPY --chown=openhands:openhands --chmod=770 --from=backend-builder ${VIRTUAL_EN
 COPY --chown=openhands:openhands --chmod=770 ./skills ./skills
 COPY --chown=openhands:openhands --chmod=770 ./openhands ./openhands
 COPY --chown=openhands:openhands --chmod=777 ./openhands/runtime/plugins ./openhands/runtime/plugins
+COPY --chown=openhands:openhands --chmod=770 ./apollosai ./apollosai
 COPY --chown=openhands:openhands pyproject.toml poetry.lock README.md MANIFEST.in LICENSE ./
 
 # This is run as "openhands" user, and will create __pycache__ with openhands:openhands ownership
@@ -92,5 +93,7 @@ USER root
 
 WORKDIR /app
 
+ENV OPENHANDS_CONFIG_CLS=apollosai.server.config.ApollosAIServerConfig
+
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["uvicorn", "openhands.server.listen:app", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["uvicorn", "apollosai.app_server:app", "--host", "0.0.0.0", "--port", "3000"]
