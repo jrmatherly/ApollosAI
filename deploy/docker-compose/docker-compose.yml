@@ -85,7 +85,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-apollosai}
     # No host port binding — internal only. Use docker-compose.dev.yml for host access.
     volumes:
-      - apollosai-pgdata:/var/lib/postgresql/data
+      # PG 18+ uses version-specific subdirectory under /var/lib/postgresql
+      # Mount at /var/lib/postgresql (not /data) to support pg_upgrade --link
+      - apollosai-pgdata:/var/lib/postgresql
       - ./init-db.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-apollosai}"]
